@@ -504,3 +504,10 @@ ScrollTrigger.create({
       Math.floor((new Date(2026,7,8) - new Date()) / 86400000), 1500);
   }
 });
+const scrollBar = document.createElement('div');
+scrollBar.style.cssText = 'position:fixed;top:0;left:0;height:2px;background:#D4AF37;z-index:99998;width:0%;transition:width 0.1s;';
+document.body.appendChild(scrollBar);
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollBar.style.width = p + '%';
+});
