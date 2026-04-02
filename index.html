@@ -497,6 +497,19 @@
     </div>
   </div>
 </section>
+<!-- СЕКЦИЯ: ПОЖЕЛАНИЯ -->
+<section id="wishes" class="w-full py-24 px-6 bg-wedding-dark">
+  <div class="max-w-xl mx-auto text-center">
+    <p class="text-sm font-sans tracking-[0.3em] uppercase mb-4 text-wedding-gold">Ваши слова</p>
+    <h2 class="font-accent text-4xl md:text-6xl text-wedding-light mb-12">Пожелания</h2>
+    <form name="wishes" method="POST" data-netlify="true" class="flex flex-col gap-4">
+      <input type="hidden" name="form-name" value="wishes"/>
+      <input name="name" required placeholder="Ваше имя" style="background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.3);color:#F9F6F0;padding:14px 20px;font-family:'Inter',sans-serif;font-size:0.9rem;outline:none;border-radius:2px;" />
+      <textarea name="wish" required placeholder="Ваше пожелание..." rows="4" style="background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.3);color:#F9F6F0;padding:14px 20px;font-family:'Inter',sans-serif;font-size:0.9rem;outline:none;border-radius:2px;resize:none;"></textarea>
+      <button type="submit" style="background:transparent;border:1px solid #D4AF37;color:#D4AF37;padding:14px;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;transition:background 0.3s,color 0.3s;" onmouseover="this.style.background='#D4AF37';this.style.color='#1A1A1A'" onmouseout="this.style.background='transparent';this.style.color='#D4AF37'">Отправить пожелание</button>
+    </form>
+  </div>
+</section>
 <!-- ФУТЕР -->
 <footer class="w-full py-16 bg-wedding-dark text-center">
   <p class="font-accent text-3xl text-wedding-gold mb-4">Екатерина & Артём</p>
