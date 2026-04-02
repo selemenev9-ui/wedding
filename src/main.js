@@ -515,11 +515,11 @@ window.addEventListener('scroll', () => {
 const h1 = document.querySelector('h1.gsap-hero');
 if (h1) {
   const text = h1.innerText;
-  h1.innerText = '';
+  h1.innerHTML = '<span id="typed"></span>';
   let i = 0;
   setTimeout(() => {
     const iv = setInterval(() => {
-      h1.innerText += text[i];
+      document.getElementById('typed').innerText += text[i];
       i++;
       if (i >= text.length) clearInterval(iv);
     }, 80);
