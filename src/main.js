@@ -511,3 +511,17 @@ window.addEventListener('scroll', () => {
   const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
   scrollBar.style.width = p + '%';
 });
+// --- ЭФФЕКТ ПЕЧАТНОЙ МАШИНКИ ---
+const h1 = document.querySelector('h1.gsap-hero');
+if (h1) {
+  const text = h1.innerText;
+  h1.innerText = '';
+  let i = 0;
+  setTimeout(() => {
+    const iv = setInterval(() => {
+      h1.innerText += text[i];
+      i++;
+      if (i >= text.length) clearInterval(iv);
+    }, 80);
+  }, 1800);
+}
