@@ -515,7 +515,9 @@ window.addEventListener('scroll', () => {
 const h1 = document.querySelector('h1.gsap-hero');
 if (h1) {
   const text = h1.innerText;
-  h1.innerHTML = '<span id="typed"></span>';
+  h1.style.whiteSpace = 'normal';
+h1.style.wordBreak = 'break-word';
+h1.innerHTML = '<span id="typed" style="white-space:normal;word-break:break-word;"></span>';
   let i = 0;
   setTimeout(() => {
     const iv = setInterval(() => {
