@@ -17,3 +17,13 @@ html, body {
   background: transparent;
 }
 * { cursor: none; }
+.gsap-details-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 24px;
+  border-radius: 4px;
+}
+.gsap-details-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
