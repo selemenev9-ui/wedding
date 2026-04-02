@@ -1,0 +1,19 @@
+@import url('https://fonts.cdnfonts.com/css/playfair-display');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: theme('colors.wedding-light');
+  color: theme('colors.wedding-dark');
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+* { cursor: none; }
