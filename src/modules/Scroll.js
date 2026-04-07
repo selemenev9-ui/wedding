@@ -19,35 +19,61 @@ const LENIS_DEFAULTS = {
 
 export default class Scroll {
     constructor(lenisOptions = {}) {
-        const isCoarsePointer =
+        this.isNativeTouch =
             typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-        const mobileOverrides = isCoarsePointer
-            ? {
-                // Faster touch response to leave hero without repeated aggressive swipes.
-                duration: 0.9,
-                wheelMultiplier: 1,
-                touchMultiplier: 1.35,
-            }
-            : {};
+
+        if (this.isNativeTouch) {
+            // Mobile: keep native browser scroll path for reliable touch + pull-to-refresh.
+            this.lenis = {
+                on: () => {},
+                off: () => {},
+                raf: () => {},
+                resize: () => {},
+                destroy: () => {},
+                start: () => {
+                    document.documentElement.style.overflow = '';
+                    document.body.style.overflow = '';
+                },
+                stop: () => {
+                    document.documentElement.style.overflow = 'hidden';
+                    document.body.style.overflow = 'hidden';
+                },
+                scrollTo: (target, opts = {}) => {
+                    if (typeof target === 'number') {
+                        window.scrollTo({ top: target, behavior: opts.immediate ? 'auto' : 'smooth' });
+                        return;
+                    }
+                    if (target === 0 || target === 'top') {
+                        window.scrollTo({ top: 0, behavior: opts.immediate ? 'auto' : 'smooth' });
+                    }
+                },
+            };
+            return;
+        }
+
         this.lenis = new Lenis({
             ...LENIS_DEFAULTS,
-            ...mobileOverrides,
             ...lenisOptions,
         });
     }
 
     raf(time) {
-        this.lenis.raf(time);
+        if (!this.isNativeTouch) this.lenis.raf(time);
     }
 
     resize() {
-        this.lenis.resize();
+        if (!this.isNativeTouch) this.lenis.resize();
         ScrollTrigger.refresh();
     }
 
     destroy() {
-        this.lenis.off('scroll', ScrollTrigger.update);
-        this.lenis.destroy();
+        if (!this.isNativeTouch) {
+            this.lenis.off('scroll', ScrollTrigger.update);
+            this.lenis.destroy();
+            return;
+        }
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
     }
 }
 
