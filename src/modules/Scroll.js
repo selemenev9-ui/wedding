@@ -12,13 +12,25 @@ const LENIS_DEFAULTS = {
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     wheelMultiplier: 0.8,
     smoothWheel: true,
+    syncTouch: true,
+    touchMultiplier: 1.0,
     autoRaf: false,
 };
 
 export default class Scroll {
     constructor(lenisOptions = {}) {
+        const isCoarsePointer =
+            typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+        const mobileOverrides = isCoarsePointer
+            ? {
+                // Reduce long inertial tail on touch devices; improves tap responsiveness.
+                duration: 1.2,
+                wheelMultiplier: 1,
+            }
+            : {};
         this.lenis = new Lenis({
             ...LENIS_DEFAULTS,
+            ...mobileOverrides,
             ...lenisOptions,
         });
     }
@@ -40,7 +52,7 @@ export default class Scroll {
 
 /** Desktop vs portrait: lateral spread and uniform ring scale multipliers. */
 const RING_RESP_DESKTOP = { xMul: 1, scaleMul: 1 };
-const RING_RESP_MOBILE = { xMul: 0.4, scaleMul: 0.7 };
+const RING_RESP_MOBILE = { xMul: 0.28, scaleMul: 0.82 };
 
 /** ~32° — ring band faces camera instead of edge-on (thin line). */
 const RING_FACE_TILT_X = Math.PI * 0.18;

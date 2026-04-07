@@ -15,6 +15,7 @@ html, body {
     width: 100%;
     background-color: var(--color-page-bg);
     cursor: none;
+    overscroll-behavior-y: none;
 }
 
 a, button, [role="button"], label[for], .editorial-btn, .route-link, .rsvp-radio-label {
@@ -196,6 +197,7 @@ canvas {
     left: 0;
     z-index: 0;
     outline: none;
+    pointer-events: none;
 }
 
 .hero-overlay {
@@ -357,6 +359,11 @@ canvas {
 
 /* Hero mobile: same absolute rails; shorter horizontal padding */
 @media (max-width: 767px) and (pointer: coarse) {
+    html, body {
+        min-height: 100svh;
+        min-height: 100dvh;
+    }
+
     .hero-overlay__inner {
         min-height: 100svh;
         min-height: 100dvh;
@@ -380,6 +387,29 @@ canvas {
 
     #countdown {
         gap: 1.25rem;
+    }
+
+    #hero-spacer,
+    #section-path,
+    #section-glimpse,
+    #section-final,
+    .path-container,
+    .glimpse-pin-container,
+    .golden-thread {
+        height: 100svh;
+        height: 100dvh;
+        min-height: 100svh;
+        min-height: 100dvh;
+    }
+
+    a,
+    button,
+    .editorial-btn,
+    .route-link,
+    .rsvp-radio-label,
+    .rsvp-input {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 }
 
