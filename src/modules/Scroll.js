@@ -23,9 +23,10 @@ export default class Scroll {
             typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
         const mobileOverrides = isCoarsePointer
             ? {
-                // Mobile balance: smooth but not sticky.
-                duration: 1.2,
+                // Faster touch response to leave hero without repeated aggressive swipes.
+                duration: 0.9,
                 wheelMultiplier: 1,
+                touchMultiplier: 1.35,
             }
             : {};
         this.lenis = new Lenis({
