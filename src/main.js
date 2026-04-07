@@ -540,21 +540,27 @@ if (rsvpForm) {
 
             let delivered = false;
             let lastError = null;
+            const canUseLocalRsvpApi =
+                typeof window !== 'undefined' &&
+                (window.location.hostname === 'localhost' ||
+                    window.location.hostname === '127.0.0.1');
 
             // Preferred route when backend exists (dev/preview/custom server).
-            try {
-                const rsvpRes = await fetch('/api/rsvp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: nameInput, attendance }),
-                });
-                const rsvpData = await rsvpRes.json().catch(() => ({ ok: false }));
-                delivered = !!(rsvpRes.ok && rsvpData.ok);
-                if (!delivered) {
-                    lastError = new Error(rsvpData.description || 'RSVP API Error');
+            if (canUseLocalRsvpApi) {
+                try {
+                    const rsvpRes = await fetch('/api/rsvp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: nameInput, attendance }),
+                    });
+                    const rsvpData = await rsvpRes.json().catch(() => ({ ok: false }));
+                    delivered = !!(rsvpRes.ok && rsvpData.ok);
+                    if (!delivered) {
+                        lastError = new Error(rsvpData.description || 'RSVP API Error');
+                    }
+                } catch (err) {
+                    lastError = err;
                 }
-            } catch (err) {
-                lastError = err;
             }
 
             // GitHub Pages fallback: direct Telegram request via no-cors.
