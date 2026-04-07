@@ -10,7 +10,13 @@
     --color-page-bg-rgb: 234, 231, 220;
 }
 
-html, body {
+html {
+    width: 100%;
+    background-color: var(--color-page-bg);
+    cursor: none;
+}
+
+body {
     overflow-x: hidden;
     width: 100%;
     background-color: var(--color-page-bg);
@@ -382,7 +388,7 @@ canvas {
     #hero-names {
         font-size: min(clamp(3rem, 30vw, 7.5rem), 28vh);
         line-height: 1.05;
-        pointer-events: auto;
+        pointer-events: none;
         overflow: visible;
         white-space: normal;
         will-change: transform, opacity;

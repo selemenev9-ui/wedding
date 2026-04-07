@@ -89,7 +89,7 @@ function isHeroMobileViewport() {
     return typeof window !== 'undefined' && window.matchMedia(HERO_MOBILE_QUERY).matches;
 }
 
-function setHeroNamesState({ opacity = 1, y = 0, scale = 1, pointerEvents = 'auto' } = {}) {
+function setHeroNamesState({ opacity = 1, y = 0, scale = 1, pointerEvents = 'none' } = {}) {
     const heroNamesDOM = document.querySelector('#hero-names');
     if (!heroNamesDOM) return;
     gsap.set(heroNamesDOM, {
@@ -165,7 +165,7 @@ function handleHeroSplitResize() {
             y: 0,
         });
         if (isHeroMobileViewport()) {
-            setHeroNamesState({ opacity: 1, y: 0, scale: 1, pointerEvents: 'auto' });
+            setHeroNamesState({ opacity: 1, y: 0, scale: 1, pointerEvents: 'none' });
         } else {
             gsap.killTweensOf('#hero-names');
         }
@@ -322,7 +322,7 @@ window.addEventListener('resources:ready', () => {
         }
         gsap.set('.hero-tagline', { opacity: 0, y: 20, xPercent: -50, x: 0 });
         if (isHeroMobile) {
-            setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'auto' });
+            setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'none' });
         }
         gsap.set('.hero-bottom', { opacity: 0, y: 20 });
 
