@@ -63,6 +63,7 @@ public/photos/scroll/              # 1.webp, 2.webp, 3.webp — Act II cascade
 public/photos/gallery/             # 1.webp … 24.webp — full ribbon gallery
 public/photos/                     # 5.webp, 12.webp (legacy)
 public/og.webp                     # Open Graph share image 1200×630 (`og:image:width` / `:height` in index)
+public/CNAME                       # GitHub Pages custom domain mapping: `katyartemwedding.ru`
 public/models/                     # ring_a.glb, ring_b.glb, hero_text_opt.glb (Meshopt — required for load)
 ```
 
