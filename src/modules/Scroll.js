@@ -12,7 +12,7 @@ const LENIS_DEFAULTS = {
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     wheelMultiplier: 0.8,
     smoothWheel: true,
-    syncTouch: true,
+    syncTouch: false,
     touchMultiplier: 1.0,
     autoRaf: false,
 };
@@ -23,8 +23,8 @@ export default class Scroll {
             typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
         const mobileOverrides = isCoarsePointer
             ? {
-                // Reduce long inertial tail on touch devices; improves tap responsiveness.
-                duration: 1.2,
+                // Near-native touch feel on phones; avoid over-smoothed drag latency.
+                duration: 0.65,
                 wheelMultiplier: 1,
             }
             : {};
