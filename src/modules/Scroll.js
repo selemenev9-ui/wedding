@@ -24,12 +24,21 @@ export default class Scroll {
 
         if (this.isNativeTouch) {
             // Mobile: keep native browser scroll path for reliable touch + pull-to-refresh.
+            // Register a passive scroll listener so ScrollTrigger.update() fires on every
+            // native scroll tick — same role that lenis.on('scroll', ...) plays on desktop.
+            this._nativeScrollHandler = () => ScrollTrigger.update();
+            window.addEventListener('scroll', this._nativeScrollHandler, { passive: true });
+
             this.lenis = {
                 on: () => {},
                 off: () => {},
                 raf: () => {},
                 resize: () => {},
-                destroy: () => {},
+                destroy: () => {
+                    if (this._nativeScrollHandler) {
+                        window.removeEventListener('scroll', this._nativeScrollHandler);
+                    }
+                },
                 start: () => {
                     document.documentElement.style.overflow = '';
                     document.body.style.overflow = '';

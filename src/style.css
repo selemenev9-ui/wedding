@@ -155,6 +155,15 @@ body {
     border-bottom: 1px solid rgba(18, 12, 8, 0.06);
 }
 
+@media (pointer: coarse) {
+    #site-nav.nav--scrolled {
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border-bottom: none;
+    }
+}
+
 .nav-logo {
     font-family: 'Manrope', sans-serif;
     font-size: 0.62rem;
@@ -590,6 +599,10 @@ canvas {
     font-weight: 400;
     color: rgba(18, 12, 8, 0.62);
     transition: color 0.3s;
+    min-height: 44px;
+    padding: 6px 4px;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .rsvp-radio-label:hover {
@@ -974,9 +987,9 @@ canvas {
 
     .nav-links.open {
         display: flex;
-        background: rgba(var(--color-page-bg-rgb), 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 
     .nav-links a {

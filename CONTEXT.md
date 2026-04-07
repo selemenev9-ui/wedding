@@ -186,3 +186,28 @@ public/models/                     # ring_a.glb, ring_b.glb, hero_text_opt.glb (
 
 - **`#section-final`** `100vh`, **`aria-label="RSVP"`**; rings persist from masterTl pos **145**.
 - **ScrollTrigger (DOM)**: `.final-date` + `.final-tagline` scrub with `stagger:0.15` — `start:'top 60%'`, `end:'bottom 90%'`, `ease:'none'`.
+
+---
+
+## Mobile Interaction Fixes (committed `77dbab1` / deployed `ce43c42`)
+
+### Root Cause 1 — All Buttons Blocked on Mobile
+
+**Bug:** `#hero-names` in `style.css` mobile block (`@media (max-width: 767px) and (pointer: coarse)`) had `pointer-events: auto`. The element is `position: absolute` inside `.hero-overlay` (`position: fixed; inset: 0; z-index: 10`). After scroll GSAP scrubs its opacity to 0, but `pointer-events: auto` remains. **An invisible `#hero-names` intercepts every touch event across the entire screen** — only the burger nav at z-index 55/60 was above it.
+
+**Fix:**
+- `src/style.css` line ~385: changed `pointer-events: auto` → `pointer-events: none` inside mobile block.
+- `src/main.js` `setHeroNamesState()`: changed default `pointerEvents = 'auto'` → `'none'`.
+- All `setHeroNamesState(...)` calls updated to `pointerEvents: 'none'` (hero-names is purely decorative, never needs pointer interaction).
+
+### Root Cause 2 — Pull-to-Refresh Broken
+
+**Bug:** `html, body { overflow-x: hidden; }` — setting `overflow-x: hidden` on the `html` root element creates a clipping scroll container that iOS Safari's pull-to-refresh gesture cannot bypass.
+
+**Fix:** Split the rule so `overflow-x: hidden` is only on `body`, not `html`:
+```css
+html { width: 100%; background-color: ...; cursor: none; }
+body { overflow-x: hidden; width: 100%; background-color: ...; cursor: none; }
+```
+
+**Rule for future:** NEVER set `overflow` or `overflow-x/y: hidden` on `html`. Only set on `body` or lower elements.
