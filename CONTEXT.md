@@ -148,6 +148,22 @@ public/models/                     # ring_a.glb, ring_b.glb, hero_text_opt.glb (
 
 ## P0 Patches Applied (SOTD Typography & Meta Foundation)
 
+## DEPLOY PROCEDURE (MANDATORY — do not skip steps)
+
+```powershell
+npm run build
+git add -f dist/          # ← REQUIRED: dist is in .gitignore; -f force-adds assets
+git add -A                # stage everything else
+git commit -m "..."
+git subtree split --prefix dist -b gh-pages-tmp
+git push origin gh-pages-tmp:gh-pages --force
+git branch -D gh-pages-tmp
+```
+
+**WHY:** `dist` is in `.gitignore`. `git add -A` silently skips new `dist/assets/*.js` and `dist/assets/*.css`. Without `git add -f dist/`, gh-pages gets the new `index.html` (with new hash references) but NO asset files → site breaks with 404 on CSS/JS. This happened on commits `0e68d7d` and `77dbab1`. Fixed by `2687e76`.
+
+---
+
 - **`<title>`** → `Катя & Артём · 08.08.2026` (was placeholder "Awwwards 3D Project").
 - **Font stack**: Added `Manrope` (wght 300/400/500/600) via Google Fonts alongside Playfair Display.
 - **Typography split**:
@@ -211,3 +227,21 @@ body { overflow-x: hidden; width: 100%; background-color: ...; cursor: none; }
 ```
 
 **Rule for future:** NEVER set `overflow` or `overflow-x/y: hidden` on `html`. Only set on `body` or lower elements.
+
+---
+
+## Mobile Polish Pass (commit `0e68d7d` / deployed `62e3c9c`)
+
+### Nav background removed on mobile
+- `#site-nav.nav--scrolled` on `@media (pointer: coarse)` → `background: transparent; backdrop-filter: none; border-bottom: none` — the scrolled glass band was visible as a cream stripe; removed.
+- `.nav-links.open` → `background: transparent; backdrop-filter: none` — the near-opaque cream full-screen menu background removed; text remains readable against the page/WebGL background.
+
+### Route link fixed
+- Removed `target="_blank"` from `index.html` `.route-link` — on mobile `target="_blank"` silently opens in a background tab with no user feedback (appears broken). Now opens in the same tab.
+
+### Radio button touch targets
+- `.rsvp-radio-label` now has `min-height: 44px; padding: 6px 4px; user-select: none; -webkit-user-select: none` — meets Apple/Google HIG minimum 44px touch target, prevents text-selection on tap.
+
+### ScrollTrigger native scroll sync
+- `src/modules/Scroll.js` native touch path: added `window.addEventListener('scroll', ScrollTrigger.update, { passive: true })` so GSAP ScrollTrigger fires on every native scroll frame. This ensures pinned sections, scrub animations, and `.destination-content autoAlpha` are properly driven on mobile. Listener is removed on `destroy()`.
+- Previously `ScrollTrigger.update()` was only called from `lenis.on('scroll', ...)` which is a no-op in native touch mode.
