@@ -1,0 +1,956 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Sync with WebGL StudioDome + Renderer clear */
+    --color-page-bg: #eae7dc;
+    --color-page-bg-rgb: 234, 231, 220;
+}
+
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    background-color: var(--color-page-bg);
+    cursor: none;
+}
+
+a, button, [role="button"], label[for], .editorial-btn, .route-link, .rsvp-radio-label {
+    cursor: none;
+}
+
+#cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #120c08;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+    transition: width 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.3s ease;
+}
+
+#cursor.cursor--hidden {
+    opacity: 0;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    html, body {
+        cursor: auto;
+    }
+    a, button, [role="button"], label[for], .editorial-btn, .route-link, .rsvp-radio-label {
+        cursor: auto;
+    }
+    #cursor {
+        display: none;
+    }
+}
+
+body {
+    min-height: 100vh;
+    position: relative;
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+}
+
+#preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--color-page-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.preloader-ring-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preloader-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.preloader-track {
+    stroke: rgba(18, 12, 8, 0.08);
+    stroke-width: 1;
+    fill: none;
+}
+
+.preloader-progress {
+    stroke: #9a7b4a;
+    stroke-width: 1;
+    fill: none;
+    stroke-linecap: round;
+    /* circumference of r=38: 2π×38 ≈ 238.76 */
+    stroke-dasharray: 238.76;
+    stroke-dashoffset: 238.76;
+    will-change: stroke-dashoffset;
+}
+
+.preloader-text {
+    position: relative;
+    z-index: 1;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.38em;
+    text-indent: 0.38em;
+    color: rgba(18, 12, 8, 0.45);
+    text-transform: uppercase;
+    user-select: none;
+}
+
+#site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 3rem;
+    transition: background 0.5s ease;
+}
+
+#site-nav.nav--scrolled {
+    background: rgba(var(--color-page-bg-rgb), 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(18, 12, 8, 0.06);
+}
+
+.nav-logo {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #120c08;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+#nav-burger {
+    display: none;
+}
+
+.nav-links a {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+    text-shadow: none;
+}
+
+.nav-links a:hover {
+    color: #120c08;
+}
+
+#hero-spacer {
+    height: 100vh;
+    pointer-events: none;
+}
+
+/* Fixed canvas behind DOM; hero overlay at z-index 10. Desktop #hero-names is display:none so
+   Playfair DOM never stacks on WebGL lettering (no “ghost” aliasing). */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    outline: none;
+}
+
+.hero-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.hero-overlay__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0 1.5rem;
+}
+
+.hero-tagline {
+    position: absolute;
+    top: calc(clamp(48px, 10vh, 96px) + env(safe-area-inset-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.62);
+    overflow: hidden;
+    max-width: min(100%, 42rem);
+    margin: 0;
+}
+
+.hero-names {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.2em 0.35em;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 600;
+    line-height: 1.05;
+    color: #120c08;
+    overflow: hidden;
+}
+
+.hero-names .char {
+    display: inline-block;
+}
+
+.hero-tagline .word {
+    display: inline-block;
+}
+
+.hero-names__amp {
+    color: #9a7b4a;
+    font-weight: 400;
+    padding: 0 0.08em;
+}
+
+/* DOM hero names: mobile only — `top`/`left` 50%; GSAP `xPercent`/`yPercent` -50 (see main.js / Scroll.js). */
+#hero-names {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 20vw, 7rem);
+    line-height: 1.1;
+    color: #120c08;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    max-width: min(100%, 42rem);
+    margin: 0;
+}
+
+@media not all and (pointer: coarse) {
+    #hero-names {
+        display: none !important;
+    }
+}
+
+.hero-bottom {
+    position: absolute;
+    bottom: clamp(20px, 5vh, 56px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(10px, 2vh, 24px);
+}
+
+.hero-date {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+    font-weight: 400;
+    letter-spacing: 0.55em;
+    color: rgba(18, 12, 8, 0.75);
+    text-indent: 0.55em;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    margin: 0;
+    white-space: nowrap;
+    max-width: min(100%, 42rem);
+}
+
+#countdown {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    margin: 0;
+    max-width: min(100%, 42rem);
+}
+
+.cd-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cd-num {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: #120c08;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.05em;
+}
+
+.cd-label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.55rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: rgba(18, 12, 8, 0.42);
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+}
+
+.hero-scroll-indicator {
+    position: absolute;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 3rem;
+    margin: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(18, 12, 8, 0.35),
+        rgba(18, 12, 8, 0.04)
+    );
+}
+
+/* Hero mobile: same absolute rails; shorter horizontal padding */
+@media (max-width: 767px) and (pointer: coarse) {
+    .hero-overlay__inner {
+        min-height: 100svh;
+        min-height: 100dvh;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+
+    .hero-bottom {
+        bottom: clamp(12px, 3vh, 28px);
+        gap: 0.5rem;
+    }
+
+    #hero-names {
+        font-size: min(clamp(3rem, 30vw, 7.5rem), 28vh);
+        line-height: 1.05;
+        pointer-events: auto;
+        overflow: visible;
+        white-space: normal;
+        will-change: transform, opacity;
+    }
+
+    #countdown {
+        gap: 1.25rem;
+    }
+}
+
+/* —— Scroll sections: transparent DOM over fixed WebGL (no panel fills) —— */
+
+.section-divider {
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(18, 12, 8, 0.06),
+        rgba(18, 12, 8, 0.14),
+        rgba(18, 12, 8, 0.06),
+        transparent
+    );
+    margin: 0 auto;
+}
+
+/* —— Scroll Protagonist: narrative sections —— */
+#section-path {
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+}
+
+#section-destination {
+    min-height: 150vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8vh 6vw;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+}
+
+#section-final {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 8vh 6vw;
+    z-index: 5;
+    background: transparent;
+}
+
+#section-glimpse {
+    min-height: 100vh;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+}
+
+/* —— Act III: #section-destination — focal typography + RSVP —— */
+.destination-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 5;
+    position: relative;
+    max-width: 36rem;
+    width: 100%;
+    padding: 0 1.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+}
+
+.dest-date,
+.dest-address {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.48);
+    margin-bottom: 1rem;
+    text-shadow: none;
+}
+
+.dest-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: #120c08;
+    text-shadow: 0 2px 24px rgba(255, 255, 255, 0.45);
+    margin: 0 0 2rem;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+.route-link {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 500;
+    color: #8b6f3d;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.7rem;
+    border-bottom: 1px solid rgba(139, 111, 61, 0.45);
+    padding-bottom: 4px;
+    transition: border-color 0.3s ease;
+    display: inline-block;
+    margin-bottom: 40px;
+}
+
+.route-link:hover {
+    border-color: #6b5428;
+}
+
+#btn-reveal-rsvp {
+    margin-top: 0;
+}
+
+.rsvp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 32px;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.rsvp-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(18, 12, 8, 0.2);
+    color: #120c08;
+    padding: 12px 0;
+    width: 100%;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.3s;
+    text-align: center;
+}
+
+.rsvp-input:focus {
+    border-color: #8b6f3d;
+}
+
+.rsvp-options {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.rsvp-radio-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgba(18, 12, 8, 0.62);
+    transition: color 0.3s;
+}
+
+.rsvp-radio-label:hover {
+    color: #120c08;
+}
+
+.rsvp-radio-label input {
+    display: none;
+}
+
+.radio-custom {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(18, 12, 8, 0.28);
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition:
+        background 0.3s,
+        border-color 0.3s;
+}
+
+.rsvp-radio-label input:checked + .radio-custom {
+    background: #8b6f3d;
+    border-color: #8b6f3d;
+}
+
+.rsvp-radio-label:has(input:checked) {
+    color: #120c08;
+}
+
+.rsvp-status {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    margin-top: 10px;
+    height: 20px;
+    color: rgba(18, 12, 8, 0.55);
+}
+
+.submit-btn {
+    margin-top: 0;
+}
+
+/* —— Act II: #section-glimpse — absolute stack: mask + button overlay —— */
+
+.glimpse-label {
+    position: absolute;
+    top: 6vh;
+    left: 0;
+    right: 0;
+    z-index: 8;
+    margin: 0;
+    padding: 0 1.5rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.42);
+    pointer-events: none;
+    text-align: center;
+    /* no translateX — GSAP animates y on this node in glimpseDomTl */
+}
+
+.glimpse-pin-container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.glimpse-expand-mask {
+    position: relative;
+    width: 30vw;
+    aspect-ratio: 3 / 4;
+    border-radius: 12px;
+    overflow: hidden;
+    will-change: width, height, border-radius;
+    z-index: 1;
+}
+
+/* Viewport-sized layers — mask is a window; image scale does not follow card shrink */
+.glimpse-img {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    max-width: none;
+    pointer-events: none;
+    display: block;
+}
+
+/* Landscape / desktop: full vertical frame, letterboxing on sides (editorial) */
+@media (min-aspect-ratio: 1/1) {
+    .glimpse-img {
+        object-fit: contain;
+    }
+}
+
+.glimpse-img-1 {
+    z-index: 1;
+    opacity: 1;
+}
+
+.glimpse-img-2 {
+    z-index: 2;
+    opacity: 0;
+}
+
+.glimpse-img-3 {
+    z-index: 3;
+    opacity: 0;
+}
+
+/* Button sits over the full-bleed mask (same stacking context as pin container) */
+.glimpse-action {
+    position: absolute;
+    bottom: 8vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+}
+
+/* —— Shared editorial button —— */
+.editorial-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    color: #120c08;
+    border: 1px solid rgba(18, 12, 8, 0.22);
+    padding: 12px 32px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition:
+        border-color 0.3s ease,
+        color 0.3s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+    white-space: nowrap;
+}
+
+.editorial-btn:hover {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(18, 12, 8, 0.35);
+    color: #120c08;
+    box-shadow: 0 4px 24px rgba(18, 12, 8, 0.06);
+}
+
+.editorial-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px rgba(18, 12, 8, 0.25);
+}
+
+/* Glimpse CTA — solid dark chip on light photography */
+.glimpse-action .editorial-btn,
+#btn-open-gallery {
+    background: #120c08;
+    color: var(--color-page-bg);
+    border-color: #120c08;
+}
+
+.glimpse-action .editorial-btn:hover,
+#btn-open-gallery:hover {
+    background: #1c1510;
+    color: var(--color-page-bg);
+    border-color: #2a2118;
+    box-shadow: 0 6px 28px rgba(18, 12, 8, 0.35);
+}
+
+.glimpse-action .editorial-btn:focus-visible,
+#btn-open-gallery:focus-visible {
+    box-shadow: 0 0 0 2px rgba(var(--color-page-bg-rgb), 0.45);
+}
+
+/* —— Gallery overlay — UI chrome layer over the WebGL canvas ——
+   NO background: canvas + studio clear (#EAE7DC) is the backdrop.
+   Only pointer-events and z-index positioning matter here. ——————————— */
+.gallery-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    display: flex;
+    padding: 40px;
+    justify-content: flex-end;
+    align-items: flex-start;
+    background: transparent;
+}
+
+/* —— Act I: #section-path — pinned stage + glowing DOM thread —— */
+.path-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.golden-thread {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 1px);
+    width: 2px;
+    height: 100vh;
+    transform-origin: top center;
+    /* scaleY only — no translateX so GSAP owns full transform during scrub */
+    transform: scaleY(0);
+    pointer-events: none;
+    z-index: 5;
+    will-change: transform;
+
+    /* Gradient beam on light studio — deeper gold for contrast */
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(154, 123, 74, 0.45) 8%,
+        rgba(139, 111, 61, 0.85) 30%,
+        rgba(120, 95, 50, 0.95) 50%,
+        rgba(139, 111, 61, 0.85) 70%,
+        rgba(154, 123, 74, 0.45) 92%,
+        transparent 100%
+    );
+
+    box-shadow:
+        0 0 4px 1px rgba(139, 111, 61, 0.55),
+        0 0 20px 5px rgba(139, 111, 61, 0.18);
+}
+
+.path-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 5vw;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 5vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: 0.02em;
+    color: #120c08;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.path-text .char {
+    display: inline-block;
+}
+
+.final-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.final-date {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.65rem, 1.4vw, 0.85rem);
+    font-weight: 500;
+    letter-spacing: 0.45em;
+    text-indent: 0.45em;
+    color: rgba(18, 12, 8, 0.45);
+    text-transform: uppercase;
+}
+
+.final-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(4.5rem, 14vw, 14rem);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: #120c08;
+    will-change: transform, opacity;
+}
+
+@media (max-width: 768px) {
+    #site-nav {
+        padding: 1rem 1.4rem;
+    }
+
+    .nav-links {
+        gap: 1.4rem;
+    }
+
+    .nav-links a {
+        font-size: 0.6rem;
+    }
+
+    #section-path,
+    #section-destination,
+    #section-final {
+        padding: 6vh 5vw;
+    }
+
+    .glimpse-expand-mask {
+        width: 78vw;
+    }
+
+    #countdown {
+        gap: 1.5rem;
+    }
+
+    .cd-num {
+        font-size: clamp(1.4rem, 8vw, 2.2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    #nav-burger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        z-index: 60;
+    }
+
+    #nav-burger > span {
+        display: block;
+        width: 22px;
+        height: 1.5px;
+        background: rgba(18, 12, 8, 0.85);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #nav-burger.active > span:nth-child(1) {
+        transform: rotate(45deg) translate(4.5px, 4.5px);
+    }
+
+    #nav-burger.active > span:nth-child(2) {
+        opacity: 0;
+    }
+
+    #nav-burger.active > span:nth-child(3) {
+        transform: rotate(-45deg) translate(4.5px, -4.5px);
+    }
+
+    .nav-links {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+        z-index: 55;
+    }
+
+    .nav-links.open {
+        display: flex;
+        background: rgba(var(--color-page-bg-rgb), 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .nav-links a {
+        font-size: 1.1rem;
+        letter-spacing: 0.15em;
+        color: #120c08;
+        text-shadow: none;
+    }
+}
+
+/* Failsafe: hide custom cursor dot on touch / coarse-pointer devices */
+@media (pointer: coarse) {
+    #cursor {
+        display: none !important;
+    }
+}
