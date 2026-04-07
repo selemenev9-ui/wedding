@@ -534,29 +534,57 @@ if (rsvpForm) {
             const chatId = import.meta.env.VITE_TG_CHAT_ID;
 
             console.log('Env Check:', { hasToken: !!token, hasChatId: !!chatId });
+            if (!token || !chatId) {
+                throw new Error('Missing VITE_TG_* env');
+            }
 
-            const telegramUrl = `/api/telegram/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+            let delivered = false;
+            let lastError = null;
 
-            const res = await fetch(telegramUrl);
-            const textResponse = await res.text();
-
-            console.log('TG Response Raw:', textResponse);
-
-            let data;
+            // Preferred route when backend exists (dev/preview/custom server).
             try {
-                data = JSON.parse(textResponse);
-            } catch {
-                data = { ok: false };
+                const rsvpRes = await fetch('/api/rsvp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nameInput, attendance }),
+                });
+                const rsvpData = await rsvpRes.json().catch(() => ({ ok: false }));
+                delivered = !!(rsvpRes.ok && rsvpData.ok);
+                if (!delivered) {
+                    lastError = new Error(rsvpData.description || 'RSVP API Error');
+                }
+            } catch (err) {
+                lastError = err;
             }
 
-            if (res.ok && data.ok) {
-                rsvpStatus.textContent = 'Спасибо! Ваш ответ записан.';
-                rsvpStatus.style.color = '#8b6f3d';
-                rsvpForm.reset();
-                submitBtn.style.display = 'none';
-            } else {
-                throw new Error(data.description || 'API Error');
+            // GitHub Pages fallback: direct Telegram request via no-cors.
+            if (!delivered) {
+                const directTelegramUrl =
+                    `https://api.telegram.org/bot${token}/sendMessage` +
+                    `?chat_id=${encodeURIComponent(chatId)}` +
+                    `&text=${encodeURIComponent(message)}` +
+                    `&parse_mode=Markdown`;
+
+                try {
+                    await fetch(directTelegramUrl, {
+                        method: 'GET',
+                        mode: 'no-cors',
+                        cache: 'no-store',
+                    });
+                    delivered = true;
+                } catch (err) {
+                    lastError = err;
+                }
             }
+
+            if (!delivered) {
+                throw lastError || new Error('Telegram delivery failed');
+            }
+
+            rsvpStatus.textContent = 'Спасибо! Ваш ответ записан.';
+            rsvpStatus.style.color = '#8b6f3d';
+            rsvpForm.reset();
+            submitBtn.style.display = 'none';
         } catch (err) {
             console.error('RSVP Fatal Error:', err);
             rsvpStatus.textContent = 'Ошибка отправки. Проверьте консоль.';
