@@ -535,7 +535,7 @@ if (rsvpForm) {
                 .replaceAll('"', '&quot;');
 
         const safeName = escapeHtml(nameInput);
-        const statusLabel = attendance === 'Буду' ? '✅ Буду' : '❌ Не смогу';
+        const statusLabel = attendance === 'Буду' ? '✅ С удовольствием буду' : '❌ К сожалению, не смогу';
         const safeStatus = escapeHtml(statusLabel);
         const sentAt = new Date().toLocaleString('ru-RU', {
             day: '2-digit',
@@ -545,12 +545,17 @@ if (rsvpForm) {
             minute: '2-digit',
         });
         const safeSentAt = escapeHtml(sentAt);
+        const source = escapeHtml(typeof window !== 'undefined' ? window.location.hostname : 'unknown');
         const message =
-            `<b>RSVP Катя и Артём</b>\n` +
+            `<b>RSVP • Катя & Артём</b>\n` +
+            `━━━━━━━━━━━━━━\n` +
             `🕊 <b>Новый ответ на приглашение</b>\n\n` +
-            `👤 <b>Гость:</b> ${safeName}\n` +
-            `📌 <b>Статус:</b> ${safeStatus}\n` +
-            `🕒 <b>Время:</b> ${safeSentAt}`;
+            `👤 <b>Гость</b>\n` +
+            `${safeName}\n\n` +
+            `📌 <b>Статус</b>\n` +
+            `${safeStatus}\n\n` +
+            `🕒 <b>Время:</b> ${safeSentAt}\n` +
+            `🌐 <b>Источник:</b> ${source}`;
 
         try {
             const token = import.meta.env.VITE_TG_BOT_TOKEN;

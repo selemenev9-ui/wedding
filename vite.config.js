@@ -49,7 +49,7 @@ function attachRsvpMiddleware(server, env) {
                     .replaceAll('>', '&gt;')
                     .replaceAll('"', '&quot;');
             const safeName = escapeHtml(name);
-            const statusLabel = attendance === 'Буду' ? '✅ Буду' : '❌ Не смогу';
+            const statusLabel = attendance === 'Буду' ? '✅ С удовольствием буду' : '❌ К сожалению, не смогу';
             const safeStatus = escapeHtml(statusLabel);
             const sentAt = new Date().toLocaleString('ru-RU', {
                 day: '2-digit',
@@ -59,12 +59,17 @@ function attachRsvpMiddleware(server, env) {
                 minute: '2-digit',
             });
             const safeSentAt = escapeHtml(sentAt);
+            const source = escapeHtml(req.headers.host || 'local-dev');
             const message =
-                `<b>RSVP Катя и Артём</b>\n` +
+                `<b>RSVP • Катя & Артём</b>\n` +
+                `━━━━━━━━━━━━━━\n` +
                 `🕊 <b>Новый ответ на приглашение</b>\n\n` +
-                `👤 <b>Гость:</b> ${safeName}\n` +
-                `📌 <b>Статус:</b> ${safeStatus}\n` +
-                `🕒 <b>Время:</b> ${safeSentAt}`;
+                `👤 <b>Гость</b>\n` +
+                `${safeName}\n\n` +
+                `📌 <b>Статус</b>\n` +
+                `${safeStatus}\n\n` +
+                `🕒 <b>Время:</b> ${safeSentAt}\n` +
+                `🌐 <b>Источник:</b> ${source}`;
 
             try {
                 const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
