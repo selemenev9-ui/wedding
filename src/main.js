@@ -527,7 +527,30 @@ if (rsvpForm) {
         submitBtn.textContent = 'Отправка...';
         submitBtn.disabled = true;
 
-        const message = `🕊 *Новый ответ на приглашение* \n\n*Гость:* ${nameInput}\n*Статус:* ${attendance}`;
+        const escapeHtml = (value) =>
+            String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;');
+
+        const safeName = escapeHtml(nameInput);
+        const statusLabel = attendance === 'Буду' ? '✅ Буду' : '❌ Не смогу';
+        const safeStatus = escapeHtml(statusLabel);
+        const sentAt = new Date().toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+        const safeSentAt = escapeHtml(sentAt);
+        const message =
+            `<b>RSVP Катя и Артём</b>\n` +
+            `🕊 <b>Новый ответ на приглашение</b>\n\n` +
+            `👤 <b>Гость:</b> ${safeName}\n` +
+            `📌 <b>Статус:</b> ${safeStatus}\n` +
+            `🕒 <b>Время:</b> ${safeSentAt}`;
 
         try {
             const token = import.meta.env.VITE_TG_BOT_TOKEN;
@@ -569,7 +592,7 @@ if (rsvpForm) {
                     `https://api.telegram.org/bot${token}/sendMessage` +
                     `?chat_id=${encodeURIComponent(chatId)}` +
                     `&text=${encodeURIComponent(message)}` +
-                    `&parse_mode=Markdown`;
+                    `&parse_mode=HTML`;
 
                 try {
                     await fetch(directTelegramUrl, {
