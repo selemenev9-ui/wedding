@@ -620,32 +620,6 @@ const GALLERY_DOM_HIDE =
 const galleryOverlay  = document.getElementById('gallery-overlay');
 const btnOpenGallery  = document.getElementById('btn-open-gallery');
 const btnCloseGallery = document.getElementById('btn-close-gallery');
-const routeLink = document.querySelector('.route-link');
-const isCoarsePointer = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-
-function bindFastTap(el, handler) {
-    if (!el || !isCoarsePointer) return;
-    let touchTriggered = false;
-    el.addEventListener(
-        'touchend',
-        (e) => {
-            touchTriggered = true;
-            e.preventDefault();
-            handler(e);
-            window.setTimeout(() => {
-                touchTriggered = false;
-            }, 350);
-        },
-        { passive: false },
-    );
-    el.addEventListener('click', (e) => {
-        if (touchTriggered) {
-            e.preventDefault();
-            return;
-        }
-        handler(e);
-    });
-}
 
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.body.classList.contains('gallery-active') && btnCloseGallery) {
@@ -654,7 +628,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 if (btnOpenGallery) {
-    const openGallery = () => {
+    btnOpenGallery.addEventListener('click', () => {
         scroll.lenis.stop();
         document.body.classList.add('gallery-active');
 
@@ -679,16 +653,11 @@ if (btnOpenGallery) {
         if (glassRing) glassRing.mesh.visible = false;
 
         galleryRibbon.open();
-    };
-    if (isCoarsePointer) {
-        bindFastTap(btnOpenGallery, openGallery);
-    } else {
-        btnOpenGallery.addEventListener('click', openGallery);
-    }
+    });
 }
 
 if (btnCloseGallery) {
-    const closeGallery = () => {
+    btnCloseGallery.addEventListener('click', () => {
         document.body.classList.remove('gallery-active');
 
         gsap.to('#gallery-overlay', {
@@ -715,16 +684,11 @@ if (btnCloseGallery) {
 
         scroll.lenis.start();
         ScrollTrigger.refresh();
-    };
-    if (isCoarsePointer) {
-        bindFastTap(btnCloseGallery, closeGallery);
-    } else {
-        btnCloseGallery.addEventListener('click', closeGallery);
-    }
+    });
 }
 
 if (btnRevealRsvp && rsvpForm) {
-    const openRsvpForm = () => {
+    btnRevealRsvp.addEventListener('click', () => {
         if (rsvpForm.style.display === 'flex') return;
         btnRevealRsvp.style.display = 'none';
         rsvpForm.style.display = 'flex';
@@ -741,19 +705,6 @@ if (btnRevealRsvp && rsvpForm) {
                 },
             },
         );
-    };
-    if (isCoarsePointer) {
-        bindFastTap(btnRevealRsvp, openRsvpForm);
-    } else {
-        btnRevealRsvp.addEventListener('click', openRsvpForm);
-    }
-}
-
-if (routeLink && isCoarsePointer) {
-    bindFastTap(routeLink, () => {
-        const href = routeLink.getAttribute('href');
-        if (!href) return;
-        window.open(href, '_blank', 'noopener,noreferrer');
     });
 }
 
