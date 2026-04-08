@@ -796,18 +796,60 @@ canvas {
 }
 
 /* —— Gallery overlay — UI chrome layer over the WebGL canvas ——
-   NO background: canvas + studio clear (#EAE7DC) is the backdrop.
-   Only pointer-events and z-index positioning matter here. ——————————— */
+   No background: scene background is tweened by tweenSceneBg() in main.js.
+   Only pointer-events, z-index, and UI positioning matter here. ——————— */
 .gallery-overlay {
     position: fixed;
     inset: 0;
     z-index: 100;
     pointer-events: none;
-    display: flex;
-    padding: 40px;
-    justify-content: flex-end;
-    align-items: flex-start;
     background: transparent;
+}
+
+/* Close button — anchored top-right */
+.gallery-close-btn {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    /* Inherit .editorial-btn styles; override text colour for dark bg */
+    color: rgba(234, 231, 220, 0.75);
+    border-color: rgba(234, 231, 220, 0.2);
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.gallery-close-btn:hover {
+    color: rgba(234, 231, 220, 1);
+    border-color: rgba(234, 231, 220, 0.45);
+}
+
+/* Counter — bottom centre; updates via GalleryRibbon.update() */
+.gallery-counter {
+    position: absolute;
+    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(234, 231, 220, 0.4);
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .gallery-close-btn {
+        top: 24px;
+        right: 20px;
+        padding: 10px 22px;
+        font-size: 0.6rem;
+    }
+    .gallery-counter {
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        font-size: 0.6rem;
+    }
 }
 
 /* —— Act I: #section-path — pinned stage + glowing DOM thread —— */

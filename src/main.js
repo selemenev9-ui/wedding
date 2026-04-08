@@ -610,6 +610,38 @@ if (rsvpForm) {
     });
 }
 
+/* ── Gallery scene background tween ─────────────────────────────────
+   Tweens StudioDome material colour + renderer clear colour in sync.
+   On open → near-black (#0d0a07) so photos "float" in dark space.
+   On close → restore warm pearl (#EAE7DC).
+   Works without importing THREE: StudioDome._material.color is a
+   THREE.Color with normalised r/g/b we can tween directly.
+────────────────────────────────────────────────────────────────────── */
+const _bgProxy = { r: 0, g: 0, b: 0 };
+let   _bgTween = null;
+
+function tweenSceneBg(r, g, b, duration = 0.85) {
+    const domeMat  = world?.studioDome?._material;
+    const renderer = world?.renderer?.instance;
+    if (!domeMat || !renderer) return;
+
+    _bgTween?.kill();
+    // Seed proxy from current dome colour so tween always starts where we are
+    _bgProxy.r = domeMat.color.r;
+    _bgProxy.g = domeMat.color.g;
+    _bgProxy.b = domeMat.color.b;
+
+    _bgTween = gsap.to(_bgProxy, {
+        r, g, b,
+        duration,
+        ease: 'power2.out',
+        onUpdate() {
+            domeMat.color.setRGB(_bgProxy.r, _bgProxy.g, _bgProxy.b);
+            renderer.setClearColor(domeMat.color, 1);
+        },
+    });
+}
+
 /* ── Gallery mode toggle ─────────────────────────────────────────────
    Main narrative DOM fades with opacity + pointer-events only (no autoAlpha
    / visibility) so layout & ScrollTrigger pin math stay intact; WebGL reads
@@ -652,6 +684,9 @@ if (btnOpenGallery) {
 
         if (glassRing) glassRing.mesh.visible = false;
 
+        // Dark "gallery room" — photos pop on near-black background
+        tweenSceneBg(13 / 255, 10 / 255, 7 / 255, 0.85);
+
         galleryRibbon.open();
     });
 }
@@ -677,6 +712,9 @@ if (btnCloseGallery) {
             duration: 0.5,
             ease: 'power2.in',
         });
+
+        // Restore warm pearl as cards fall away
+        tweenSceneBg(234 / 255, 231 / 255, 220 / 255, 0.7);
 
         galleryRibbon.close(() => {
             if (glassRing) glassRing.mesh.visible = true;
