@@ -289,13 +289,14 @@ canvas {
     line-height: 1.1;
     color: #120c08;
     text-align: center;
-    text-shadow: 0 1px 0 rgba(234, 231, 220, 0.45);
+    text-shadow: none;
     -webkit-text-stroke: 0.35px rgba(234, 231, 220, 0.35);
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
     overflow: visible;
     max-width: none;
+    will-change: transform, opacity;
     margin: 0;
 }
 
@@ -950,6 +951,10 @@ body.gallery-active .gallery-overlay {
     line-height: 0.9;
     letter-spacing: -0.02em;
     color: #120c08;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern' 1, 'liga' 1;
     will-change: transform, opacity;
 }
 

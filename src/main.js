@@ -9,8 +9,6 @@ import HeroText from './gl/world/HeroText.js';
 import Scroll, { bindGlassRingScrollEffects } from './modules/Scroll.js';
 import MouseParallax from './modules/MouseParallax.js';
 import GlimpseGallery from './gl/world/GlimpseGallery.js';
-import GalleryRibbon from './gl/world/GalleryRibbon.js';
-import Cursor from './modules/Cursor.js';
 
 if (!gsap.plugins?.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
@@ -29,7 +27,13 @@ if (window.scrollY === 0) {
 gsap.set('.hero-bottom, .hero-scroll-indicator', { opacity: 0 });
 
 if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
-    new Cursor();
+    import('./modules/Cursor.js')
+        .then(({ default: Cursor }) => {
+            new Cursor();
+        })
+        .catch((err) => {
+            console.warn('Cursor lazy-load failed:', err);
+        });
 }
 
 // ── Preloader SVG ring progress ───────────────────────────────────────
@@ -159,9 +163,26 @@ window.addEventListener('resize', () => {
     heroSplitResizeTimer = window.setTimeout(handleHeroSplitResize, HERO_SPLIT_DEBOUNCE_MS);
 });
 
-// GlimpseGallery / GalleryRibbon require only World.instance — no resources:ready dependency
+// GlimpseGallery requires only World.instance — no resources:ready dependency
 const glimpseGallery = new GlimpseGallery();
-const galleryRibbon  = new GalleryRibbon();
+let galleryRibbon = null;
+let galleryRibbonPromise = null;
+
+async function ensureGalleryRibbon() {
+    if (galleryRibbon) return galleryRibbon;
+    if (!galleryRibbonPromise) {
+        galleryRibbonPromise = import('./gl/world/GalleryRibbon.js')
+            .then(({ default: GalleryRibbon }) => {
+                galleryRibbon = new GalleryRibbon();
+                return galleryRibbon;
+            })
+            .catch((err) => {
+                galleryRibbonPromise = null;
+                throw err;
+            });
+    }
+    return galleryRibbonPromise;
+}
 
 let mouseParallax = new MouseParallax([]);
 
@@ -215,7 +236,7 @@ gsap.ticker.add((time) => {
 
     smoothVelocity += (_rawVelocity - smoothVelocity) * 0.12;
     glimpseGallery.update(smoothVelocity);
-    galleryRibbon.update();
+    galleryRibbon?.update();
     glassRing?.update();
     mouseParallax.update();
     world.update();
@@ -663,7 +684,18 @@ if (btnOpenGallery) {
         // Dark "gallery room" — photos pop on near-black background
         tweenSceneBg(13 / 255, 10 / 255, 7 / 255, 0.85);
 
-        await galleryRibbon.open();
+        try {
+            const ribbon = await ensureGalleryRibbon();
+            await ribbon.open();
+        } catch (err) {
+            console.error('GalleryRibbon open failed:', err);
+            document.body.classList.remove('gallery-active');
+            gsap.set('#gallery-overlay', { autoAlpha: 0 });
+            gsap.set(GALLERY_DOM_HIDE, { opacity: 1, pointerEvents: 'auto' });
+            if (glassRing) glassRing.mesh.visible = true;
+            tweenSceneBg(234 / 255, 231 / 255, 220 / 255, 0.2);
+            scroll.lenis.start();
+        }
     });
 }
 
@@ -687,17 +719,26 @@ if (btnCloseGallery) {
             pointerEvents: 'auto',
             duration: 0.5,
             ease: 'power2.in',
+            onComplete: () => {
+                // Wait one frame so restored layout is committed before recalculating pin metrics.
+                requestAnimationFrame(() => {
+                    ScrollTrigger.refresh();
+                });
+            },
         });
 
         // Restore warm pearl as cards fall away
         tweenSceneBg(234 / 255, 231 / 255, 220 / 255, 0.7);
 
-        galleryRibbon.close(() => {
-            if (glassRing) glassRing.mesh.visible = true;
-        });
+        if (galleryRibbon) {
+            galleryRibbon.close(() => {
+                if (glassRing) glassRing.mesh.visible = true;
+            });
+        } else if (glassRing) {
+            glassRing.mesh.visible = true;
+        }
 
         scroll.lenis.start();
-        ScrollTrigger.refresh();
     });
 }
 
@@ -732,6 +773,6 @@ window.addEventListener('resize', () => {
     world.camera.resize(sizes);
     world.renderer.resize(sizes);
     scroll.resize();
-    galleryRibbon.resize();
+    galleryRibbon?.resize();
 });
 
