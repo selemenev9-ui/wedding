@@ -78,7 +78,6 @@ export default class World {
             { name: 'envMap', type: 'hdri', path: '/hdri/studio_small_09_1k.hdr' },
             { name: 'ringA', type: 'gltf', path: '/models/ring_a.glb' },
             { name: 'ringB', type: 'gltf', path: '/models/ring_b.glb' },
-            { name: 'heroText', type: 'gltf', path: '/models/hero_text_opt.glb' },
         ]);
 
         /** Set from `main.js` when `HeroText` is created (layered load). */

@@ -83,11 +83,6 @@ let heroIntroTimeline = null;
 let heroIntroCompleted = false;
 let heroSplitResizeTimer = 0;
 const HERO_SPLIT_DEBOUNCE_MS = 150;
-const HERO_MOBILE_QUERY = '(max-width: 767px) and (pointer: coarse)';
-
-function isHeroMobileViewport() {
-    return typeof window !== 'undefined' && window.matchMedia(HERO_MOBILE_QUERY).matches;
-}
 
 function setHeroNamesState({ opacity = 1, y = 0, scale = 1, pointerEvents = 'none' } = {}) {
     const heroNamesDOM = document.querySelector('#hero-names');
@@ -105,31 +100,13 @@ function setHeroNamesState({ opacity = 1, y = 0, scale = 1, pointerEvents = 'non
 }
 
 /**
- * WebGL hero vs DOM `#hero-names`: `matchMedia (max-width: 767px)`.
- * @param {import('./gl/world/HeroText.js').default | null} ht
+ * Initialise `#hero-names` DOM element state — shown on all screens.
+ * @param {import('./gl/world/HeroText.js').default | null} _ht
  */
-function setupHeroTextMedia(ht) {
+function setupHeroTextMedia(_ht) {
     const heroNamesDOM = document.querySelector('#hero-names');
     if (!heroNamesDOM || typeof window === 'undefined') return;
-
-    const mobileMediaQuery = window.matchMedia(HERO_MOBILE_QUERY);
-
-    function handleHeroTextMedia(mq) {
-        const matches = mq.matches;
-        gsap.killTweensOf(heroNamesDOM);
-        if (matches) {
-            if (ht?.root) ht.root.visible = false;
-            setHeroNamesState({ opacity: heroIntroCompleted ? 1 : 0, y: heroIntroCompleted ? 0 : 20 });
-        } else {
-            if (ht?.root) ht.root.visible = true;
-            setHeroNamesState({ opacity: 0, y: 0, scale: 1, pointerEvents: 'none' });
-            /* Desktop: hard-hidden via CSS `display: none` — no GSAP on #hero-names. */
-        }
-        ScrollTrigger.refresh();
-    }
-
-    handleHeroTextMedia(mobileMediaQuery);
-    mobileMediaQuery.addEventListener('change', handleHeroTextMedia);
+    setHeroNamesState({ opacity: heroIntroCompleted ? 1 : 0, y: heroIntroCompleted ? 0 : 20 });
 }
 
 /**
@@ -164,11 +141,7 @@ function handleHeroSplitResize() {
             opacity: 1,
             y: 0,
         });
-        if (isHeroMobileViewport()) {
-            setHeroNamesState({ opacity: 1, y: 0, scale: 1, pointerEvents: 'none' });
-        } else {
-            gsap.killTweensOf('#hero-names');
-        }
+        setHeroNamesState({ opacity: 1, y: 0, scale: 1, pointerEvents: 'none' });
         gsap.killTweensOf('.hero-scroll-indicator');
         gsap.set('.hero-scroll-indicator', {
             opacity: 1,
@@ -316,19 +289,13 @@ function runHeroIntro() {
     heroIntroCompleted = false;
     rebuildHeroSplits('hidden');
 
-    const isHeroMobile = isHeroMobileViewport();
-
-    if (isHeroMobile) {
-        gsap.killTweensOf('#hero-names');
-    }
+    gsap.killTweensOf('#hero-names');
 
     if (heroSplitTagline?.words?.length) {
         gsap.set(heroSplitTagline.words, { y: '0%', opacity: 0 });
     }
     gsap.set('.hero-tagline', { opacity: 0, y: 20, xPercent: -50, x: 0 });
-    if (isHeroMobile) {
-        setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'none' });
-    }
+    setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'none' });
     gsap.set('.hero-bottom', { opacity: 0, y: 20 });
 
     heroIntroTimeline = gsap.timeline({
@@ -393,21 +360,19 @@ function runHeroIntro() {
             '<',
         );
     }
-    if (isHeroMobile) {
-        heroIntroTimeline.fromTo(
-            '#hero-names',
-            { opacity: 0, y: 20, xPercent: -50, yPercent: -50, x: 0 },
-            {
-                opacity: 1,
-                y: 0,
-                xPercent: -50,
-                yPercent: -50,
-                x: 0,
-                duration: 1.2,
-            },
-            introSt,
-        );
-    }
+    heroIntroTimeline.fromTo(
+        '#hero-names',
+        { opacity: 0, y: 20, xPercent: -50, yPercent: -50, x: 0 },
+        {
+            opacity: 1,
+            y: 0,
+            xPercent: -50,
+            yPercent: -50,
+            x: 0,
+            duration: 1.2,
+        },
+        introSt,
+    );
     heroIntroTimeline.fromTo(
         '.hero-bottom',
         { opacity: 0, y: 20 },

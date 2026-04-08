@@ -253,7 +253,7 @@ canvas {
 
 .hero-names {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: baseline;
     justify-content: center;
     gap: 0.2em 0.35em;
@@ -279,27 +279,28 @@ canvas {
     padding: 0 0.08em;
 }
 
-/* DOM hero names: mobile only — `top`/`left` 50%; GSAP `xPercent`/`yPercent` -50 (see main.js / Scroll.js). */
+/* DOM hero names: all screens — `top`/`left` 50%; GSAP `xPercent`/`yPercent` -50 (see main.js). */
 #hero-names {
     position: absolute;
     top: 50%;
     left: 50%;
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2.5rem, 20vw, 7rem);
+    font-size: clamp(3.2rem, 10vw, 10rem);
     line-height: 1.1;
     color: #120c08;
     text-align: center;
+    text-shadow: 0 1px 0 rgba(234, 231, 220, 0.45);
+    -webkit-text-stroke: 0.35px rgba(234, 231, 220, 0.35);
+    white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    overflow: hidden;
-    max-width: min(100%, 42rem);
+    overflow: visible;
+    max-width: none;
     margin: 0;
 }
 
-@media not all and (pointer: coarse) {
-    #hero-names {
-        display: none !important;
-    }
+#hero-names .hero-names__amp {
+    color: #9a7b4a;
 }
 
 .hero-bottom {
@@ -399,8 +400,7 @@ canvas {
         line-height: 1.05;
         pointer-events: none;
         overflow: visible;
-        white-space: normal;
-        will-change: transform, opacity;
+        white-space: nowrap;
     }
 
     #countdown {

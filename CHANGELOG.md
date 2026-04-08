@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **HeroText migrated to Troika SDF text**: `src/gl/world/HeroText.js` now builds `'Катя & Артём'` with `troika-three-text` (plus gold `&` overlay), preserving the same public API (`root`, `group`, `group.scale`, `_syncGoldEnvMap`, `destroy`) while removing `hero_text_opt.glb` dependency.
 - **Asynchronous layered loading**: `ResourceLoader` — отложенные промисы на ассет (`waitFor(name)`), прогресс `resources:progress`, по завершении попыток загрузки — **`Promise.allSettled`** → `resources:ready` с `detail: { ok, failed, total }` (старт сцены от события не зависит; один упавший ассет не «ломает» агрегатный промис). `World` ждёт `envMap` и выставляет окружение; **`tryFadeEnvReflections()`** — плавное **`envMapIntensity`** для золота героя (1.5) и колец (0.9), **`WeakSet`** против дублей; на `main` после `heroText`/`glassRing` — повторные вызовы по `ready`. `HeroText` / `GlassRing` — каркас в сцене сразу, стартовый **`envMapIntensity: 0`** на золоте до фейда. `main.js`: ранние `GlassRing` + `HeroText`, `world.glassRing`, `bindGlassRingScrollEffects`, `MouseParallax`, затем `launchExperience` → `await heroText.ready` → прелоадер → `runHeroIntro`.
 - Галерея: лёгкий автодрейф (`AUTO_SCROLL_WORLD_PER_SEC`), пауза после жеста/колеса и во вкладке в фоне.
 - Перфоманс: `public/gallery-manifest.json` из `scripts/convert-images.js` — без 24× `Image()`; DPR cap coarse 1.5 / fine 2.0; на coarse pointer тени 512² и меньший `radius`.
