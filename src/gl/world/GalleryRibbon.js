@@ -12,6 +12,12 @@ const BASE_PATH = '/photos/gallery/';
 /** Clear gap between photo *edges* (fraction of card height) — editorial rhythm */
 const EDGE_GAP_FRAC = 0.055;
 
+/** Idle auto-pan (world units / sec, same sign as wheel «next»). ~0 = off. */
+const AUTO_SCROLL_WORLD_PER_SEC = 0.1;
+
+/** After drag / wheel, pause auto-pan so it doesn’t fight the user */
+const AUTO_PAUSE_AFTER_USER_MS = 2800;
+
 /* ─────────────────────────────────────────────────────────────────────
    GLSL — Vertex
 ───────────────────────────────────────────────────────────────────── */
@@ -87,6 +93,7 @@ function _makeMat() {
    • Spacing: uniform *edge* gap G between photos; centre step varies as
      w_i/2 + G + w_{i+1}/2 (w = itemH × aspect). No single global stride.
    • All TOTAL aspects probed once before open; GL textures don’t reshape the strip.
+   • Optional slow auto-pan when idle; pauses on interaction + tab hidden.
 ═════════════════════════════════════════════════════════════════════ */
 export default class GalleryRibbon {
 
@@ -117,6 +124,9 @@ export default class GalleryRibbon {
         this._itemH  = 1.5;
         this._velNorm = 1;
 
+        this._autoPausedUntil = 0;
+        this._lastAutoTs      = 0;
+
         this._counterEl        = document.getElementById('gallery-counter');
         this._overlayEl        = document.getElementById('gallery-overlay');
         this._lastCounterVal   = -1;
@@ -135,11 +145,20 @@ export default class GalleryRibbon {
         this._cancelBound = (e) => this._onPointerCancel(e);
         this._wheelBound  = (e) => this._onWheel(e);
 
+        this._visBound = () => {
+            if (!document.hidden) this._lastAutoTs = performance.now();
+        };
+
         window.addEventListener('pointerdown',   this._downBound);
         window.addEventListener('pointermove',   this._moveBound);
         window.addEventListener('pointerup',     this._upBound);
         window.addEventListener('pointercancel', this._cancelBound);
         window.addEventListener('wheel',         this._wheelBound, { passive: true });
+        document.addEventListener('visibilitychange', this._visBound);
+    }
+
+    _suppressAutoPan() {
+        this._autoPausedUntil = performance.now() + AUTO_PAUSE_AFTER_USER_MS;
     }
 
     _buildPool() {
@@ -360,6 +379,8 @@ export default class GalleryRibbon {
         this._computeLayout();
         this._resetState();
         this.container.visible = true;
+        this._lastAutoTs       = performance.now();
+        this._autoPausedUntil  = performance.now() + 2200;
 
         for (const m of this._meshes) {
             this._applyTexture(m, m.userData.imgIdx);
@@ -391,6 +412,7 @@ export default class GalleryRibbon {
         this._dragging = false;
         this._momentum = 0;
         this._releasePointerCaptureIfAny();
+        this._autoPausedUntil = 0;
 
         const exitOrder = [0, 6, 1, 5, 2, 4, 3];
         const tl = gsap.timeline({
@@ -433,9 +455,22 @@ export default class GalleryRibbon {
     update() {
         if (!this.container.visible) return;
 
+        const now = performance.now();
+        let frameDt = this._lastAutoTs > 0 ? (now - this._lastAutoTs) / 1000 : 0;
+        this._lastAutoTs = now;
+        if (frameDt > 0.08) frameDt = 0.08;
+
         if (!this._dragging) {
             this._momentum    *= 0.91;
             this.scrollTarget += this._momentum;
+        }
+
+        if (AUTO_SCROLL_WORLD_PER_SEC !== 0 &&
+            !this._dragging &&
+            !document.hidden &&
+            now >= this._autoPausedUntil &&
+            Math.abs(this._momentum) < 0.015) {
+            this.scrollTarget -= AUTO_SCROLL_WORLD_PER_SEC * frameDt;
         }
 
         const lerpF = this._isTouchDrag ? 0.14 : 0.085;
@@ -520,6 +555,7 @@ export default class GalleryRibbon {
         this._dragVel     = 0;
         this._momentum    = 0;
         this._isTouchDrag = e.pointerType === 'touch';
+        this._suppressAutoPan();
 
         if (this._overlayEl && (e.pointerType === 'touch' || e.pointerType === 'pen')) {
             try {
@@ -564,6 +600,7 @@ export default class GalleryRibbon {
 
     _onWheel(e) {
         if (!this.container.visible) return;
+        this._suppressAutoPan();
         this._momentum = 0;
         const rawDelta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 120);
         this.scrollTarget -= rawDelta * this._px2world() * 2.5;
@@ -601,6 +638,7 @@ export default class GalleryRibbon {
         window.removeEventListener('pointerup',     this._upBound);
         window.removeEventListener('pointercancel', this._cancelBound);
         window.removeEventListener('wheel',         this._wheelBound);
+        document.removeEventListener('visibilitychange', this._visBound);
 
         this._w.scene.remove(this.container);
         this._geo.dispose();
