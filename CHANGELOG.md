@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+- **Hero names readability parity**: added desktop-like subtle stroke/shadow treatment to mobile stacked `#hero-names` so lettering remains legible over bright/dark ring regions.
+- **Hero names vertical spacing pass**: increased stacked mobile separation so `Катя` sits higher and `Артём` lower, with adjusted line-height/gap around central ampersand for clearer three-line composition.
+- **Scope correction for hero stack mode**: restricted stacked `#hero-names` treatment to mobile coarse-pointer only (`max-width: 767px` + `pointer: coarse`) and increased mobile auto-fit target size for stronger visual presence.
+- **Mobile hero wrap hardening**: enforced wrapped flex layout for `#hero-names` on coarse-pointer mobile and added rendered-width fallback shrink loop in `fitHeroNamesToViewport()` to prevent residual overflow on very narrow viewports.
+- **Mobile hero title readability pass**: switched mobile `#hero-names` behavior from forced single-line shrink to larger multi-line layout (`white-space: normal`) with viewport-constrained auto-fit sizing, so text stays big and no longer overflows narrow screens.
 - **Mobile hero title fit fix**: added viewport auto-fit logic for `#hero-names` (`fitHeroNamesToViewport()` in `src/main.js`) to shrink font-size on coarse-pointer phones until the single-line name block fits screen width; added defensive mobile `max-width` in `src/style.css`.
 - **TBT-oriented startup deferral**: moved `bindGlassRingScrollEffects()` initialization from early boot to intro start in `src/main.js`, so expensive ScrollTrigger timeline wiring happens later and initial main-thread load is lighter.
 - **Perf-oriented startup split**: `src/main.js` now lazy-loads `Cursor` only for fine pointers and lazy-loads `GalleryRibbon` on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial JS startup pressure before hero narrative.

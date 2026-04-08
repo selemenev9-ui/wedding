@@ -87,29 +87,49 @@ let heroIntroTimeline = null;
 let heroIntroCompleted = false;
 let heroSplitResizeTimer = 0;
 const HERO_SPLIT_DEBOUNCE_MS = 150;
-const HERO_NAMES_MIN_PX = 42;
-const HERO_NAMES_MAX_PX = 120;
+const HERO_NAMES_MIN_PX = 60;
+const HERO_NAMES_MAX_PX = 148;
 const HERO_NAMES_SIDE_PADDING_PX = 32;
 
 function fitHeroNamesToViewport() {
     if (typeof window === 'undefined') return;
-    if (!window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches) return;
     const heroNamesDOM = document.querySelector('#hero-names');
     if (!heroNamesDOM) return;
+
+    const shouldStack = window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches;
+    heroNamesDOM.classList.toggle('hero-names--stacked', shouldStack);
+    if (!shouldStack) {
+        heroNamesDOM.style.removeProperty('max-width');
+        heroNamesDOM.style.removeProperty('white-space');
+        heroNamesDOM.style.removeProperty('display');
+        heroNamesDOM.style.removeProperty('flex-wrap');
+        heroNamesDOM.style.removeProperty('justify-content');
+        heroNamesDOM.style.removeProperty('font-size');
+        return;
+    }
 
     const maxWidth = Math.max(0, window.innerWidth - HERO_NAMES_SIDE_PADDING_PX);
     let sizePx = Math.min(
         HERO_NAMES_MAX_PX,
-        window.innerWidth * 0.22,
-        window.innerHeight * 0.28,
+        window.innerWidth * 0.27,
+        window.innerHeight * 0.215,
     );
     sizePx = Math.max(HERO_NAMES_MIN_PX, Math.floor(sizePx));
+
+    // Stacked intent (all narrow devices): keep title large while fitting viewport width.
+    heroNamesDOM.style.maxWidth = `${maxWidth}px`;
+    heroNamesDOM.style.whiteSpace = 'normal';
+    heroNamesDOM.style.display = 'flex';
+    heroNamesDOM.style.flexWrap = 'nowrap';
+    heroNamesDOM.style.justifyContent = 'center';
     heroNamesDOM.style.fontSize = `${sizePx}px`;
 
-    // Gradually reduce font-size until the decorative single-line title fits viewport width.
-    while (heroNamesDOM.scrollWidth > maxWidth && sizePx > HERO_NAMES_MIN_PX) {
+    // If a narrow viewport still overflows due to glyph metrics, reduce gradually.
+    let guard = 0;
+    while (heroNamesDOM.getBoundingClientRect().width > maxWidth && sizePx > HERO_NAMES_MIN_PX && guard < 200) {
         sizePx -= 1;
         heroNamesDOM.style.fontSize = `${sizePx}px`;
+        guard += 1;
     }
 }
 
