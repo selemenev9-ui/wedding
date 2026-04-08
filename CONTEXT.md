@@ -79,6 +79,7 @@ public/CNAME
 - **Navigation/sections:** fixed nav with burger menu on small screens, three anchor links (`История`, `Галерея`, `Детали`), final section as scroll destination without nav item.
 - **RSVP delivery:** form reveal animation via GSAP; submit path uses env-backed Telegram flow with HTML-escaped payload: local tries `POST /api/rsvp` then direct Telegram fallback (`no-cors`), production static host uses direct fallback path.
 - **Metadata/OG:** absolute OG/Twitter meta tags in `index.html`; `public/og.webp` treated as immutable master per `public/OG_POLICY.md`.
+- **SEO meta baseline:** `index.html` now includes explicit `<meta name="description">` for Lighthouse SEO completeness and better search snippet summary.
 
 ## 5. Environment (scene/runtime constants)
 
