@@ -289,8 +289,8 @@ canvas {
     line-height: 1.1;
     color: #120c08;
     text-align: center;
-    text-shadow: none;
-    -webkit-text-stroke: 0.35px rgba(234, 231, 220, 0.35);
+    text-shadow: 0 1px 0 rgba(234, 231, 220, 0.45);
+    -webkit-text-stroke: 0.45px rgba(234, 231, 220, 0.42);
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;

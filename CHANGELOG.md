@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Desktop hero text contrast tweak**: increased base `#hero-names` readability with slightly stronger `-webkit-text-stroke` and a subtle `text-shadow` so the contour is visible in desktop view.
 - **Hero names readability parity**: added desktop-like subtle stroke/shadow treatment to mobile stacked `#hero-names` so lettering remains legible over bright/dark ring regions.
 - **Hero names vertical spacing pass**: increased stacked mobile separation so `Катя` sits higher and `Артём` lower, with adjusted line-height/gap around central ampersand for clearer three-line composition.
 - **Scope correction for hero stack mode**: restricted stacked `#hero-names` treatment to mobile coarse-pointer only (`max-width: 767px` + `pointer: coarse`) and increased mobile auto-fit target size for stronger visual presence.

@@ -66,6 +66,7 @@ public/CNAME
 - **Hero-name mobile-only stacked layout:** `fitHeroNamesToViewport()` now applies only on mobile coarse-pointer query (`(max-width: 767px) and (pointer: coarse)`), toggling `.hero-names--stacked` (`Катя` top, `&` center, `Артём` bottom). Desktop/tablet layouts remain unchanged.
 - **Hero-name vertical separation tuning:** in `.hero-names--stacked`, top/bottom name parts now use stronger opposite Y offsets and tighter center ampersand line-height so `Катя` reads clearly above and `Артём` below with more visual air.
 - **Hero-name readability parity:** mobile stacked hero names now keep desktop-like subtle separation treatment (`-webkit-text-stroke` + lightweight text-shadow) for legibility over dark ring highlights.
+- **Desktop hero-name readability bump:** base `#hero-names` stroke/shadow contrast is slightly strengthened (`-webkit-text-stroke` + subtle top text-shadow) so separation remains visible on bright and dark ring areas.
 - **Ring choreography:** `src/modules/Scroll.js` builds pinned `pathDomTl` (`+=1500`) and `glimpseDomTl` (`+=3000`), then a full-page `masterTl` (`0..160`) for rings and camera (`z 6.5 -> 5 -> 4.85 -> 4.55`), with Act-I hero scale-out and mobile DOM name scrub-out.
 - **Act I (Path):** full-viewport golden thread scrub + SplitType char choreography for two lines (`.path-text-1`, `.path-text-2`) inside pinned section.
 - **Act II (Glimpse):** mask expansion + label fade + staged image crossfades + gallery CTA reveal in pinned section.
