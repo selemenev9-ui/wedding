@@ -43,6 +43,7 @@ The classic template (story cards, location/map, DOM gallery, wishes form, light
 | RSVP / Telegram | **Root `.env`** → `VITE_TG_*`. **`main.js`**: `fetch('/api/telegram/bot…/sendMessage?…')` — **Vite `server.proxy` / `preview.proxy`** forwards to **`api.telegram.org`** (replaces unstable **AllOrigins**). Debug logs retained. Optional **`POST /api/rsvp`** middleware still in `vite.config.js`. |
 
 ```
+CHANGELOG.md                     # Краткая история правок для handoff (ИИ/люди)
 .env (root, gitignored)           # MUST exist locally: VITE_TG_BOT_TOKEN, VITE_TG_CHAT_ID — see § top
 .env.example                      # Template without secrets
 vite.config.js                    # proxy `/api/telegram` → api.telegram.org; plugin POST `/api/rsvp` → Telegram
@@ -96,7 +97,7 @@ public/models/                     # ring_a.glb, ring_b.glb, hero_text_opt.glb (
 - **Gallery UI State Toggle** (`main.js`):
   - **Safe DOM hide**: `#site-nav`, `#section-path`, `#section-glimpse`, `#section-destination`, `#section-final`, `.section-divider` only — **`#hero-overlay` excluded** so the ScrollTrigger-scrubbed hero overlay is not forced back to visible on gallery close.
   - Tweens: **`opacity: 0`** + **`pointerEvents: 'none'`** open (0.6s); **`opacity: 1`** + **`pointerEvents: 'auto'`** close (0.5s) — no `autoAlpha` on layout boxes; **no** gallery close hook touching `#hero-overlay`.
-  - Open: `lenis.stop()` → **`document.body.classList.add('gallery-active')`** → overlay in + DOM fade; `glassRing.mesh.visible=false`; `galleryRibbon.open()`.
+  - Open: `lenis.stop()` → **`document.body.classList.add('gallery-active')`** → overlay in + DOM fade; `glassRing.mesh.visible=false`; **`await galleryRibbon.open()`** (click handler is `async` — layout probes finish before ribbon shows).
   - Close: `document.body.classList.remove('gallery-active')` → overlay out + DOM restore → `galleryRibbon.close` → rings back → `lenis.start()` → **`ScrollTrigger.refresh()`**.
   - Open adds **`gallery-active`** on `document.body`. **Escape**: global `keydown` — if `e.key === 'Escape'` and body has `gallery-active`, **`btnCloseGallery.click()`** (same path as button close).
   - `#gallery-overlay`: fixed, transparent background, z-index 100 (close control).
@@ -106,9 +107,9 @@ public/models/                     # ring_a.glb, ring_b.glb, hero_text_opt.glb (
   - **Pool**: `POOL=7` `THREE.Mesh` objects sharing one `PlaneGeometry(1, 1.5, 32, 32)`. Added to a `THREE.Group container` — `visible=false` at construction.
   - **Zero init-time textures**: construction creates only dark-fallback-textured meshes. No HTTP requests.
   - **Per-texture aspect** (`_ratioByIdx`): on decode, `ratio = image.width / image.height`; `_applyScale(mesh)` updates `scale.x = _itemH * ratio`, `scale.y = _itemH / 1.5`, and `uAspect` uniform. Called only on texture load + `open()` + `resize()` — **NOT** in RAF.
-  - **Stride / gap**: `_stride = _itemH * _maxRatio + gap` where `_maxRatio` is the max ratio among loaded images; `gap = _itemH * 0.06`.
-  - **Lazy loader** (`_applyTexture(mesh, idx)`): cache / pending / load; on resolve: store ratio, update `_maxRatio`, recompute stride, rebalance if needed, apply texture + `_applyScale` to matching meshes.
-  - **`open()`**: `_syncMaxRatioFromCache()` → `_computeLayout()` → `_resetState()` → `container.visible = true` → `_applyTexture` for 7 slots → **premium entry**: cards start at `position.y = -itemH * 0.65`, GSAP tweens `y → 0` + `uOpacity 0→1`, stagger order `[3,2,4,1,5,0,6]` (centre-outward), `delay = i * 0.07s`, `expo.out` 1.3s.
+  - **Spacing (even edge gaps)**: before open, **`_ensureRatiosForAllSlides()`** probes all **`1…24.webp`** aspects via **`Image()`** into `_ratioByIdx`. Strip uses **no single global stride**: distance from centre of slide **`i`** to **`i+1`** is **`w_i/2 + G + w_{i+1}/2`** where **`w = _itemH × aspect`**, **`G = EDGE_GAP_FRAC × _itemH`** (~5.5%, tweak in `GalleryRibbon.js`). Teleport jumps use **`_forwardPoolFrom` / `_backwardPoolFrom`** (sums of those steps). Shader velocity normalises by **`_velNorm ≈ loopLength/TOTAL`**. If a GL texture refines ratio vs probe, **`_reflowPreserveAnchor()`** rebuilds offsets (sorted L→R) while keeping the near-centre slide fixed.
+  - **Lazy loader** (`_applyTexture(mesh, idx)`): cache / pending / load; applies texture + `_applyScale`; optional reflow when decoded aspect differs from probe.
+  - **`open()`**: **`await _ensureRatiosForAllSlides()`** → `_computeLayout()` → `_resetState()` → `container.visible = true` → `_applyTexture` for 7 slots → **premium entry**: cards start at `position.y = -itemH * 0.65`, GSAP tweens `y → 0` + `uOpacity 0→1`, stagger order `[3,2,4,1,5,0,6]` (centre-outward), `delay = i * 0.07s`, `expo.out` 1.3s`.
   - **`close(onComplete)`**: exit stagger `[0,6,1,5,2,4,3]` (edges first, centre last): GSAP `y → -itemH * 0.45` + `uOpacity 1→0`, `power2.in` 0.5s, `t = i * 0.04s`. On complete: `container.visible = false`, `position.y` reset for next open.
   - **Scene background toggle** (`main.js`): `tweenSceneBg(r, g, b, dur)` tweens `world.studioDome._material.color` + `renderer.setClearColor` in sync. On open → `#0d0a07` (near-black, 0.85s). On close → `#EAE7DC` (pearl restore, 0.7s). No extra imports — uses `setRGB` directly on existing THREE.Color.
   - **Performance — RAF loop is lean**: `_computeLayout()` and `_applyScale()` absent from `update()`. RAF = scroll physics + pool teleport + `position.x` + `uVelocity` uniform only.
@@ -116,9 +117,10 @@ public/models/                     # ring_a.glb, ring_b.glb, hero_text_opt.glb (
   - **Shader uniforms**: `uTexture`, `uVelocity` (±2 clamped), `uOpacity`, **`uAspect`** (image ratio — drives rounded-corner SDF).
   - **Vertex shader**: `curveZ = sin(uv.x * PI) * vel * 0.8` (stronger horizontal bow) + `curveY = sin(uv.y * PI) * vel * 0.12` (organic sail effect).
   - **Fragment shader**: aspect-correct **rounded corners SDF** (`r=0.04` of card height, `smoothstep` AA ±0.008) + **subtle vignette** (`1 - 2.2*|uv-0.5|²` mixed at 22%) + texture sample × opacity.
-  - **Physics**: drag velocity uses **EWMA** `_dragVel = _dragVel * 0.65 + delta * 0.35`; momentum `= _dragVel * 9` (frame-rate stable). Lerp factor: `0.085` desktop / `0.10` touch (detected via `e.pointerType`). Momentum decay `*0.91`. **Wheel normalised**: `Math.sign(dY) * Math.min(|dY|, 120)`.
+  - **Physics**: drag velocity uses **EWMA** `_dragVel = _dragVel * 0.65 + delta * 0.35`; momentum `= _dragVel * 9` (frame-rate stable). Lerp factor: `0.085` desktop / **`0.14` touch** (detected via `e.pointerType`). Momentum decay `*0.91`. **Wheel normalised**: `Math.sign(dY) * Math.min(|dY|, 120)`.
+  - **Pointer / touch**: window **`pointercancel`**; **`setPointerCapture` / `releasePointerCapture`** on **`#gallery-overlay`** for touch/pen; ignore **`pointerdown`** on **`.gallery-close-btn`**; primary mouse button only. **`body.gallery-active .gallery-overlay { touch-action: none;`** (`style.css`) to reduce browser gesture fighting horizontal pan.
+  - **`resize()`** (when visible): `_computeLayout()` then **uniform scale** of `scrollCurrent`, `scrollTarget`, and each mesh `userData.offset` by **`newItemH / oldItemH`**; **`_recomputeLayoutMetrics()`** + **`_applyScale`** all meshes.
   - **Counter** (`#gallery-counter`): updated in `update()` throttled to every 6 frames (~10/s). Finds nearest mesh to `worldX=0` → displays `"NN / 24"`. DOM: `position:absolute`, `bottom: 36px + safe-area`, `left:50%`, Manrope 0.65rem, muted pearl `rgba(234,231,220,0.4)`.
-  - **`resize()`**: recomputes layout and re-scales meshes (if container visible).
   - **`destroy()`**: removes event listeners, disposes geo, materials, textures.
 - **Act III / Finale DOM**: `Scroll.js` sets `.destination-content`, `.final-date`, `.final-tagline` to `autoAlpha:0`, `y:30`; standalone scrub tweens as in §0. Rings persist as Unity backdrop through Act IV.
 - **Final Section Climax** (`style.css` + `Scroll.js`): `.final-tagline` → Playfair Display italic, `clamp(4.5rem, 14vw, 14rem)`, `line-height:0.9`, `letter-spacing:-0.02em` — cinematic full-width sign-off. `.final-date` demoted to small uppercase Manrope label (0.65–0.85rem, opacity 0.7) above the giant text. `ScrollTrigger.create(once:true)` on `#section-final top 70%` → `onEnter`: perpetual `glassRing.mesh.rotation.y += 2π` (28s, `repeat:-1`) + subtle Z-tilt `0.08π` in 4.5s (orbital closing stance). Safe: **`masterTl`** scrubs **`groupA/groupB`** + **`heroText.root.scale`** only; never root **`glassRing.mesh.rotation`**.

@@ -660,7 +660,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 if (btnOpenGallery) {
-    btnOpenGallery.addEventListener('click', () => {
+    btnOpenGallery.addEventListener('click', async () => {
         scroll.lenis.stop();
         document.body.classList.add('gallery-active');
 
@@ -687,7 +687,7 @@ if (btnOpenGallery) {
         // Dark "gallery room" — photos pop on near-black background
         tweenSceneBg(13 / 255, 10 / 255, 7 / 255, 0.85);
 
-        galleryRibbon.open();
+        await galleryRibbon.open();
     });
 }
 

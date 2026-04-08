@@ -806,6 +806,11 @@ canvas {
     background: transparent;
 }
 
+/* Horizontal gallery pan — suppress browser scroll/default touch gestures while open */
+body.gallery-active .gallery-overlay {
+    touch-action: none;
+}
+
 /* Close button — anchored top-right */
 .gallery-close-btn {
     position: absolute;
