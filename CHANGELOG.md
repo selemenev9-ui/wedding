@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Renderer hotfix**: fixed `ReferenceError: sizes is not defined` in `Renderer._ensureComposer()` by storing constructor/resize `sizes` on the instance (`this._sizes`) and using that for adaptive AA sample selection.
 - **Mobile AA quality-gate**: `src/gl/Renderer.js` now disables composer RT MSAA on coarse-pointer devices (`samples: 0`) while keeping SMAA, reducing mobile GPU load/TBT risk without changing desktop AA profile.
 - **TBT cleanup pass**: removed reserved `GlimpseGallery` from runtime boot loop and switched `MouseParallax` to lazy-load on fine-pointer devices only, trimming non-critical startup JS work.
 - **Desktop hero text contrast tweak**: increased base `#hero-names` readability with slightly stronger `-webkit-text-stroke` and a subtle `text-shadow` so the contour is visible in desktop view.

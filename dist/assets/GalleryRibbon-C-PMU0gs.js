@@ -1,4 +1,4 @@
-import{t as e}from"./gsap-C2rjybam.js";import{B as t,H as n,N as r,P as i,bt as a,et as o,f as s,ft as c,lt as l,y as u}from"./three.module-DcW-nKkt.js";import{t as d}from"./index-rZTfqeG6.js";var f=24,p=7,m=`/photos/gallery/`,h=.055,g=.1,_=2800,v=`
+import{t as e}from"./gsap-C2rjybam.js";import{B as t,H as n,N as r,P as i,bt as a,et as o,f as s,ft as c,lt as l,y as u}from"./three.module-DcW-nKkt.js";import{t as d}from"./index-B7VuiEpu.js";var f=24,p=7,m=`/photos/gallery/`,h=.055,g=.1,_=2800,v=`
     uniform float uVelocity;
     varying vec2  vUv;
 

@@ -45,6 +45,7 @@ export default class Renderer {
 
         this._scene = scene;
         this._camera = camera;
+        this._sizes = sizes;
     }
 
     _ensureComposer() {
@@ -55,7 +56,7 @@ export default class Renderer {
         const pr = this.instance.getPixelRatio();
 
         // Desktop: MSAA 8x + SMAA. Coarse-pointer mobile: disable RT MSAA to cut GPU cost and keep SMAA.
-        const rtSamples = sizes?.coarsePointer ? 0 : 8;
+        const rtSamples = this._sizes?.coarsePointer ? 0 : 8;
         const renderTarget = new THREE.WebGLRenderTarget(size.x * pr, size.y * pr, {
             samples: rtSamples,
             type: THREE.HalfFloatType, // match EffectComposer default (HDR-friendly before OutputPass)
@@ -82,6 +83,7 @@ export default class Renderer {
     }
 
     resize(sizes) {
+        this._sizes = sizes;
         this.instance.setSize(sizes.width, sizes.height);
         this.instance.domElement.style.width = `${sizes.width}px`;
         this.instance.domElement.style.height = `${sizes.height}px`;

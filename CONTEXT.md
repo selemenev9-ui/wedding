@@ -92,6 +92,7 @@ public/CNAME
 | Shadow catcher | Plane `25x25`, `ShadowMaterial opacity 0.28`, `z=-1.5`, receives shadows |
 | DPR cap | `coarsePointer ? 1.5 : 2.0` |
 | AA profile | fine pointer: composer RT `samples: 8` + SMAA; coarse pointer: composer RT `samples: 0` + SMAA |
+| Stability note | `Renderer` keeps latest `sizes` on instance (`this._sizes`) so adaptive AA selection in `_ensureComposer()` is scope-safe and works on init + resize |
 | Lenis | Desktop defaults: duration `2.0`, wheelMultiplier `0.8`, smoothWheel true, syncTouch true; coarse pointer uses native-scroll shim path |
 | Rings timeline | Act I `0-30`, Act II `30-125`, Act III `125-145`, Act IV `145-160` |
 | Gallery | `TOTAL=24`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
