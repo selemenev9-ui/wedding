@@ -54,9 +54,10 @@ export default class Renderer {
         this.instance.getSize(size);
         const pr = this.instance.getPixelRatio();
 
-        // Hardware MSAA 8× on composer buffers + SMAA pass below — spatial AA for thin/matt hero text edges.
+        // Desktop: MSAA 8x + SMAA. Coarse-pointer mobile: disable RT MSAA to cut GPU cost and keep SMAA.
+        const rtSamples = sizes?.coarsePointer ? 0 : 8;
         const renderTarget = new THREE.WebGLRenderTarget(size.x * pr, size.y * pr, {
-            samples: 8,
+            samples: rtSamples,
             type: THREE.HalfFloatType, // match EffectComposer default (HDR-friendly before OutputPass)
         });
         renderTarget.texture.name = 'EffectComposer.rt1';
