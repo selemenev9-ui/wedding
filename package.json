@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/convert-images.js && vite build",
     "preview": "vite preview",
     "images": "node scripts/convert-images.js"
   },

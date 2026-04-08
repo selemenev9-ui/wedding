@@ -92,7 +92,7 @@ function _makeMat() {
 
    • Spacing: uniform *edge* gap G between photos; centre step varies as
      w_i/2 + G + w_{i+1}/2 (w = itemH × aspect). No single global stride.
-   • All TOTAL aspects probed once before open; GL textures don’t reshape the strip.
+   • Aspects from build-time gallery-manifest.json (no 24× Image probes); GL reflow if decode differs.
    • Optional slow auto-pan when idle; pauses on interaction + tab hidden.
 ═════════════════════════════════════════════════════════════════════ */
 export default class GalleryRibbon {
@@ -155,6 +155,22 @@ export default class GalleryRibbon {
         window.addEventListener('pointercancel', this._cancelBound);
         window.addEventListener('wheel',         this._wheelBound, { passive: true });
         document.addEventListener('visibilitychange', this._visBound);
+
+        this._manifestPromise = this._loadGalleryManifest();
+    }
+
+    async _loadGalleryManifest() {
+        try {
+            const res = await fetch('/gallery-manifest.json');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            for (let i = 0; i < TOTAL; i++) {
+                const r = data[i];
+                if (typeof r === 'number' && r > 0) this._ratioByIdx.set(i, r);
+            }
+        } catch (e) {
+            console.warn('GalleryRibbon: gallery-manifest.json — using defaults until textures decode', e);
+        }
     }
 
     _suppressAutoPan() {
@@ -288,29 +304,11 @@ export default class GalleryRibbon {
         return best;
     }
 
-    _probeImageRatio(idx) {
-        return new Promise((resolve) => {
-            const im = new Image();
-            im.onload = () => {
-                const r = im.naturalWidth > 0 && im.naturalHeight > 0
-                    ? im.naturalWidth / im.naturalHeight
-                    : this._defaultRatio;
-                resolve(r);
-            };
-            im.onerror = () => resolve(this._defaultRatio);
-            im.src = `${BASE_PATH}${idx + 1}.webp`;
-        });
-    }
-
     async _ensureRatiosForAllSlides() {
-        const jobs = [];
+        await this._manifestPromise;
         for (let i = 0; i < TOTAL; i++) {
-            if (this._ratioByIdx.has(i)) continue;
-            jobs.push(
-                this._probeImageRatio(i).then((r) => { this._ratioByIdx.set(i, r); }),
-            );
+            if (!this._ratioByIdx.has(i)) this._ratioByIdx.set(i, this._defaultRatio);
         }
-        await Promise.all(jobs);
     }
 
     _computeLayout() {
@@ -346,6 +344,8 @@ export default class GalleryRibbon {
             `${BASE_PATH}${idx + 1}.webp`,
             (tex) => {
                 tex.colorSpace = THREE.SRGBColorSpace;
+                tex.minFilter = THREE.LinearMipmapLinearFilter;
+                tex.magFilter = THREE.LinearFilter;
                 const img = tex.image;
                 const ratio = img?.width && img?.height
                     ? img.width / img.height

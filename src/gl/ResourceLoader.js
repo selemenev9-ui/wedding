@@ -16,6 +16,24 @@ export default class ResourceLoader {
         this.assets = assets;
         /** @type {Record<string, THREE.Texture | string | import('three/examples/jsm/loaders/GLTFLoader.js').GLTF>} */
         this.items = {};
+
+        /** @type {Map<string, { promise: Promise<unknown>; resolve: (v: unknown) => void; reject: (e: unknown) => void }>} */
+        this._deferreds = new Map();
+
+        for (const asset of assets) {
+            let resolve;
+            let reject;
+            const promise = new Promise((res, rej) => {
+                resolve = res;
+                reject = rej;
+            });
+            this._deferreds.set(asset.name, {
+                promise,
+                resolve: /** @type {(v: unknown) => void} */ (resolve),
+                reject: /** @type {(e: unknown) => void} */ (reject),
+            });
+        }
+
         this._textureLoader = new THREE.TextureLoader();
         this._hdrLoader = new HDRLoader();
         this._dracoLoader = new DRACOLoader();
@@ -25,52 +43,86 @@ export default class ResourceLoader {
         this._gltfLoader.setMeshoptDecoder(MeshoptDecoder);
         /** @type {string[]} */
         this._fontBlobUrls = [];
+
+        this._loadedCount = 0;
         this._loadAll();
+    }
+
+    /**
+     * @param {string} name
+     * @returns {Promise<unknown>}
+     */
+    waitFor(name) {
+        const d = this._deferreds.get(name);
+        if (!d) return Promise.reject(new Error(`ResourceLoader: asset "${name}" not in manifest`));
+        return d.promise;
     }
 
     _loadAll() {
         const total = this.assets.length;
-        let loaded = 0;
 
-        const onOne = () => {
-            loaded++;
+        /** @param {unknown} result */
+        const onSuccess = (name, result) => {
+            this.items[name] = result;
+            const def = this._deferreds.get(name);
+            if (def) def.resolve(result);
+
+            this._loadedCount++;
             window.dispatchEvent(
-                new CustomEvent('resources:progress', { detail: { loaded, total, ratio: loaded / total } }),
+                new CustomEvent('resources:progress', {
+                    detail: { loaded: this._loadedCount, total, ratio: this._loadedCount / total },
+                }),
             );
         };
 
-        const tasks = this.assets.map((desc) =>
-            this._loadOne(desc).then(() => {
-                onOne();
-            }),
-        );
+        const tasks = this.assets.map((desc) => this._loadOne(desc, onSuccess));
 
-        Promise.all(tasks)
-            .then(() => {
-                window.dispatchEvent(new CustomEvent('resources:ready'));
-            })
-            .catch((err) => {
-                console.error('ResourceLoader failed:', err);
-            });
+        // Never block the aggregate on a single rejection or hang ALL listeners on Promise.all —
+        // boot already uses per-asset `waitFor()`. `resources:ready` = “all load attempts settled”.
+        Promise.allSettled(tasks).then((results) => {
+            const rejected = results.filter((r) => r.status === 'rejected');
+            if (rejected.length) {
+                console.warn(
+                    `ResourceLoader: ${rejected.length}/${results.length} asset(s) failed (see errors above).`,
+                );
+            }
+            window.dispatchEvent(
+                new CustomEvent('resources:ready', {
+                    detail: {
+                        ok: rejected.length === 0,
+                        failed: rejected.length,
+                        total: results.length,
+                    },
+                }),
+            );
+        });
     }
 
     /**
      * @param {AssetDescriptor} desc
+     * @param {(name: string, result: unknown) => void} onSuccess
      * @returns {Promise<void>}
      */
-    _loadOne(desc) {
+    _loadOne(desc, onSuccess) {
         const { name, type, path } = desc;
+        const def = this._deferreds.get(name);
+        if (!def) return Promise.reject(new Error(`ResourceLoader: no deferred for "${name}"`));
+
+        const fail = (err) => {
+            def.reject(err);
+            return Promise.reject(err);
+        };
 
         if (type === 'hdri') {
             return new Promise((resolve, reject) => {
                 this._hdrLoader.load(
                     path,
                     (texture) => {
-                        this.items[name] = texture;
+                        onSuccess(name, texture);
                         resolve();
                     },
                     undefined,
-                    reject,
+                    (err) => { fail(err); reject(err); },
                 );
             });
         }
@@ -80,11 +132,11 @@ export default class ResourceLoader {
                 this._textureLoader.load(
                     path,
                     (texture) => {
-                        this.items[name] = texture;
+                        onSuccess(name, texture);
                         resolve();
                     },
                     undefined,
-                    reject,
+                    (err) => { fail(err); reject(err); },
                 );
             });
         }
@@ -100,8 +152,9 @@ export default class ResourceLoader {
                 .then((blob) => {
                     const url = URL.createObjectURL(blob);
                     this._fontBlobUrls.push(url);
-                    this.items[name] = url;
-                });
+                    onSuccess(name, url);
+                })
+                .catch((err) => fail(err));
         }
 
         if (type === 'gltf') {
@@ -109,16 +162,16 @@ export default class ResourceLoader {
                 this._gltfLoader.load(
                     path,
                     (gltf) => {
-                        this.items[name] = gltf;
+                        onSuccess(name, gltf);
                         resolve();
                     },
                     undefined,
-                    reject,
+                    (err) => { fail(err); reject(err); },
                 );
             });
         }
 
-        return Promise.reject(new Error(`ResourceLoader: unknown type "${type}" for "${name}"`));
+        return fail(new Error(`ResourceLoader: unknown type "${type}" for "${name}"`));
     }
 
     /**
@@ -143,6 +196,7 @@ export default class ResourceLoader {
         }
 
         this.items = {};
+        this._deferreds.clear();
 
         this._dracoLoader?.dispose();
         this._dracoLoader = null;

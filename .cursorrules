@@ -32,14 +32,11 @@ You are an expert in high-end web experiences. Your goal is to build a project w
 - Never suggest React/Vue wrappers.
 
 ## CONTEXT MANAGEMENT (CRITICAL):
-- There is a `CONTEXT.md` file in the root directory.
-- After EVERY successful feature implementation, architecture change, or bug fix, you MUST automatically update this file.
-- Format for `CONTEXT.md`: 
-  1. Current stack & folder structure (briefly).
-  2. Implemented features (what is currently working).
-  3. Current environment settings (camera params, colors, etc.).
-  4. Unresolved issues or next steps.
-- Do not wait for a separate prompt to update this file; do it automatically at the end of your successful generation to maintain a perfect "save state" for context resets.
+- There is a **`CONTEXT.md`** file in the project root — the **authoritative save state** for stack, boot flow, and behaviour.
+- After **every** successful feature, architecture change, or non-trivial bug fix, you **must** update **`CONTEXT.md`** so it stays true to the code (no stale event names, no wrong boot order).
+- Add a short line under **`CHANGELOG.md`** → **`[Unreleased]`** when the change matters for handoff (load strategy, scroll, gallery, deploy).
+- Typical **`CONTEXT.md`** sections to keep current: stack / folder map, **asset & boot lifecycle**, implemented features, env / tuning table, next steps.
+- Do not wait for a separate prompt: refresh context docs as part of the same task that changes behaviour.
 ## WORKFLOW & EXECUTION PIPELINE
 - The user works with an external Lead Architect (AI).
 - The user will provide you with exact, surgical commands wrapped in quotes.

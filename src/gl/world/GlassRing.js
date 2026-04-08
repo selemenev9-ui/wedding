@@ -36,40 +36,29 @@ export default class GlassRing {
         this._geometries = new Set();
         this._built = false;
 
-        this._onResourcesReady = () => this._tryBuild(true);
-        window.addEventListener('resources:ready', this._onResourcesReady);
-        queueMicrotask(() => this._tryBuild(false));
+        this.ready = this._init();
     }
 
-    /**
-     * @param {boolean} fromReady - if true, assets must exist (throw if not)
-     */
-    _tryBuild(fromReady) {
-        if (this._built) return;
+    async _init() {
+        try {
+            const [gltfA, gltfB] = await Promise.all([
+                this.resources.waitFor('ringA'),
+                this.resources.waitFor('ringB'),
+            ]);
 
-        const gltfA = this.resources.get('ringA');
-        const gltfB = this.resources.get('ringB');
+            this.goldMaterial = new THREE.MeshPhysicalMaterial({
+                color:        new THREE.Color('#e0b354'),
+                metalness:    1.0,
+                roughness:    0.12,
+                envMapIntensity: 0,
+            });
 
-        if (!gltfA || !gltfB) {
-            if (fromReady) {
-                throw new Error('GlassRing: ringA / ringB GLTF assets missing from ResourceLoader');
-            }
-            return;
+            this._ingestGltf(gltfA, this.floatA);
+            this._ingestGltf(gltfB, this.floatB);
+            this._built = true;
+        } catch (e) {
+            console.error('GlassRing: failed to load ring GLBs', e);
         }
-
-        window.removeEventListener('resources:ready', this._onResourcesReady);
-
-        this.goldMaterial = new THREE.MeshPhysicalMaterial({
-            color: new THREE.Color('#e0b354'),
-            metalness: 1.0,
-            roughness: 0.12,
-            envMapIntensity: 0.9,
-        });
-
-        this._ingestGltf(gltfA, this.floatA);
-        this._ingestGltf(gltfB, this.floatB);
-
-        this._built = true;
     }
 
     /**
@@ -161,8 +150,6 @@ export default class GlassRing {
     }
 
     destroy() {
-        window.removeEventListener('resources:ready', this._onResourcesReady);
-
         if (this.scene && this.mesh) {
             this.scene.remove(this.mesh);
         }

@@ -51,14 +51,23 @@ export default class HeroText {
             color: new THREE.Color('#e0b354'),
             metalness: 1.0,
             roughness: 0.12,
-            envMapIntensity: 1.5,
+            envMapIntensity: 0,
         });
 
         /** @type {Set<THREE.BufferGeometry>} */
         this._geometries = new Set();
         this._built = false;
 
-        this._tryBuild();
+        this.ready = this._init();
+    }
+
+    async _init() {
+        try {
+            const gltf = await this.resources.waitFor('heroText');
+            this._buildFromGltf(/** @type {import('three/examples/jsm/loaders/GLTFLoader.js').GLTF} */ (gltf));
+        } catch (e) {
+            console.error('HeroText: failed to load hero_text_opt.glb', e);
+        }
     }
 
     /**
@@ -75,25 +84,24 @@ export default class HeroText {
         return false;
     }
 
-    /** Same IBL as rings: `scene.environment` from `/hdri/studio_small_09_1k.hdr` (PMREM in `World._setupEnvironment`). */
+    /**
+     * Same IBL as rings: `scene.environment` from HDRI (PMREM in `World._setupEnvironment`).
+     * Called from World after env is applied — keep public surface for `World.heroText`.
+     */
     _syncGoldEnvMap() {
         if (!this.goldMaterial) return;
         const env = this.scene.environment;
         if (env) {
             this.goldMaterial.envMap = env;
         }
-        this.goldMaterial.envMapIntensity = 1.5;
         this.goldMaterial.needsUpdate = true;
     }
 
-    _tryBuild() {
+    /**
+     * @param {import('three/examples/jsm/loaders/GLTFLoader.js').GLTF} gltf
+     */
+    _buildFromGltf(gltf) {
         if (this._built) return;
-
-        const gltf = this.resources.get('heroText');
-        if (!gltf) {
-            console.warn('HeroText: hero_text_opt.glb not loaded yet or missing');
-            return;
-        }
 
         gltf.scene.rotation.x = Math.PI / 2;
         gltf.scene.updateMatrixWorld(true);

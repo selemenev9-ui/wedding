@@ -25,7 +25,7 @@ if (window.scrollY === 0) {
     gsap.set('#hero-overlay', { opacity: 1 });
 }
 
-// `#hero-names` visibility: `setupHeroTextMedia` after HeroText init (`resources:ready`)
+// `#hero-names` visibility: `setupHeroTextMedia` once `HeroText` exists (asynchronous layered loading).
 gsap.set('.hero-bottom, .hero-scroll-indicator', { opacity: 0 });
 
 if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
@@ -198,6 +198,35 @@ scroll.resize();
 
 const { lenis } = scroll;
 
+glassRing = new GlassRing();
+glassRing.mesh.scale.setScalar(0);
+
+try {
+    heroText = new HeroText();
+    const w = getWorld();
+    if (w) {
+        w.heroText = heroText;
+        w.glassRing = glassRing;
+    }
+} catch (e) {
+    console.error('HeroText init failed:', e);
+}
+
+const _kickEnvFade = () => world.tryFadeEnvReflections?.();
+_kickEnvFade();
+heroText?.ready.then(_kickEnvFade);
+glassRing.ready.then(_kickEnvFade);
+
+setupHeroTextMedia(heroText);
+bindGlassRingScrollEffects(glassRing);
+scroll.resize();
+
+mouseParallax.destroy();
+mouseParallax = new MouseParallax([
+    { object: glassRing.mesh, depth: 0.06 },
+    ...(heroText?.root ? [{ object: heroText.root, depth: 0.035 }] : []),
+]);
+
 // Scroll velocity — captured from Lenis event, smoothed on GSAP ticker (same frame as WebGL)
 let _rawVelocity   = 0;
 let smoothVelocity = 0;
@@ -277,159 +306,139 @@ function tickWeddingCountdown() {
 tickWeddingCountdown();
 setInterval(tickWeddingCountdown, 1000);
 
-window.addEventListener('resources:ready', () => {
-    const preloader = document.getElementById('preloader');
+function runHeroIntro() {
+    scroll.resize();
+    scroll.lenis.scrollTo(0, { immediate: true });
+    ScrollTrigger.refresh();
 
-    glassRing = new GlassRing();
-    glassRing.mesh.scale.setScalar(0);
+    scroll.lenis.start();
 
-    try {
-        heroText = new HeroText();
-        const w = getWorld();
-        if (w) w.heroText = heroText;
-    } catch (e) {
-        console.error('HeroText init failed:', e);
+    heroIntroCompleted = false;
+    rebuildHeroSplits('hidden');
+
+    const isHeroMobile = isHeroMobileViewport();
+
+    if (isHeroMobile) {
+        gsap.killTweensOf('#hero-names');
     }
 
-    setupHeroTextMedia(heroText);
+    if (heroSplitTagline?.words?.length) {
+        gsap.set(heroSplitTagline.words, { y: '0%', opacity: 0 });
+    }
+    gsap.set('.hero-tagline', { opacity: 0, y: 20, xPercent: -50, x: 0 });
+    if (isHeroMobile) {
+        setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'none' });
+    }
+    gsap.set('.hero-bottom', { opacity: 0, y: 20 });
 
-    const runIntro = () => {
-        bindGlassRingScrollEffects(glassRing);
-        scroll.resize();
-        scroll.lenis.scrollTo(0, { immediate: true });
-        ScrollTrigger.refresh();
+    heroIntroTimeline = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+            heroIntroCompleted = true;
+            heroIntroTimeline = null;
+            ScrollTrigger.refresh();
+            gsap.to('.hero-scroll-indicator', {
+                scaleY: 0.5,
+                opacity: 0.3,
+                duration: 1,
+                yoyo: true,
+                repeat: -1,
+                ease: 'power1.inOut',
+                transformOrigin: 'top center',
+            });
+        },
+    });
 
-        mouseParallax.destroy();
-        const parallaxLayers = [{ object: glassRing.mesh, depth: 0.06 }];
-        if (heroText?.root) {
-            parallaxLayers.push({ object: heroText.root, depth: 0.035 });
-        }
-        mouseParallax = new MouseParallax(parallaxLayers);
-
-        scroll.lenis.start();
-
-        heroIntroCompleted = false;
-        rebuildHeroSplits('hidden');
-
-        const isHeroMobile = isHeroMobileViewport();
-
-        if (isHeroMobile) {
-            gsap.killTweensOf('#hero-names');
-        }
-
-        if (heroSplitTagline?.words?.length) {
-            gsap.set(heroSplitTagline.words, { y: '0%', opacity: 0 });
-        }
-        gsap.set('.hero-tagline', { opacity: 0, y: 20, xPercent: -50, x: 0 });
-        if (isHeroMobile) {
-            setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'none' });
-        }
-        gsap.set('.hero-bottom', { opacity: 0, y: 20 });
-
-        heroIntroTimeline = gsap.timeline({
-            defaults: { ease: 'power3.out' },
-            onComplete: () => {
-                heroIntroCompleted = true;
-                heroIntroTimeline = null;
-                ScrollTrigger.refresh();
-                gsap.to('.hero-scroll-indicator', {
-                    scaleY: 0.5,
-                    opacity: 0.3,
-                    duration: 1,
-                    yoyo: true,
-                    repeat: -1,
-                    ease: 'power1.inOut',
-                    transformOrigin: 'top center',
-                });
-            },
+    const ringScaleIn = { x: 1, y: 1, z: 1, duration: 2.0, ease: 'elastic.out(1, 0.5)' };
+    if (glassRing?._built) {
+        heroIntroTimeline.to(glassRing.mesh.scale, ringScaleIn, 0.05);
+    } else if (glassRing) {
+        glassRing.ready.then(() => {
+            gsap.to(glassRing.mesh.scale, ringScaleIn);
         });
+    }
 
-        // Glass ring scales in
+    if (heroText?.group) {
         heroIntroTimeline.to(
-            glassRing.mesh.scale,
-            { x: 1, y: 1, z: 1, duration: 2.0, ease: 'elastic.out(1, 0.5)' },
-            0.05,
+            heroText.group.scale,
+            { x: 1, y: 1, z: 1, duration: 1.15, ease: 'expo.out' },
+            0.1,
         );
+    }
 
-        if (heroText?.group) {
-            heroIntroTimeline.to(
-                heroText.group.scale,
-                { x: 1, y: 1, z: 1, duration: 1.15, ease: 'expo.out' },
-                0.1,
-            );
-        }
-
-        const introHeroIn = '-=0.8';
-        const introSt = '<0.15';
+    const introHeroIn = '-=0.8';
+    const introSt = '<0.15';
+    heroIntroTimeline.fromTo(
+        '.hero-tagline',
+        { opacity: 0, y: 20, xPercent: -50, x: 0 },
+        {
+            opacity: 1,
+            y: 0,
+            xPercent: -50,
+            x: 0,
+            duration: 1.2,
+            clearProps: 'all',
+        },
+        introHeroIn,
+    );
+    if (heroSplitTagline?.words?.length) {
+        heroIntroTimeline.to(
+            heroSplitTagline.words,
+            {
+                opacity: 1,
+                duration: 0.75,
+                ease: 'expo.out',
+                stagger: { amount: 0.2, from: 'start' },
+            },
+            '<',
+        );
+    }
+    if (isHeroMobile) {
         heroIntroTimeline.fromTo(
-            '.hero-tagline',
-            { opacity: 0, y: 20, xPercent: -50, x: 0 },
+            '#hero-names',
+            { opacity: 0, y: 20, xPercent: -50, yPercent: -50, x: 0 },
             {
                 opacity: 1,
                 y: 0,
                 xPercent: -50,
+                yPercent: -50,
                 x: 0,
                 duration: 1.2,
-                clearProps: 'all',
-            },
-            introHeroIn,
-        );
-        if (heroSplitTagline?.words?.length) {
-            heroIntroTimeline.to(
-                heroSplitTagline.words,
-                {
-                    opacity: 1,
-                    duration: 0.75,
-                    ease: 'expo.out',
-                    stagger: { amount: 0.2, from: 'start' },
-                },
-                '<',
-            );
-        }
-        if (isHeroMobile) {
-            heroIntroTimeline.fromTo(
-                '#hero-names',
-                { opacity: 0, y: 20, xPercent: -50, yPercent: -50, x: 0 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    xPercent: -50,
-                    yPercent: -50,
-                    x: 0,
-                    duration: 1.2,
-                },
-                introSt,
-            );
-        }
-        heroIntroTimeline.fromTo(
-            '.hero-bottom',
-            { opacity: 0, y: 20 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 1.2,
-                clearProps: 'all',
             },
             introSt,
         );
+    }
+    heroIntroTimeline.fromTo(
+        '.hero-bottom',
+        { opacity: 0, y: 20 },
+        {
+            opacity: 1,
+            y: 0,
+            duration: 1.2,
+            clearProps: 'all',
+        },
+        introSt,
+    );
 
-        // Scroll indicator
-        heroIntroTimeline.fromTo(
-            '.hero-scroll-indicator',
-            {
-                opacity: 0,
-                scaleY: 0,
-                xPercent: -50,
-                x: 0,
-                transformOrigin: 'top center',
-            },
-            { opacity: 1, scaleY: 1, xPercent: -50, x: 0, duration: 1.0, ease: 'expo.out', clearProps: 'all' },
-            '>',
-        );
-    };
+    heroIntroTimeline.fromTo(
+        '.hero-scroll-indicator',
+        {
+            opacity: 0,
+            scaleY: 0,
+            xPercent: -50,
+            x: 0,
+            transformOrigin: 'top center',
+        },
+        { opacity: 1, scaleY: 1, xPercent: -50, x: 0, duration: 1.0, ease: 'expo.out', clearProps: 'all' },
+        '>',
+    );
+}
 
+async function launchExperience() {
+    if (heroText) await heroText.ready;
+
+    const preloader = document.getElementById('preloader');
     if (preloader) {
-        // Fill the arc to 100% then fade out
         if (preloaderArc) {
             gsap.to(preloaderArc, {
                 attr: { 'stroke-dashoffset': 0 },
@@ -447,13 +456,15 @@ window.addEventListener('resources:ready', () => {
             },
             onComplete: () => {
                 preloader.remove();
-                runIntro();
+                runHeroIntro();
             },
         });
     } else {
-        runIntro();
+        runHeroIntro();
     }
-});
+}
+
+launchExperience();
 
 const navBurger = document.getElementById('nav-burger');
 const navLinksEl = document.querySelector('.nav-links');
@@ -749,10 +760,9 @@ if (btnRevealRsvp && rsvpForm) {
 window.addEventListener('resize', () => {
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
-    const isFinePointer = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
-    const renderScale = isFinePointer ? 1.5 : 1.0;
-    const dprCap = isFinePointer ? 2 : 2;
-    sizes.pixelRatio = Math.min(window.devicePixelRatio * renderScale, dprCap);
+    sizes.coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const dprCap = sizes.coarsePointer ? 1.5 : 2.0;
+    sizes.pixelRatio = Math.min(window.devicePixelRatio, dprCap);
 
     world.camera.resize(sizes);
     world.renderer.resize(sizes);
