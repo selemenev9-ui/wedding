@@ -212,8 +212,14 @@ heroText?.ready.then(_kickEnvFade);
 glassRing.ready.then(_kickEnvFade);
 
 setupHeroTextMedia(heroText);
-bindGlassRingScrollEffects(glassRing);
-scroll.resize();
+
+let ringScrollEffectsBound = false;
+function ensureRingScrollEffectsBound() {
+    if (ringScrollEffectsBound || !glassRing) return;
+    bindGlassRingScrollEffects(glassRing);
+    ringScrollEffectsBound = true;
+    scroll.resize();
+}
 
 mouseParallax.destroy();
 mouseParallax = new MouseParallax([
@@ -301,6 +307,9 @@ tickWeddingCountdown();
 setInterval(tickWeddingCountdown, 1000);
 
 function runHeroIntro() {
+    // Defer heavy ScrollTrigger timeline wiring until intro start to reduce initial main-thread pressure.
+    ensureRingScrollEffectsBound();
+
     scroll.resize();
     scroll.lenis.scrollTo(0, { immediate: true });
     ScrollTrigger.refresh();

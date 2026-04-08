@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **TBT-oriented startup deferral**: moved `bindGlassRingScrollEffects()` initialization from early boot to intro start in `src/main.js`, so expensive ScrollTrigger timeline wiring happens later and initial main-thread load is lighter.
 - **Perf-oriented startup split**: `src/main.js` now lazy-loads `Cursor` only for fine pointers and lazy-loads `GalleryRibbon` on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial JS startup pressure before hero narrative.
 - **Lighthouse protocol note**: release checklist now explicitly requires auditing against `vite preview` / production URL (not `localhost` dev server), to avoid misleading TBT/LCP diagnostics from dev-module overhead.
 - **P0 release-readiness package**: improved `.final-tagline` typography rendering (`font-smoothing`, kerning/ligature hints), moved gallery-close `ScrollTrigger.refresh()` to post-reflow timing (`requestAnimationFrame` in DOM-restore completion), and added mobile stress/refresh/RSVP checklist to `CONTEXT.md`.
