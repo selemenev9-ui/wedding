@@ -61,6 +61,7 @@ public/CNAME
 
 - **Layered boot:** scene, scroll orchestration, and core DOM animation setup are initialized at T+0; heavy assets load asynchronously via `ResourceLoader` deferreds and `waitFor(name)`.
 - **Startup TBT trim:** heavy ring scroll choreography wiring (`bindGlassRingScrollEffects` -> pinned timelines + master timeline) is deferred from early boot to intro start (`runHeroIntro`) so initial paint path does less main-thread setup work.
+- **Startup JS trim (non-critical modules):** `MouseParallax` now lazy-loads only on fine-pointer devices; reserved `GlimpseGallery` is removed from startup/update path to reduce initial parse/execute overhead.
 - **Preloader flow:** SVG arc listens to global `resources:progress`; experience launch waits for `heroText.ready` (currently immediate stub resolve), fades preloader, then runs hero intro timeline.
 - **Hero text architecture:** visible hero names are DOM (`#hero-names`) on all screens. `HeroText` is an API-compatible no-op Three.js stub (`root`, `group`, `ready`, `destroy`) so timelines and world hooks remain stable.
 - **Hero-name mobile-only stacked layout:** `fitHeroNamesToViewport()` now applies only on mobile coarse-pointer query (`(max-width: 767px) and (pointer: coarse)`), toggling `.hero-names--stacked` (`Катя` top, `&` center, `Артём` bottom). Desktop/tablet layouts remain unchanged.

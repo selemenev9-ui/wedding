@@ -7,8 +7,6 @@ import World, { getWorld } from './gl/World.js';
 import GlassRing from './gl/world/GlassRing.js';
 import HeroText from './gl/world/HeroText.js';
 import Scroll, { bindGlassRingScrollEffects } from './modules/Scroll.js';
-import MouseParallax from './modules/MouseParallax.js';
-import GlimpseGallery from './gl/world/GlimpseGallery.js';
 
 if (!gsap.plugins?.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
@@ -210,8 +208,6 @@ window.addEventListener('resize', () => {
     heroSplitResizeTimer = window.setTimeout(handleHeroSplitResize, HERO_SPLIT_DEBOUNCE_MS);
 });
 
-// GlimpseGallery requires only World.instance — no resources:ready dependency
-const glimpseGallery = new GlimpseGallery();
 let galleryRibbon = null;
 let galleryRibbonPromise = null;
 
@@ -231,7 +227,7 @@ async function ensureGalleryRibbon() {
     return galleryRibbonPromise;
 }
 
-let mouseParallax = new MouseParallax([]);
+let mouseParallax = { update: () => {}, destroy: () => {} };
 
 const scroll = new Scroll();
 scroll.lenis.stop();
@@ -268,27 +264,29 @@ function ensureRingScrollEffectsBound() {
     scroll.resize();
 }
 
-mouseParallax.destroy();
-mouseParallax = new MouseParallax([
-    { object: glassRing.mesh, depth: 0.06 },
-    ...(heroText?.root ? [{ object: heroText.root, depth: 0.035 }] : []),
-]);
+if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
+    import('./modules/MouseParallax.js')
+        .then(({ default: MouseParallax }) => {
+            mouseParallax.destroy();
+            mouseParallax = new MouseParallax([
+                { object: glassRing.mesh, depth: 0.06 },
+                ...(heroText?.root ? [{ object: heroText.root, depth: 0.035 }] : []),
+            ]);
+        })
+        .catch((err) => {
+            console.warn('MouseParallax lazy-load failed:', err);
+        });
+}
 
-// Scroll velocity — captured from Lenis event, smoothed on GSAP ticker (same frame as WebGL)
-let _rawVelocity   = 0;
-let smoothVelocity = 0;
 let loggedDrawCalls = false;
 
-lenis.on('scroll', (e) => {
-    _rawVelocity = e.velocity;
+lenis.on('scroll', () => {
     ScrollTrigger.update();
 });
 
 gsap.ticker.add((time) => {
     lenis.raf(time * 1000);
 
-    smoothVelocity += (_rawVelocity - smoothVelocity) * 0.12;
-    glimpseGallery.update(smoothVelocity);
     galleryRibbon?.update();
     glassRing?.update();
     mouseParallax.update();
