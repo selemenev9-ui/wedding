@@ -402,6 +402,7 @@ canvas {
         pointer-events: none;
         overflow: visible;
         white-space: nowrap;
+        max-width: calc(100vw - 32px);
     }
 
     #countdown {

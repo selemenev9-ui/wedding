@@ -87,6 +87,31 @@ let heroIntroTimeline = null;
 let heroIntroCompleted = false;
 let heroSplitResizeTimer = 0;
 const HERO_SPLIT_DEBOUNCE_MS = 150;
+const HERO_NAMES_MIN_PX = 42;
+const HERO_NAMES_MAX_PX = 120;
+const HERO_NAMES_SIDE_PADDING_PX = 32;
+
+function fitHeroNamesToViewport() {
+    if (typeof window === 'undefined') return;
+    if (!window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches) return;
+    const heroNamesDOM = document.querySelector('#hero-names');
+    if (!heroNamesDOM) return;
+
+    const maxWidth = Math.max(0, window.innerWidth - HERO_NAMES_SIDE_PADDING_PX);
+    let sizePx = Math.min(
+        HERO_NAMES_MAX_PX,
+        window.innerWidth * 0.22,
+        window.innerHeight * 0.28,
+    );
+    sizePx = Math.max(HERO_NAMES_MIN_PX, Math.floor(sizePx));
+    heroNamesDOM.style.fontSize = `${sizePx}px`;
+
+    // Gradually reduce font-size until the decorative single-line title fits viewport width.
+    while (heroNamesDOM.scrollWidth > maxWidth && sizePx > HERO_NAMES_MIN_PX) {
+        sizePx -= 1;
+        heroNamesDOM.style.fontSize = `${sizePx}px`;
+    }
+}
 
 function setHeroNamesState({ opacity = 1, y = 0, scale = 1, pointerEvents = 'none' } = {}) {
     const heroNamesDOM = document.querySelector('#hero-names');
@@ -111,6 +136,7 @@ function setupHeroTextMedia(_ht) {
     const heroNamesDOM = document.querySelector('#hero-names');
     if (!heroNamesDOM || typeof window === 'undefined') return;
     setHeroNamesState({ opacity: heroIntroCompleted ? 1 : 0, y: heroIntroCompleted ? 0 : 20 });
+    fitHeroNamesToViewport();
 }
 
 /**
@@ -155,6 +181,7 @@ function handleHeroSplitResize() {
     }
 
     rebuildHeroSplits(heroIntroCompleted ? 'visible' : 'hidden');
+    fitHeroNamesToViewport();
     ScrollTrigger.refresh();
 }
 
@@ -326,6 +353,7 @@ function runHeroIntro() {
     }
     gsap.set('.hero-tagline', { opacity: 0, y: 20, xPercent: -50, x: 0 });
     setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'none' });
+    fitHeroNamesToViewport();
     gsap.set('.hero-bottom', { opacity: 0, y: 20 });
 
     heroIntroTimeline = gsap.timeline({
@@ -783,5 +811,6 @@ window.addEventListener('resize', () => {
     world.renderer.resize(sizes);
     scroll.resize();
     galleryRibbon?.resize();
+    fitHeroNamesToViewport();
 });
 

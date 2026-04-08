@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Mobile hero title fit fix**: added viewport auto-fit logic for `#hero-names` (`fitHeroNamesToViewport()` in `src/main.js`) to shrink font-size on coarse-pointer phones until the single-line name block fits screen width; added defensive mobile `max-width` in `src/style.css`.
 - **TBT-oriented startup deferral**: moved `bindGlassRingScrollEffects()` initialization from early boot to intro start in `src/main.js`, so expensive ScrollTrigger timeline wiring happens later and initial main-thread load is lighter.
 - **Perf-oriented startup split**: `src/main.js` now lazy-loads `Cursor` only for fine pointers and lazy-loads `GalleryRibbon` on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial JS startup pressure before hero narrative.
 - **Lighthouse protocol note**: release checklist now explicitly requires auditing against `vite preview` / production URL (not `localhost` dev server), to avoid misleading TBT/LCP diagnostics from dev-module overhead.
