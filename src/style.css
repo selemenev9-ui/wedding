@@ -353,8 +353,7 @@ canvas {
     line-height: 1.1;
     color: #120c08;
     text-align: center;
-    -webkit-text-stroke: 0.8px rgba(234, 231, 220, 0.8);
-    text-shadow: 0 0 24px var(--color-page-bg), 0 0 42px var(--color-page-bg);
+    text-shadow: 0 0 16px rgba(234, 231, 220, 0.9), 0 0 32px rgba(234, 231, 220, 0.6);
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
@@ -378,8 +377,7 @@ canvas {
     line-height: 0.82;
     text-align: center;
     gap: 0.08em;
-    -webkit-text-stroke: 0.8px rgba(234, 231, 220, 0.8);
-    text-shadow: 0 0 24px var(--color-page-bg), 0 0 42px var(--color-page-bg);
+    text-shadow: 0 0 16px rgba(234, 231, 220, 0.9), 0 0 32px rgba(234, 231, 220, 0.6);
 }
 
 #hero-names.hero-names--stacked .hero-names__part:first-of-type {
