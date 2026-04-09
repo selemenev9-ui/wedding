@@ -47,22 +47,34 @@ const FRAG = /* glsl */`
     uniform sampler2D uTexture;
     uniform float     uOpacity;
     uniform float     uAspect;
+    uniform float     uVelocity;
     varying vec2      vUv;
 
     void main() {
-        vec4 col = texture2D(uTexture, vUv);
+        // 1. Dynamic UV zoom based on scroll speed
+        float speed = abs(uVelocity);
+        vec2 uv = (vUv - 0.5) * (1.0 - speed * 0.035) + 0.5;
 
+        // 2. Chromatic aberration (RGB split) tied to velocity direction
+        float shift = uVelocity * 0.012;
+        float r = texture2D(uTexture, vec2(uv.x + shift, uv.y)).r;
+        float g = texture2D(uTexture, uv).g;
+        float b = texture2D(uTexture, vec2(uv.x - shift, uv.y)).b;
+        vec3 col = vec3(r, g, b);
+
+        // 3. Rounded corners (use original vUv so the mask boundary stays rigid)
         vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0);
-        float r = 0.04;
-        vec2 q = abs(p) - vec2(uAspect * 0.5 - r, 0.5 - r);
-        float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+        float rad = 0.04;
+        vec2 q = abs(p) - vec2(uAspect * 0.5 - rad, 0.5 - rad);
+        float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rad;
         float roundMask = 1.0 - smoothstep(-0.008, 0.008, d);
 
+        // 4. Vignette
         float vig = 1.0 - dot(vUv - 0.5, (vUv - 0.5) * 2.2);
         vig = clamp(vig, 0.0, 1.0);
-        col.rgb *= mix(1.0, vig, 0.22);
+        col *= mix(1.0, vig, 0.22);
 
-        gl_FragColor = vec4(col.rgb, col.a * roundMask * uOpacity);
+        gl_FragColor = vec4(col, roundMask * uOpacity);
     }
 `;
 
