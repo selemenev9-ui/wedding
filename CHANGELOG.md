@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- **Hero intro — luxury settle**: replaced elastic ring scale-in with 3.2s `expo.out` and paired rotation untwist (`power3.out`) from a slight Y/Z offset in `runHeroIntro()` (`src/main.js`).
+- **Rendering & PBR pass**: removed EffectComposer/SMAA/RT pipeline; `WebGLRenderer` uses native MSAA (`antialias: true`) and `toneMappingExposure` 1.15. GlassRing gold upgraded (`#d4af37`, clearcoat, roughness 0.05). World: sharper key light, stronger shadow catcher, `VSMShadowMap`, glass ring env intensity fade target 2.5. DPR capped at 2.0 for all pointers.
 - **SEO completeness**: added `<meta name=\"description\">` to `index.html` to satisfy Lighthouse SEO content-best-practice and improve search snippet quality.
 - **Renderer hotfix**: fixed `ReferenceError: sizes is not defined` in `Renderer._ensureComposer()` by storing constructor/resize `sizes` on the instance (`this._sizes`) and using that for adaptive AA sample selection.
 - **Mobile AA quality-gate**: `src/gl/Renderer.js` now disables composer RT MSAA on coarse-pointer devices (`samples: 0`) while keeping SMAA, reducing mobile GPU load/TBT risk without changing desktop AA profile.

@@ -40,6 +40,7 @@ export default class World {
         this.scene = new THREE.Scene();
         this.camera = new Camera(sizes, this.scene);
         this.renderer = new Renderer(sizes, this.scene, this.camera.instance, canvas);
+        this.renderer.instance.shadowMap.type = THREE.VSMShadowMap;
 
         this.studioDome = new StudioDome();
         this.studioDome.init({ scene: this.scene });
@@ -50,7 +51,7 @@ export default class World {
         // Softer key (less directional “hot” edges); fill from ambient compensates brightness
         this.ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.05);
-        this.directionalLight.position.set(-2.5, 4.5, 3.5);
+        this.directionalLight.position.set(-4.0, 5.0, 4.0);
         this.directionalLight.castShadow = true;
         const sh = this.directionalLight.shadow;
         const lowShadow = sizes.coarsePointer === true;
@@ -68,7 +69,7 @@ export default class World {
         this.scene.add(this.ambientLight, this.directionalLight);
 
         const shadowGeo = new THREE.PlaneGeometry(25, 25);
-        const shadowMat = new THREE.ShadowMaterial({ opacity: 0.28 });
+        const shadowMat = new THREE.ShadowMaterial({ opacity: 0.45 });
         this.shadowCatcher = new THREE.Mesh(shadowGeo, shadowMat);
         this.shadowCatcher.position.z = -1.5;
         this.shadowCatcher.receiveShadow = true;
@@ -124,7 +125,7 @@ export default class World {
         };
 
         run(this.heroText?.goldMaterial, 1.5);
-        run(this.glassRing?.goldMaterial, 0.9);
+        run(this.glassRing?.goldMaterial, 2.5);
     }
 
     _setupEnvironment() {

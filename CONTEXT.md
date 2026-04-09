@@ -23,8 +23,8 @@
 | 3D | Three.js `^0.183.2`; GLTF via `GLTFLoader` + Draco + Meshopt |
 | Scroll | Lenis + GSAP + ScrollTrigger |
 | Text splitting | SplitType |
-| Post FX | `EffectComposer`: `RenderPass -> SMAAPass -> OutputPass`, `HalfFloatType`, no bloom; RT MSAA is adaptive (`8` fine pointer / `0` coarse pointer) |
-| Renderer | `alpha:false`, `antialias:false`, clear `#EAE7DC`, `ACESFilmicToneMapping`, `exposure 1.0`, `PCFSoftShadowMap` |
+| Post FX | Native WebGLRenderer (`antialias: true`). Removed EffectComposer to achieve 60fps and remove mobile GPU bottleneck. |
+| Renderer | `alpha:false`, `antialias:true`, clear `#EAE7DC`, `ACESFilmicToneMapping`, `exposure 1.15`; shadow map type `VSMShadowMap` (set on instance in `World`) |
 | RSVP | Root `.env` with `VITE_TG_BOT_TOKEN`, `VITE_TG_CHAT_ID`; `vite.config.js` has `/api/rsvp` middleware and `/api/telegram` proxy |
 
 Core map:
@@ -63,6 +63,7 @@ public/CNAME
 - **Startup TBT trim:** heavy ring scroll choreography wiring (`bindGlassRingScrollEffects` -> pinned timelines + master timeline) is deferred from early boot to intro start (`runHeroIntro`) so initial paint path does less main-thread setup work.
 - **Startup JS trim (non-critical modules):** `MouseParallax` now lazy-loads only on fine-pointer devices; reserved `GlimpseGallery` is removed from startup/update path to reduce initial parse/execute overhead.
 - **Preloader flow:** SVG arc listens to global `resources:progress`; experience launch waits for `heroText.ready` (currently immediate stub resolve), fades preloader, then runs hero intro timeline.
+- **Hero ring intro motion:** glass rings scale in with `expo.out` over 3.2s (no elastic bounce); initial Y/Z rotation offset untwists to rest via `power3.out` in parallel with scale (same timing in timeline; deferred `glassRing.ready` path mirrors with standalone tweens).
 - **Hero text architecture:** visible hero names are DOM (`#hero-names`) on all screens. `HeroText` is an API-compatible no-op Three.js stub (`root`, `group`, `ready`, `destroy`) so timelines and world hooks remain stable.
 - **Hero-name mobile-only stacked layout:** `fitHeroNamesToViewport()` now applies only on mobile coarse-pointer query (`(max-width: 767px) and (pointer: coarse)`), toggling `.hero-names--stacked` (`Катя` top, `&` center, `Артём` bottom). Desktop/tablet layouts remain unchanged.
 - **Hero-name vertical separation tuning:** in `.hero-names--stacked`, top/bottom name parts now use stronger opposite Y offsets and tighter center ampersand line-height so `Катя` reads clearly above and `Артём` below with more visual air.
@@ -74,7 +75,7 @@ public/CNAME
 - **Gallery overlay mode:** open/close state toggles `body.gallery-active`, stops/starts Lenis, fades narrative DOM (excluding hero overlay), hides/shows glass rings, handles Escape close, and refreshes ScrollTrigger on close.
 - **Lazy non-critical JS loading:** `Cursor` is dynamically imported only on fine-pointer devices; `GalleryRibbon` is dynamically imported on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial startup JS work before hero/scroll narrative.
 - **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=24`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, and throttled on-screen counter (`NN / 24`).
-- **World/lighting:** singleton `World`, studio dome background, ambient + directional light, adaptive shadow map settings (`coarse: 512`, `fine: 2048`), shadow catcher plane (`z=-1.5`, opacity `0.28`), PMREM environment setup, and guarded env-reflection fade on materials when available.
+- **World/lighting:** singleton `World`, studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on materials when available.
 - **Mobile behavior:** coarse-pointer path uses native scroll shim in `Scroll.js` (with passive scroll->ScrollTrigger sync), canvas is non-intercepting (`pointer-events:none`), touch controls use `touch-action: manipulation`, hero/pinned sections use `svh/dvh` handling, pull-to-refresh preserved (no overflow lock on `html`).
 - **Navigation/sections:** fixed nav with burger menu on small screens, three anchor links (`История`, `Галерея`, `Детали`), final section as scroll destination without nav item.
 - **RSVP delivery:** form reveal animation via GSAP; submit path uses env-backed Telegram flow with HTML-escaped payload: local tries `POST /api/rsvp` then direct Telegram fallback (`no-cors`), production static host uses direct fallback path.
@@ -87,20 +88,19 @@ public/CNAME
 |------|-------|
 | Camera | Perspective `fov: 35`; resize updates aspect/projection only |
 | Clear color | `#EAE7DC` opaque |
-| Tone mapping | `ACESFilmicToneMapping`, exposure `1.0` |
-| Lights | Ambient `0.5`; Directional `1.05` at `(-2.5, 4.5, 3.5)` |
-| Shadows | `PCFSoftShadowMap`; coarse `512` + bias `-0.005` + radius `4`; fine `2048` + bias `-0.001` + radius `12` |
-| Shadow catcher | Plane `25x25`, `ShadowMaterial opacity 0.28`, `z=-1.5`, receives shadows |
-| DPR cap | `coarsePointer ? 1.5 : 2.0` |
-| AA profile | fine pointer: composer RT `samples: 8` + SMAA; coarse pointer: composer RT `samples: 0` + SMAA |
-| Stability note | `Renderer` keeps latest `sizes` on instance (`this._sizes`) so adaptive AA selection in `_ensureComposer()` is scope-safe and works on init + resize |
+| Tone mapping | `ACESFilmicToneMapping`, exposure `1.15` |
+| Lights | Ambient `0.5`; Directional `1.05` at `(-4.0, 5.0, 4.0)` |
+| Shadows | `VSMShadowMap`; coarse `512` + bias `-0.005` + radius `4`; fine `2048` + bias `-0.001` + radius `12` |
+| Shadow catcher | Plane `25x25`, `ShadowMaterial opacity 0.45`, `z=-1.5`, receives shadows |
+| DPR cap | `Math.min(devicePixelRatio, 2.0)` (all pointers) |
+| AA | Native multisampling via `WebGLRenderer` `antialias: true` |
 | Lenis | Desktop defaults: duration `2.0`, wheelMultiplier `0.8`, smoothWheel true, syncTouch true; coarse pointer uses native-scroll shim path |
 | Rings timeline | Act I `0-30`, Act II `30-125`, Act III `125-145`, Act IV `145-160` |
 | Gallery | `TOTAL=24`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
 
 ## 6. Next steps
 
-- Optional: run real-device profiling (iPhone 13/14 class) and decide whether coarse-pointer AA should keep MSAA8+SMAA or downgrade to SMAA-only.
+- Optional: run real-device profiling (iPhone 13/14 class) on native renderer MSAA + VSM shadows and tune bias/radius if artifacts appear.
 - Optional: polish Act IV final inertia/easing if artistic review wants stronger magnetic settle in Unity segment.
 - Optional: add ultrawide guardrails for `.final-tagline` (hard width cap) if composition breaks on very wide screens.
 - Optional: gallery center-card hover microinteraction (raycast + subtle scale/label), only if perf budget stays safe.

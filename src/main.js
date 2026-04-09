@@ -392,12 +392,17 @@ function runHeroIntro() {
         },
     });
 
-    const ringScaleIn = { x: 1, y: 1, z: 1, duration: 2.0, ease: 'elastic.out(1, 0.5)' };
+    const ringScaleIn = { x: 1, y: 1, z: 1, duration: 3.2, ease: 'expo.out' };
     if (glassRing?._built) {
-        heroIntroTimeline.to(glassRing.mesh.scale, ringScaleIn, 0.05);
+        gsap.set(glassRing.mesh.rotation, { y: Math.PI * -0.15, z: Math.PI * 0.05 });
+        heroIntroTimeline
+            .to(glassRing.mesh.scale, ringScaleIn, 0.05)
+            .to(glassRing.mesh.rotation, { x: 0, y: 0, z: 0, duration: 3.2, ease: 'power3.out' }, 0.05);
     } else if (glassRing) {
         glassRing.ready.then(() => {
+            gsap.set(glassRing.mesh.rotation, { y: Math.PI * -0.15, z: Math.PI * 0.05 });
             gsap.to(glassRing.mesh.scale, ringScaleIn);
+            gsap.to(glassRing.mesh.rotation, { x: 0, y: 0, z: 0, duration: 3.2, ease: 'power3.out' });
         });
     }
 

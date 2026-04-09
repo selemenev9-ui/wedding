@@ -7,7 +7,6 @@ export default class Sizes {
             window.matchMedia('(pointer: coarse)').matches;
         this.coarsePointer = coarse;
 
-        const dprCap = coarse ? 1.5 : 2.0;
-        this.pixelRatio = Math.min(window.devicePixelRatio, dprCap);
+        this.pixelRatio = Math.min(window.devicePixelRatio, 2.0);
     }
 }

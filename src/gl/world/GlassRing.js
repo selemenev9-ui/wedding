@@ -47,10 +47,12 @@ export default class GlassRing {
             ]);
 
             this.goldMaterial = new THREE.MeshPhysicalMaterial({
-                color:        new THREE.Color('#e0b354'),
-                metalness:    1.0,
-                roughness:    0.12,
-                envMapIntensity: 0,
+                color:               new THREE.Color('#d4af37'),
+                metalness:           1.0,
+                roughness:           0.05,
+                clearcoat:           0.4,
+                clearcoatRoughness:  0.1,
+                envMapIntensity:     0,
             });
 
             this._ingestGltf(gltfA, this.floatA);
