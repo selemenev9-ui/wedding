@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Typography boot gate**: `launchExperience()` now awaits `document.fonts.load` for Playfair Display and Manrope before preloader exit so SplitType runs against final font metrics (mitigates FOUT/swap layout crash on slow networks).
 - **Hero intro — luxury settle**: replaced elastic ring scale-in with 3.2s `expo.out` and paired rotation untwist (`power3.out`) from a slight Y/Z offset in `runHeroIntro()` (`src/main.js`).
 - **Rendering & PBR pass**: removed EffectComposer/SMAA/RT pipeline; `WebGLRenderer` uses native MSAA (`antialias: true`) and `toneMappingExposure` 1.15. GlassRing gold upgraded (`#d4af37`, clearcoat, roughness 0.05). World: sharper key light, stronger shadow catcher, `VSMShadowMap`, glass ring env intensity fade target 2.5. DPR capped at 2.0 for all pointers.
 - **SEO completeness**: added `<meta name=\"description\">` to `index.html` to satisfy Lighthouse SEO content-best-practice and improve search snippet quality.

@@ -483,6 +483,16 @@ function runHeroIntro() {
 async function launchExperience() {
     if (heroText) await heroText.ready;
 
+    // Block experience until critical typography is fully loaded to prevent SplitType miscalculations
+    try {
+        await Promise.all([
+            document.fonts.load('1em "Playfair Display"'),
+            document.fonts.load('1em "Manrope"'),
+        ]);
+    } catch (e) {
+        console.warn('Font Loading API failed/timeout, proceeding with fallback:', e);
+    }
+
     const preloader = document.getElementById('preloader');
     if (preloader) {
         if (preloaderArc) {
