@@ -10,6 +10,70 @@
     --color-page-bg-rgb: 234, 231, 220;
 }
 
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('/fonts/Manrope-Light-300.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/Manrope-Regular-400.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/Manrope-Medium-500.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/Manrope-SemiBold-600.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-Italic-400.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-Regular-400.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-SemiBold-600.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-Bold-700.ttf') format('truetype');
+}
+
 html {
     width: 100%;
     background-color: var(--color-page-bg);
@@ -289,7 +353,6 @@ canvas {
     line-height: 1.1;
     color: #120c08;
     text-align: center;
-    text-shadow: 0 1px 0 rgba(234, 231, 220, 0.45);
     -webkit-text-stroke: 0.45px rgba(234, 231, 220, 0.42);
     white-space: nowrap;
     opacity: 0;
@@ -314,7 +377,6 @@ canvas {
     line-height: 0.82;
     text-align: center;
     gap: 0.08em;
-    text-shadow: 0 1px 0 rgba(234, 231, 220, 0.45);
     -webkit-text-stroke: 0.35px rgba(234, 231, 220, 0.35);
 }
 
