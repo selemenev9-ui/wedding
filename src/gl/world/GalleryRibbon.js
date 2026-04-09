@@ -49,6 +49,7 @@ const FRAG = /* glsl */`
     uniform float     uAspect;
     uniform float     uVelocity;
     uniform float     uHover;
+    uniform float     uTime;
     varying vec2      vUv;
 
     float filmGrainHash(vec2 p) {
@@ -88,7 +89,8 @@ const FRAG = /* glsl */`
         col *= 1.0 + hLift * 0.065;
 
         // 5. Cinematic film grain (in-shader, ~4% — no post stack)
-        float gn = filmGrainHash(vUv * 1400.0) - 0.5;
+        vec2 grainUv = (vUv + vec2(mod(uTime * 0.07, 1.0), mod(uTime * 0.11, 1.0))) * 1400.0;
+        float gn = filmGrainHash(grainUv) - 0.5;
         col += gn * 0.08;
 
         gl_FragColor = vec4(col, roundMask * uOpacity);
@@ -109,6 +111,7 @@ function _makeMat() {
             uOpacity:  { value: 0 },
             uAspect:   { value: 2 / 3 },
             uHover:    { value: 0 },
+            uTime:     { value: 0 },
         },
         vertexShader:   VERT,
         fragmentShader: FRAG,
@@ -561,6 +564,7 @@ export default class GalleryRibbon {
 
             m.position.x = this.scrollCurrent + m.userData.offset;
             m.material.uniforms.uVelocity.value = shaderVel;
+            m.material.uniforms.uTime.value = now * 0.001;
         }
 
         if (this._counterEl) {
@@ -707,6 +711,7 @@ export default class GalleryRibbon {
             m.material.uniforms.uAspect.value   = this._defaultRatio;
             m.material.uniforms.uTexture.value  = _FALLBACK;
             m.material.uniforms.uHover.value    = 0;
+            m.material.uniforms.uTime.value     = 0;
             gsap.killTweensOf(m.material.uniforms.uHover);
             this._applyScale(m);
         }

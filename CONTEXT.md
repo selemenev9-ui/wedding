@@ -12,7 +12,7 @@
 - **Goal:** premium Awwwards-style wedding experience with stable 60fps and predictable mobile behavior.
 - **Global palette:** warm pearl base `#EAE7DC` synchronized across DOM background, preloader, `theme-color`, renderer clear color, and `StudioDome`.
 - **Typography:** hero names via DOM `#hero-names` (Playfair), UI/system copy via Manrope, truffle primary text `#120c08`, muted labels in low-alpha truffle, restrained gold accents (`#8b6f3d`/`#9a7b4a`).
-- **WebGL look:** pure minimalist studio aesthetic. All atmospheric particle systems (petals/grain) explicitly removed to prioritize negative space and high-end PBR materials. Gold rings over a matte `StudioDome`; transparent DOM sections over fixed canvas.
+- **WebGL look:** pure minimalist studio aesthetic. Atmospheric particle systems are removed; only a localized gallery film-grain shader remains for analog texture without global post-processing. Gold rings over a matte `StudioDome`; transparent DOM sections over fixed canvas.
 - **Motion language:** one long-form ring/camera choreography across the page, with pinned DOM narrative beats and restrained easing (avoid noisy micro-jank).
 
 ## 3. Stack & Folder Structure
@@ -84,7 +84,7 @@ public/CNAME
 - **Lazy non-critical JS loading:** `Cursor` is dynamically imported only on fine-pointer devices; `GalleryRibbon` is dynamically imported on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial startup JS work before hero/scroll narrative.
 - **Magnetic UI & difference-blend cursor (fine pointer):** `#cursor` is a small white disc with `mix-blend-mode: difference` so it inverts against light or dark regions (DOM and canvas). `Cursor.js` pairs snappy `quickTo` follow (`0.1s`, `power3.out`) with GSAP magnetic displacement on `.editorial-btn` (`mousemove` pull toward pointer, `mouseleave` elastic return to origin) and hover scale on the broader interactive set.
 - **Minimalist WebGL scope:** dormant particle layer removed (`Petals.js` deleted); no full-screen post stack or particles—**gallery-only** in-shader film grain (~4% luminance noise via `filmGrainHash`) keeps editorial clarity elsewhere.
-- **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=24`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, throttled on-screen counter (`NN / 24`), velocity-based chromatic aberration and optical zoom, **in-shader film grain** (cheap hash, no EffectComposer), and **hover feedback**: shared `World.raycaster` + NDC `World.mouse`, per-card `uHover` uniform (GSAP tweens only when the hit mesh changes), subtle fragment “lift” (pinch, +brightness, −vignette). **Open choreography:** entry stagger **0.05s** and subtle `rotation.z` fan-in to flat. **Lifecycle:** `destroy()` disposes all `_texCache` textures and clears the map; `_resetState` / `close()` clear hover tweens and `uHover`.
+- **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=24`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, throttled on-screen counter (`NN / 24`), velocity-based chromatic aberration and optical zoom, **dynamic in-shader film grain** (`uTime`-driven hash "sizzle", no EffectComposer), and **hover feedback**: shared `World.raycaster` + NDC `World.mouse`, per-card `uHover` uniform (GSAP tweens only when the hit mesh changes), subtle fragment “lift” (pinch, +brightness, −vignette). **Open choreography:** entry stagger **0.05s** and subtle `rotation.z` fan-in to flat. **Lifecycle:** `destroy()` disposes all `_texCache` textures and clears the map; `_resetState` / `close()` clear hover tweens and `uHover`.
 - **World input (NDC):** `World` owns `THREE.Raycaster` + `THREE.Vector2` mouse; `main.js` updates `world.updateMouse(ndcX, ndcY)` on `mousemove` using current `sizes.width` / `sizes.height` so ray tests stay aligned with the WebGL viewport.
 - **World/lighting:** singleton `World` (central WebGL resize + `glassRing` / optional `galleryRibbon` refs from `main.js`, plus shared `raycaster` / `mouse` for gallery hover and future picks), studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on glass gold when available.
 - **Mobile behavior:** coarse-pointer path uses native scroll shim in `Scroll.js` (with passive scroll->ScrollTrigger sync), canvas is non-intercepting (`pointer-events:none`), touch controls use `touch-action: manipulation`, hero/pinned sections use `svh/dvh` handling, pull-to-refresh preserved (no overflow lock on `html`).
@@ -92,7 +92,7 @@ public/CNAME
 - **RSVP delivery:** form reveal animation via GSAP; submit path uses env-backed Telegram flow with HTML-escaped payload: local tries `POST /api/rsvp` then direct Telegram fallback (`no-cors`), production static host uses direct fallback path.
 - **Metadata/OG:** absolute OG/Twitter meta tags in `index.html`; `public/og.webp` treated as immutable master per `public/OG_POLICY.md`.
 - **SEO meta baseline:** `index.html` now includes explicit `<meta name="description">` for Lighthouse SEO completeness and better search snippet summary.
-- **Accessibility landmark:** primary narrative sits in a single `<main id="main">` (after `#site-nav`) so auditors and screen readers get a documented main region; Lenis `html` classes do not replace this landmark.
+- **Accessibility landmark:** primary narrative sits in a single `<main id="main">` (after `#site-nav`) so auditors and screen readers get a documented main region; Lenis `html` classes do not replace this landmark. All major in-main sections expose explicit `aria-label`s (`История`, `Галерея`, `Детали`, `Финал и RSVP`) for assistive-tech clarity.
 
 ## 5. Environment (scene/runtime constants)
 
@@ -100,7 +100,7 @@ public/CNAME
 |------|-------|
 | Camera | Perspective `fov: 35`; resize updates aspect/projection only |
 | Clear color | `#EAE7DC` opaque |
-| Tone mapping | `ACESFilmicToneMapping`, **`toneMappingExposure` `1.2`** (matches `Renderer.js`) |
+| Tone mapping | `ACESFilmicToneMapping`; exposure **`1.2` desktop / `1.1` coarse-pointer mobile** (`Renderer.js`) |
 | Lights | Ambient `0.5`; Directional `1.05` at `(-4.0, 5.0, 4.0)` |
 | Shadows | `VSMShadowMap`; coarse `512` + bias `-0.005` + radius `4`; fine `2048` + bias `-0.001` + radius `12` |
 | Shadow catcher | Plane `25x25`, `ShadowMaterial opacity 0.45`, `z=-1.5`, receives shadows |
