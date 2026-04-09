@@ -12,7 +12,7 @@
 - **Goal:** premium Awwwards-style wedding experience with stable 60fps and predictable mobile behavior.
 - **Global palette:** warm pearl base `#EAE7DC` synchronized across DOM background, preloader, `theme-color`, renderer clear color, and `StudioDome`.
 - **Typography:** hero names via DOM `#hero-names` (Playfair), UI/system copy via Manrope, truffle primary text `#120c08`, muted labels in low-alpha truffle, restrained gold accents (`#8b6f3d`/`#9a7b4a`).
-- **WebGL look:** gold rings in PBR style over a matte studio dome; transparent DOM sections over fixed canvas.
+- **WebGL look:** pure minimalist studio aesthetic. All atmospheric particle systems (petals/grain) explicitly removed to prioritize negative space and high-end PBR materials. Gold rings over a matte `StudioDome`; transparent DOM sections over fixed canvas.
 - **Motion language:** one long-form ring/camera choreography across the page, with pinned DOM narrative beats and restrained easing (avoid noisy micro-jank).
 
 ## 3. Stack & Folder Structure
@@ -62,7 +62,8 @@ public/CNAME
 - **Layered boot:** scene, scroll orchestration, and core DOM animation setup are initialized at T+0; heavy assets load asynchronously via `ResourceLoader` deferreds and `waitFor(name)`. `launchExperience()` awaits `document.fonts.load` for Playfair Display and Manrope before the preloader exits so SplitType measures final glyph metrics and FOUT-related layout break is avoided.
 - **Startup TBT trim:** heavy ring scroll choreography wiring (`bindGlassRingScrollEffects` -> pinned timelines + master timeline) is deferred from early boot to intro start (`runHeroIntro`) so initial paint path does less main-thread setup work.
 - **Startup JS trim (non-critical modules):** `MouseParallax` now lazy-loads only on fine-pointer devices; reserved `GlimpseGallery` is removed from startup/update path to reduce initial parse/execute overhead.
-- **Preloader flow:** SVG arc listens to global `resources:progress`; `launchExperience` waits for `heroText.ready` (currently immediate stub resolve), then critical web fonts via Font Loading API, then fades preloader and runs hero intro timeline. `#preloader` uses a frosted-glass treatment (translucent pearl tint + `backdrop-filter` blur) so the overlay reads against the live ACES-tonemapped canvas instead of a flat solid that can mismatch the render.
+- **Frosted glass preloader:** `#preloader` is a frosted-glass overlay (`rgba(var(--color-page-bg-rgb), 0.6)` + `backdrop-filter` / `-webkit-backdrop-filter` blur) so the loading state inherits the live ACES-tonemapped WebGL backdrop instead of fighting it with a flat opaque panel.
+- **Preloader sequence:** SVG arc listens to global `resources:progress`; `launchExperience` waits for `heroText.ready`, then Font Loading API (Playfair + Manrope), then fades the frosted preloader and runs `runHeroIntro()`.
 - **StudioDome / HDRI isolation:** cyclorama `MeshStandardMaterial` uses `envMapIntensity: 0` so the matte dome fill stays on `#EAE7DC` and does not pick up hue shift when the scene environment map loads.
 - **Hero ring intro motion:** glass rings scale in with `expo.out` over 3.2s (no elastic bounce); initial Y/Z rotation offset untwists to rest via `power3.out` in parallel with scale (same timing in timeline; deferred `glassRing.ready` path mirrors with standalone tweens).
 - **Hero text architecture:** visible hero names are DOM (`#hero-names`) on all screens. `HeroText` is an API-compatible no-op Three.js stub (`root`, `group`, `ready`, `destroy`) so timelines and world hooks remain stable.
@@ -76,7 +77,8 @@ public/CNAME
 - **Act II (Glimpse):** mask expansion + label fade + staged image crossfades + gallery CTA reveal in pinned section.
 - **Gallery overlay mode:** open/close state toggles `body.gallery-active`, stops/starts Lenis, fades narrative DOM (excluding hero overlay), hides/shows glass rings, handles Escape close, and refreshes ScrollTrigger on close.
 - **Lazy non-critical JS loading:** `Cursor` is dynamically imported only on fine-pointer devices; `GalleryRibbon` is dynamically imported on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial startup JS work before hero/scroll narrative.
-- **Cursor & magnetic UI (fine pointer):** `#cursor` uses a white dot with `mix-blend-mode: difference` for contrast on both DOM and WebGL-backed areas; `Cursor.js` applies GSAP magnetic follow (`mousemove` / reset on `mouseleave` with elastic settle) to `.editorial-btn` targets alongside existing hover scale behavior.
+- **Magnetic UI & difference-blend cursor (fine pointer):** `#cursor` is a small white disc with `mix-blend-mode: difference` so it inverts against light or dark regions (DOM and canvas). `Cursor.js` pairs snappy `quickTo` follow (`0.1s`, `power3.out`) with GSAP magnetic displacement on `.editorial-btn` (`mousemove` pull toward pointer, `mouseleave` elastic return to origin) and hover scale on the broader interactive set.
+- **Minimalist WebGL scope:** dormant particle layer removed (`Petals.js` deleted); no film grain or atmospheric particles—editorial clarity and PBR read take priority.
 - **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=24`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, throttled on-screen counter (`NN / 24`), and velocity-based chromatic aberration and optical zoom in the fragment shader.
 - **World/lighting:** singleton `World`, studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on materials when available.
 - **Mobile behavior:** coarse-pointer path uses native scroll shim in `Scroll.js` (with passive scroll->ScrollTrigger sync), canvas is non-intercepting (`pointer-events:none`), touch controls use `touch-action: manipulation`, hero/pinned sections use `svh/dvh` handling, pull-to-refresh preserved (no overflow lock on `html`).
@@ -91,16 +93,16 @@ public/CNAME
 |------|-------|
 | Camera | Perspective `fov: 35`; resize updates aspect/projection only |
 | Clear color | `#EAE7DC` opaque |
-| Tone mapping | `ACESFilmicToneMapping`, exposure `1.15` |
+| Tone mapping | `ACESFilmicToneMapping`, **`toneMappingExposure` `1.15`** (matches `Renderer.js`) |
 | Lights | Ambient `0.5`; Directional `1.05` at `(-4.0, 5.0, 4.0)` |
 | Shadows | `VSMShadowMap`; coarse `512` + bias `-0.005` + radius `4`; fine `2048` + bias `-0.001` + radius `12` |
 | Shadow catcher | Plane `25x25`, `ShadowMaterial opacity 0.45`, `z=-1.5`, receives shadows |
-| DPR cap | `Math.min(devicePixelRatio, 2.0)` (all pointers) |
+| DPR cap | **`2.0` max** — `Math.min(devicePixelRatio, 2.0)` on all pointers (`Sizes.js`) |
 | AA | Native multisampling via `WebGLRenderer` `antialias: true` |
 | Lenis | Desktop defaults: duration `2.0`, wheelMultiplier `0.8`, smoothWheel true, syncTouch true; coarse pointer uses native-scroll shim path |
 | Rings timeline | Act I `0-30`, Act II `30-125`, Act III `125-145`, Act IV `145-160` |
 | Gallery | `TOTAL=24`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
-| Glass ring (gold) | `MeshPhysicalMaterial` roughness `0.15`; env reflection fade target `envMapIntensity` `1.6` for `glassRing.goldMaterial` in `tryFadeEnvReflections()` |
+| Glass ring (gold) | `MeshPhysicalMaterial` **`roughness` `0.15`**; PMREM env reflection fade target **`envMapIntensity` `1.6`** for `glassRing.goldMaterial` in `World.tryFadeEnvReflections()` (production gold response) |
 
 ## 6. Next steps
 

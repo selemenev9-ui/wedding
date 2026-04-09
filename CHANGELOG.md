@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+---
+
+## 2026-04-09 (Production Ready)
+
+- Finalized minimalist art direction, optimized PBR gold response, and stabilized cross-platform performance.
 - **Dead code removal**: removed dormant `Petals.js` particle system to enforce clean architecture, reduce bundle size, and maintain a strict minimalist art direction.
 - **Gallery optical FX**: fragment shader uses `uVelocity` for UV zoom under motion plus horizontal RGB channel split (chromatic aberration); rounded mask still driven by raw `vUv` for stable card edges (`GalleryRibbon.js`).
 - **Magnetic UI & blend cursor**: `#cursor` is white with `mix-blend-mode: difference`; `.editorial-btn` elements get magnetic GSAP offset on `mousemove` and elastic snap-back on leave (`src/modules/Cursor.js`, `src/style.css`).
