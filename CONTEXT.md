@@ -87,6 +87,7 @@ public/CNAME
 - **RSVP delivery:** form reveal animation via GSAP; submit path uses env-backed Telegram flow with HTML-escaped payload: local tries `POST /api/rsvp` then direct Telegram fallback (`no-cors`), production static host uses direct fallback path.
 - **Metadata/OG:** absolute OG/Twitter meta tags in `index.html`; `public/og.webp` treated as immutable master per `public/OG_POLICY.md`.
 - **SEO meta baseline:** `index.html` now includes explicit `<meta name="description">` for Lighthouse SEO completeness and better search snippet summary.
+- **Accessibility landmark:** primary narrative sits in a single `<main id="main">` (after `#site-nav`) so auditors and screen readers get a documented main region; Lenis `html` classes do not replace this landmark.
 
 ## 5. Environment (scene/runtime constants)
 
