@@ -979,21 +979,23 @@ body.gallery-active .gallery-overlay {
     z-index: 5;
     will-change: transform;
 
-    /* Gradient beam on light studio — deeper gold for contrast */
+    /* Light-beam: warm gold body + bright “core” (CSS bloom, no WebGL pass) */
     background: linear-gradient(
         to bottom,
         transparent 0%,
-        rgba(154, 123, 74, 0.45) 8%,
-        rgba(139, 111, 61, 0.85) 30%,
-        rgba(120, 95, 50, 0.95) 50%,
-        rgba(139, 111, 61, 0.85) 70%,
-        rgba(154, 123, 74, 0.45) 92%,
+        rgba(139, 111, 61, 0.35) 10%,
+        rgba(139, 111, 61, 0.85) 32%,
+        rgba(255, 240, 200, 1) 50%,
+        rgba(139, 111, 61, 0.85) 68%,
+        rgba(139, 111, 61, 0.35) 90%,
         transparent 100%
     );
-
+    filter: blur(1px);
     box-shadow:
-        0 0 4px 1px rgba(139, 111, 61, 0.55),
-        0 0 20px 5px rgba(139, 111, 61, 0.18);
+        0 0 2px 1px rgba(255, 248, 230, 0.55),
+        0 0 12px 3px rgba(255, 240, 200, 0.35),
+        0 0 28px 10px rgba(139, 111, 61, 0.32),
+        0 0 48px 18px rgba(139, 111, 61, 0.14);
 }
 
 .path-text {
@@ -1139,6 +1141,10 @@ body.gallery-active .gallery-overlay {
         background: rgba(var(--color-page-bg-rgb), 0.92);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        transition:
+            background 0.35s ease,
+            backdrop-filter 0.35s ease,
+            -webkit-backdrop-filter 0.35s ease;
     }
 
     .nav-links a {
@@ -1146,6 +1152,14 @@ body.gallery-active .gallery-overlay {
         letter-spacing: 0.15em;
         color: #120c08;
         text-shadow: none;
+        transition:
+            color 0.35s ease,
+            opacity 0.35s ease,
+            transform 0.35s ease;
+    }
+
+    .nav-links a:active {
+        opacity: 0.72;
     }
 }
 

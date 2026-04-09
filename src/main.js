@@ -72,6 +72,15 @@ document.body.appendChild(canvas);
 const world = new World({ canvas, sizes });
 world.resize(sizes.width, sizes.height, sizes.pixelRatio);
 
+window.addEventListener('mousemove', (e) => {
+    const w = sizes.width;
+    const h = sizes.height;
+    if (w <= 0 || h <= 0) return;
+    const ndcX = (e.clientX / w) * 2 - 1;
+    const ndcY = -(e.clientY / h) * 2 + 1;
+    world.updateMouse(ndcX, ndcY);
+});
+
 /** @type {import('./gl/world/GlassRing.js').default | null} */
 let glassRing = null;
 
@@ -557,12 +566,14 @@ launchExperience();
 
 const navBurger = document.getElementById('nav-burger');
 const navLinksEl = document.querySelector('.nav-links');
+const siteNavEl = document.getElementById('site-nav');
 
 function closeMobileNav() {
     if (!navBurger || !navLinksEl) return;
     navBurger.classList.remove('active');
     navLinksEl.classList.remove('open');
     navBurger.setAttribute('aria-expanded', 'false');
+    siteNavEl?.classList.remove('nav--menu-open');
 }
 
 if (navBurger && navLinksEl) {
@@ -571,6 +582,7 @@ if (navBurger && navLinksEl) {
         navBurger.classList.toggle('active', open);
         navLinksEl.classList.toggle('open', open);
         navBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        siteNavEl?.classList.toggle('nav--menu-open', open);
     });
 }
 

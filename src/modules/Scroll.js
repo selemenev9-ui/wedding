@@ -398,7 +398,7 @@ export function bindGlassRingScrollEffects(glassRing) {
                 // scrubs groupA / groupB children, never the root mesh rotation)
                 gsap.to(glassRing.mesh.rotation, {
                     y: `+=${Math.PI * 2}`,
-                    duration: 28,
+                    duration: 35,
                     ease: 'none',
                     repeat: -1,
                 });
@@ -406,7 +406,7 @@ export function bindGlassRingScrollEffects(glassRing) {
                 gsap.to(glassRing.mesh.rotation, {
                     z: Math.PI * 0.08,
                     duration: 4.5,
-                    ease: 'power2.out',
+                    ease: 'power2.inOut',
                 });
             },
         });

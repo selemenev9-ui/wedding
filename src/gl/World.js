@@ -87,6 +87,9 @@ export default class World {
         this.glassRing = null;
         /** @type {import('./world/GalleryRibbon.js').default | null} */
         this.galleryRibbon = null;
+        /** Shared raycaster + NDC mouse for gallery / future hits (single instance per World). */
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2(-1, -1);
         /** Avoid double-running GSAP env fades on the same material instance. */
         this._envReflectionFadeStarted = new WeakSet();
 
@@ -144,6 +147,14 @@ export default class World {
         delete this.resources.items.envMap;
 
         this.tryFadeEnvReflections();
+    }
+
+    /**
+     * @param {number} x NDC in [-1, 1] (three.js convention)
+     * @param {number} y NDC in [-1, 1]
+     */
+    updateMouse(x, y) {
+        this.mouse.set(x, y);
     }
 
     update() {

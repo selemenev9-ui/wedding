@@ -48,12 +48,23 @@ const FRAG = /* glsl */`
     uniform float     uOpacity;
     uniform float     uAspect;
     uniform float     uVelocity;
+    uniform float     uHover;
     varying vec2      vUv;
+
+    float filmGrainHash(vec2 p) {
+        vec2 f = fract(p * vec2(123.34, 345.45));
+        f += dot(f, f.yx + 19.19);
+        return fract(f.x * f.y);
+    }
 
     void main() {
         // 1. Dynamic UV zoom based on scroll speed
         float speed = abs(uVelocity);
         vec2 uv = (vUv - 0.5) * (1.0 - speed * 0.035) + 0.5;
+
+        // 1b. Subtle “lift” on hover: slight pinching + brightening, less vignette
+        float hLift = clamp(uHover, 0.0, 1.0);
+        uv = (uv - 0.5) * (1.0 - hLift * 0.028) + 0.5;
 
         // 2. Chromatic aberration (RGB split) tied to velocity direction
         float shift = uVelocity * 0.012;
@@ -69,10 +80,16 @@ const FRAG = /* glsl */`
         float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rad;
         float roundMask = 1.0 - smoothstep(-0.008, 0.008, d);
 
-        // 4. Vignette
+        // 4. Vignette (ease off slightly when hovered)
         float vig = 1.0 - dot(vUv - 0.5, (vUv - 0.5) * 2.2);
         vig = clamp(vig, 0.0, 1.0);
-        col *= mix(1.0, vig, 0.22);
+        float vigMix = 0.22 * (1.0 - hLift * 0.62);
+        col *= mix(1.0, vig, vigMix);
+        col *= 1.0 + hLift * 0.065;
+
+        // 5. Cinematic film grain (in-shader, ~4% — no post stack)
+        float gn = filmGrainHash(vUv * 1400.0) - 0.5;
+        col += gn * 0.08;
 
         gl_FragColor = vec4(col, roundMask * uOpacity);
     }
@@ -91,6 +108,7 @@ function _makeMat() {
             uVelocity: { value: 0 },
             uOpacity:  { value: 0 },
             uAspect:   { value: 2 / 3 },
+            uHover:    { value: 0 },
         },
         vertexShader:   VERT,
         fragmentShader: FRAG,
@@ -148,6 +166,8 @@ export default class GalleryRibbon {
         this.container = new THREE.Group();
         this.container.visible = false;
         this._meshes = [];
+        /** @type {THREE.Object3D | null} */
+        this._lastHoverMesh = null;
         /** Defer mesh + ShaderMaterial creation until first `open()` to avoid main-thread shader compile during boot. */
         this._gpuInited = false;
         this._w.scene.add(this.container);
@@ -408,15 +428,24 @@ export default class GalleryRibbon {
         }
 
         const entryOrder = [3, 2, 4, 1, 5, 0, 6];
+        const rotSpread = 0.11;
         entryOrder.forEach((poolIdx, staggerI) => {
             const m     = this._meshes[poolIdx];
-            const delay = staggerI * 0.07;
+            const delay = staggerI * 0.05;
+            const t     = (staggerI / Math.max(1, entryOrder.length - 1)) * 2 - 1;
 
             m.position.y = -this._itemH * 0.65;
+            m.rotation.z = t * rotSpread;
 
             gsap.to(m.position, {
                 y:        0,
                 duration: 1.3,
+                delay,
+                ease:     'expo.out',
+            });
+            gsap.to(m.rotation, {
+                z:        0,
+                duration: 1.25,
                 delay,
                 ease:     'expo.out',
             });
@@ -439,7 +468,13 @@ export default class GalleryRibbon {
         const tl = gsap.timeline({
             onComplete: () => {
                 this.container.visible = false;
-                for (const m of this._meshes) m.position.y = 0;
+                this._lastHoverMesh = null;
+                for (const m of this._meshes) {
+                    m.position.y = 0;
+                    m.rotation.z = 0;
+                    gsap.killTweensOf(m.material.uniforms.uHover);
+                    m.material.uniforms.uHover.value = 0;
+                }
                 onComplete?.();
             },
         });
@@ -547,6 +582,26 @@ export default class GalleryRibbon {
                 }
             }
         }
+
+        if (this._gpuInited && this._meshes.length) {
+            this._w.raycaster.setFromCamera(this._w.mouse, this._w.camera.instance);
+            const hits = this._w.raycaster.intersectObjects(this._meshes, false);
+            const hitObj = hits.length ? hits[0].object : null;
+
+            if (hitObj !== this._lastHoverMesh) {
+                this._lastHoverMesh = hitObj;
+                for (const m of this._meshes) {
+                    const dest = m === hitObj ? 1 : 0;
+                    const uH   = m.material.uniforms.uHover;
+                    gsap.to(uH, {
+                        value:    dest,
+                        duration: dest > 0.5 ? 0.22 : 0.38,
+                        ease:     'power2.out',
+                        overwrite: true,
+                    });
+                }
+            }
+        }
     }
 
     _px2world() {
@@ -642,13 +697,17 @@ export default class GalleryRibbon {
 
         this._recomputeLayoutMetrics();
         this._setPoolOffsetsFromChain(0);
+        this._lastHoverMesh = null;
 
         for (const m of this._meshes) {
             m.position.y                        = 0;
+            m.rotation.z                         = 0;
             m.material.uniforms.uOpacity.value  = 0;
             m.material.uniforms.uVelocity.value = 0;
             m.material.uniforms.uAspect.value   = this._defaultRatio;
             m.material.uniforms.uTexture.value  = _FALLBACK;
+            m.material.uniforms.uHover.value    = 0;
+            gsap.killTweensOf(m.material.uniforms.uHover);
             this._applyScale(m);
         }
     }
@@ -664,8 +723,13 @@ export default class GalleryRibbon {
 
         this._w.scene.remove(this.container);
         this._geo.dispose();
-        for (const m of this._meshes) m.material?.dispose();
-        for (const [, tex] of this._texCache) tex.dispose();
+        for (const m of this._meshes) {
+            gsap.killTweensOf(m.material?.uniforms?.uHover);
+            m.material?.dispose();
+        }
+        for (const [, tex] of this._texCache) {
+            tex?.dispose?.();
+        }
 
         this._texCache.clear();
         this._ratioByIdx.clear();
