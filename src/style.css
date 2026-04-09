@@ -318,6 +318,20 @@ canvas {
     margin: 0;
 }
 
+.hero-guest-note {
+    position: absolute;
+    top: calc(clamp(84px, 14vh, 132px) + env(safe-area-inset-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0 1rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.72rem, 1.45vw, 0.9rem);
+    letter-spacing: 0.08em;
+    color: rgba(18, 12, 8, 0.58);
+    white-space: nowrap;
+}
+
 .hero-names {
     display: flex;
     flex-wrap: nowrap;
@@ -675,6 +689,15 @@ canvas {
     text-align: center;
 }
 
+.rsvp-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
 .rsvp-input:focus {
     border-color: #8b6f3d;
 }
@@ -737,12 +760,40 @@ canvas {
     font-size: 0.75rem;
     font-weight: 400;
     margin-top: 10px;
-    height: 20px;
+    min-height: 20px;
     color: rgba(18, 12, 8, 0.55);
+    text-align: center;
 }
 
 .submit-btn {
     margin-top: 0;
+}
+
+@keyframes rsvpSuccessShimmer {
+    0% {
+        background-position: 180% 50%;
+        box-shadow: 0 0 0 rgba(139, 111, 61, 0);
+    }
+    45% {
+        box-shadow: 0 4px 24px rgba(139, 111, 61, 0.26);
+    }
+    100% {
+        background-position: -40% 50%;
+        box-shadow: 0 2px 14px rgba(139, 111, 61, 0.12);
+    }
+}
+
+.submit-btn.submit-btn--success {
+    color: #120c08;
+    border-color: rgba(139, 111, 61, 0.45);
+    background: linear-gradient(
+        105deg,
+        rgba(139, 111, 61, 0.2) 22%,
+        rgba(255, 240, 200, 0.88) 47%,
+        rgba(139, 111, 61, 0.2) 72%
+    );
+    background-size: 220% 100%;
+    animation: rsvpSuccessShimmer 1.15s ease-out both;
 }
 
 /* —— Act II: #section-glimpse — absolute stack: mask + button overlay —— */

@@ -124,6 +124,15 @@
         <form id="rsvp-form" class="rsvp-form" style="display: none;">
           <input
             type="text"
+            id="rsvp-company"
+            name="company"
+            class="rsvp-honeypot"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+          />
+          <input
+            type="text"
             id="rsvp-name"
             class="rsvp-input"
             placeholder="Ваши имя и фамилия"

@@ -599,8 +599,31 @@ gsap.set('#hero-overlay', { pointerEvents: 'none' });
 // Ensure overlay starts fully hidden (autoAlpha owns both opacity + visibility)
 gsap.set('#gallery-overlay', { autoAlpha: 0 });
 
+function getGuestFromUrl() {
+    if (typeof window === 'undefined') return '';
+    const raw = new URLSearchParams(window.location.search).get('guest') || '';
+    const normalized = raw.replace(/\+/g, ' ').trim().slice(0, 48);
+    return normalized.replace(/[<>"'`]/g, '').replace(/\s{2,}/g, ' ');
+}
+
+const guestNameFromUrl = getGuestFromUrl();
+if (guestNameFromUrl) {
+    const heroTagline = document.querySelector('.hero-tagline');
+    if (heroTagline) {
+        const note = document.createElement('p');
+        note.className = 'hero-guest-note';
+        note.textContent = `${guestNameFromUrl}, будем рады видеть вас`;
+        heroTagline.insertAdjacentElement('afterend', note);
+    }
+}
+
 const rsvpForm = document.getElementById('rsvp-form');
 const btnRevealRsvp = document.getElementById('btn-reveal-rsvp');
+const RSVP_MIN_FILL_MS = 2500;
+const RSVP_WINDOW_MS = 10 * 60 * 1000;
+const RSVP_MAX_PER_WINDOW = 3;
+const RSVP_RATE_KEY = 'rsvp_submit_times_v1';
+let rsvpRevealAt = Date.now();
 
 if (rsvpForm) {
     rsvpForm.addEventListener('submit', async (e) => {
@@ -608,6 +631,7 @@ if (rsvpForm) {
         const submitBtn = rsvpForm.querySelector('.submit-btn');
         const rsvpStatus = document.getElementById('rsvp-status');
         const nameEl = document.getElementById('rsvp-name');
+        const honeyEl = document.getElementById('rsvp-company');
         const attendanceEl = rsvpForm.querySelector('input[name="attendance"]:checked');
 
         if (!submitBtn || !nameEl || !attendanceEl || !rsvpStatus) return;
@@ -616,6 +640,32 @@ if (rsvpForm) {
         const attendance = attendanceEl.value;
 
         if (!nameInput) return;
+
+        // Cheap anti-bot barrier for static hosting: hidden honeypot + fill-time + local rate limit.
+        if (honeyEl && honeyEl.value.trim()) {
+            return;
+        }
+        if (Date.now() - rsvpRevealAt < RSVP_MIN_FILL_MS) {
+            rsvpStatus.textContent = 'Похоже, форма отправлена слишком быстро. Попробуйте через пару секунд.';
+            rsvpStatus.style.color = '#9a7b4a';
+            return;
+        }
+        try {
+            const now = Date.now();
+            const prev = JSON.parse(localStorage.getItem(RSVP_RATE_KEY) || '[]');
+            const recent = Array.isArray(prev)
+                ? prev.filter((ts) => Number.isFinite(ts) && now - ts < RSVP_WINDOW_MS)
+                : [];
+            if (recent.length >= RSVP_MAX_PER_WINDOW) {
+                rsvpStatus.textContent = 'Слишком много попыток. Повторите чуть позже.';
+                rsvpStatus.style.color = '#9a7b4a';
+                return;
+            }
+            recent.push(now);
+            localStorage.setItem(RSVP_RATE_KEY, JSON.stringify(recent));
+        } catch {
+            // noop: storage may be unavailable in private mode
+        }
 
         submitBtn.textContent = 'Отправка...';
         submitBtn.disabled = true;
@@ -708,7 +758,10 @@ if (rsvpForm) {
                 throw lastError || new Error('Telegram delivery failed');
             }
 
-            rsvpStatus.textContent = 'Спасибо! Ваш ответ записан.';
+            submitBtn.classList.add('submit-btn--success');
+            rsvpStatus.textContent = guestNameFromUrl
+                ? `Спасибо, ${guestNameFromUrl}! Увидимся совсем скоро.`
+                : 'Спасибо! Ваш ответ записан. Увидимся совсем скоро.';
             rsvpStatus.style.color = '#8b6f3d';
             rsvpForm.reset();
             submitBtn.style.display = 'none';
@@ -860,8 +913,13 @@ if (btnCloseGallery) {
 if (btnRevealRsvp && rsvpForm) {
     btnRevealRsvp.addEventListener('click', () => {
         if (rsvpForm.style.display === 'flex') return;
+        rsvpRevealAt = Date.now();
         btnRevealRsvp.style.display = 'none';
         rsvpForm.style.display = 'flex';
+        const nameEl = document.getElementById('rsvp-name');
+        if (nameEl && guestNameFromUrl && !nameEl.value.trim()) {
+            nameEl.value = guestNameFromUrl;
+        }
         gsap.fromTo(
             rsvpForm,
             { height: 0, autoAlpha: 0, overflow: 'hidden' },
