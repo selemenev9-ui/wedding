@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Lighthouse boot pass (no visual cuts)**: deferred ring/path `ScrollTrigger` + path `SplitType` to `requestAnimationFrame` when preloader fade begins; wedding countdown timer starts post-hero-intro; `GalleryRibbon` GPU pool/shaders init on first `open()`; `ScrollTrigger.config({ limitCallbacks: true })`; extra `ring_b.glb` preload; WebP conversion `quality: 75` / `effort: 6` in `convert-images.js` for future JPEG runs.
 - **A11y landmark**: wrapped hero, story sections, destination/RSVP, final block, and gallery overlay in `<main id="main">` for Lighthouse / screen-reader main landmark compliance.
 - **Lighthouse / boot perf**: Resource preloading and async mesh initialization implemented to optimize LCP/TBT for Lighthouse 90+ compliance (`index.html` preconnect/preloads, `main.js` idle-deferred `GlassRing`/`HeroText`, `Renderer.js` `powerPreference: high-performance`, `ResourceLoader` Draco CDN note).
 

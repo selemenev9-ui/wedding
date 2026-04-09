@@ -210,6 +210,7 @@ function handleHeroSplitResize() {
             scaleY: 1,
             transformOrigin: 'top center',
         });
+        startWeddingCountdownTicker();
     }
 
     rebuildHeroSplits(heroIntroCompleted ? 'visible' : 'hidden');
@@ -344,6 +345,14 @@ ScrollTrigger.create({
 
 const WEDDING_COUNTDOWN_TARGET = new Date('2026-08-08T15:00:00Z');
 
+/** Started after hero intro completes (or resize-aborted intro) so the 1s timer does not compete with boot TBT. */
+let weddingCountdownIntervalId = 0;
+function startWeddingCountdownTicker() {
+    if (weddingCountdownIntervalId !== 0) return;
+    tickWeddingCountdown();
+    weddingCountdownIntervalId = window.setInterval(tickWeddingCountdown, 1000);
+}
+
 function tickWeddingCountdown() {
     const elDays = document.getElementById('cd-days');
     const elHours = document.getElementById('cd-hours');
@@ -369,13 +378,13 @@ function tickWeddingCountdown() {
     elMinutes.textContent = String(minutes).padStart(2, '0');
 }
 
-tickWeddingCountdown();
-setInterval(tickWeddingCountdown, 1000);
+/** Defer path SplitType + ring `ScrollTrigger` wiring to the next frame so the preloader can paint first. */
+function flushDeferredRingScrollBind() {
+    ensureRingScrollEffectsBound();
+    ScrollTrigger.refresh();
+}
 
 function runHeroIntro() {
-    // Defer heavy ScrollTrigger timeline wiring until intro start to reduce initial main-thread pressure.
-    ensureRingScrollEffectsBound();
-
     scroll.resize();
     scroll.lenis.scrollTo(0, { immediate: true });
     ScrollTrigger.refresh();
@@ -401,6 +410,7 @@ function runHeroIntro() {
             heroIntroCompleted = true;
             heroIntroTimeline = null;
             ScrollTrigger.refresh();
+            startWeddingCountdownTicker();
             gsap.to('.hero-scroll-indicator', {
                 scaleY: 0.5,
                 opacity: 0.3,
@@ -537,6 +547,7 @@ async function launchExperience() {
             delay: 0.2,
             onStart: () => {
                 if (preloaderWrap) gsap.killTweensOf(preloaderWrap);
+                requestAnimationFrame(() => flushDeferredRingScrollBind());
             },
             onComplete: () => {
                 preloader.remove();
@@ -544,7 +555,10 @@ async function launchExperience() {
             },
         });
     } else {
-        runHeroIntro();
+        requestAnimationFrame(() => {
+            flushDeferredRingScrollBind();
+            runHeroIntro();
+        });
     }
 }
 

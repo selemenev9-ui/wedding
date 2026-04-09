@@ -6,6 +6,7 @@ import SplitType from 'split-type';
 import { getWorld } from '../gl/World.js';
 
 gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.config({ limitCallbacks: true });
 
 const LENIS_DEFAULTS = {
     duration: 2.0,

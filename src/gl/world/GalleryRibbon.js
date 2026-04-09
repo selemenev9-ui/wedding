@@ -148,7 +148,8 @@ export default class GalleryRibbon {
         this.container = new THREE.Group();
         this.container.visible = false;
         this._meshes = [];
-        this._buildPool();
+        /** Defer mesh + ShaderMaterial creation until first `open()` to avoid main-thread shader compile during boot. */
+        this._gpuInited = false;
         this._w.scene.add(this.container);
 
         this._downBound   = (e) => this._onPointerDown(e);
@@ -169,6 +170,13 @@ export default class GalleryRibbon {
         document.addEventListener('visibilitychange', this._visBound);
 
         this._manifestPromise = this._loadGalleryManifest();
+    }
+
+    /** Build ribbon pool and compile gallery shaders — call from `open()` only. */
+    initGpu() {
+        if (this._gpuInited) return;
+        this._gpuInited = true;
+        this._buildPool();
     }
 
     async _loadGalleryManifest() {
@@ -387,6 +395,7 @@ export default class GalleryRibbon {
     }
 
     async open() {
+        this.initGpu();
         await this._ensureRatiosForAllSlides();
         this._computeLayout();
         this._resetState();
@@ -450,6 +459,7 @@ export default class GalleryRibbon {
     }
 
     resize() {
+        if (!this._gpuInited) return;
         if (!this.container.visible) return;
         const prevH = this._itemH;
         this._computeLayout();
@@ -654,7 +664,7 @@ export default class GalleryRibbon {
 
         this._w.scene.remove(this.container);
         this._geo.dispose();
-        for (const m of this._meshes) m.material.dispose();
+        for (const m of this._meshes) m.material?.dispose();
         for (const [, tex] of this._texCache) tex.dispose();
 
         this._texCache.clear();

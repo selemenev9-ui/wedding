@@ -75,7 +75,7 @@ async function main() {
 
         await sharp(inputPath)
             .resize({ width: 1920, withoutEnlargement: true })
-            .webp({ quality: 85 })
+            .webp({ quality: 75, effort: 6 })
             .toFile(outputPath);
 
         console.log(`✓ ${outName}`);
