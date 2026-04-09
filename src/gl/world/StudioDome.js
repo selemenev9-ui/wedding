@@ -30,6 +30,7 @@ export default class StudioDome {
             side: THREE.BackSide,
             roughness: 1.0,
             metalness: 0.0,
+            envMapIntensity: 0,
         });
 
         this.mesh = new THREE.Mesh(this._geometry, this._material);

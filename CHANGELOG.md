@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Preloader & boot polish**: frosted `#preloader` (translucent page-bg + backdrop blur) to align with the ACES-mapped canvas; `StudioDome` material `envMapIntensity: 0` so the dome does not shift hue when the HDRI loads; `#site-nav` hidden until hero intro and eased in with the hero footer stack.
 - **Hero names — stroke removed**: dropped `-webkit-text-stroke` from `#hero-names` and `#hero-names.hero-names--stacked`; contrast over WebGL uses soft double-layer pearl `text-shadow` only to avoid harsh outlines and clipping artifacts on the rings.
 - **UX & art polish**: custom cursor `quickTo` shortened to 0.1s/`power3.out` for near 1:1 pointer tracking; glass ring gold roughness `0.15` and glass ring env fade target `1.6` to soften readable HDRI reflections; hero names use layered glow for contrast on dark WebGL areas.
 - **Typography boot gate**: `launchExperience()` now awaits `document.fonts.load` for Playfair Display and Manrope before preloader exit so SplitType runs against final font metrics (mitigates FOUT/swap layout crash on slow networks).

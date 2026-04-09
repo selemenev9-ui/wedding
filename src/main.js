@@ -22,7 +22,7 @@ if (window.scrollY === 0) {
 }
 
 // `#hero-names` visibility: `setupHeroTextMedia` once `HeroText` exists (asynchronous layered loading).
-gsap.set('.hero-bottom, .hero-scroll-indicator', { opacity: 0 });
+gsap.set('.hero-bottom, .hero-scroll-indicator, #site-nav', { opacity: 0 });
 
 if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
     import('./modules/Cursor.js')
@@ -463,6 +463,12 @@ function runHeroIntro() {
             duration: 1.2,
             clearProps: 'all',
         },
+        introSt,
+    );
+    heroIntroTimeline.fromTo(
+        '#site-nav',
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 1.2, clearProps: 'all' },
         introSt,
     );
 
