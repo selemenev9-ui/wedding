@@ -102,7 +102,8 @@ a, button, [role="button"], label[for], .editorial-btn, .route-link, .rsvp-radio
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #120c08;
+    background: #ffffff;
+    mix-blend-mode: difference;
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);

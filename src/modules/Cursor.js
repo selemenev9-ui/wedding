@@ -34,6 +34,11 @@ export default class Cursor {
             el.addEventListener('mouseenter', this.onMouseEnter);
             el.addEventListener('mouseleave', this.onMouseLeave);
         });
+
+        document.querySelectorAll('.editorial-btn').forEach((btn) => {
+            btn.addEventListener('mousemove', this.onMagneticMove);
+            btn.addEventListener('mouseleave', this.onMagneticLeave);
+        });
     }
 
     onDocumentLeave = () => {
@@ -72,6 +77,33 @@ export default class Cursor {
         });
     };
 
+    onMagneticMove = (e) => {
+        const btn = e.currentTarget;
+        const rect = btn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const distX = (e.clientX - centerX) * 0.3;
+        const distY = (e.clientY - centerY) * 0.3;
+
+        gsap.to(btn, {
+            x: distX,
+            y: distY,
+            duration: 0.4,
+            ease: 'power2.out',
+        });
+    };
+
+    onMagneticLeave = (e) => {
+        const btn = e.currentTarget;
+        gsap.to(btn, {
+            x: 0,
+            y: 0,
+            duration: 0.7,
+            ease: 'elastic.out(1.1, 0.4)',
+        });
+    };
+
     destroy() {
         window.removeEventListener('pointermove', this.onPointerMove);
         document.removeEventListener('mouseleave', this.onDocumentLeave);
@@ -79,6 +111,10 @@ export default class Cursor {
         document.querySelectorAll(HOVER_SELECTOR).forEach((el) => {
             el.removeEventListener('mouseenter', this.onMouseEnter);
             el.removeEventListener('mouseleave', this.onMouseLeave);
+        });
+        document.querySelectorAll('.editorial-btn').forEach((btn) => {
+            btn.removeEventListener('mousemove', this.onMagneticMove);
+            btn.removeEventListener('mouseleave', this.onMagneticLeave);
         });
     }
 }
