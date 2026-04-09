@@ -621,9 +621,18 @@ const rsvpForm = document.getElementById('rsvp-form');
 const btnRevealRsvp = document.getElementById('btn-reveal-rsvp');
 const RSVP_MIN_FILL_MS = 2500;
 const RSVP_WINDOW_MS = 10 * 60 * 1000;
-const RSVP_MAX_PER_WINDOW = 3;
-const RSVP_RATE_KEY = 'rsvp_submit_times_v1';
+const RSVP_MAX_PER_WINDOW = 2;
+const RSVP_NAME_REPEAT_BLOCK_MS = 12 * 60 * 60 * 1000;
+const RSVP_GLOBAL_COOLDOWN_MS = 45 * 1000;
+const RSVP_RATE_KEY = 'rsvp_submit_events_v2';
 let rsvpRevealAt = Date.now();
+
+const normalizeNameKey = (name) =>
+    String(name)
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .slice(0, 64);
 
 if (rsvpForm) {
     rsvpForm.addEventListener('submit', async (e) => {
@@ -653,16 +662,35 @@ if (rsvpForm) {
         try {
             const now = Date.now();
             const prev = JSON.parse(localStorage.getItem(RSVP_RATE_KEY) || '[]');
-            const recent = Array.isArray(prev)
-                ? prev.filter((ts) => Number.isFinite(ts) && now - ts < RSVP_WINDOW_MS)
+            const events = Array.isArray(prev)
+                ? prev.filter((e) =>
+                    e &&
+                    Number.isFinite(e.ts) &&
+                    typeof e.nameKey === 'string' &&
+                    now - e.ts < RSVP_NAME_REPEAT_BLOCK_MS,
+                )
                 : [];
-            if (recent.length >= RSVP_MAX_PER_WINDOW) {
+            const recentWindow = events.filter((e) => now - e.ts < RSVP_WINDOW_MS);
+            if (recentWindow.length >= RSVP_MAX_PER_WINDOW) {
                 rsvpStatus.textContent = 'Слишком много попыток. Повторите чуть позже.';
                 rsvpStatus.style.color = '#9a7b4a';
                 return;
             }
-            recent.push(now);
-            localStorage.setItem(RSVP_RATE_KEY, JSON.stringify(recent));
+            const latestTs = recentWindow.reduce((mx, e) => Math.max(mx, e.ts), 0);
+            if (latestTs > 0 && now - latestTs < RSVP_GLOBAL_COOLDOWN_MS) {
+                rsvpStatus.textContent = 'Подождите немного перед следующей отправкой.';
+                rsvpStatus.style.color = '#9a7b4a';
+                return;
+            }
+            const nameKey = normalizeNameKey(nameInput);
+            const sameNameRecent = events.some((e) => e.nameKey === nameKey && now - e.ts < RSVP_NAME_REPEAT_BLOCK_MS);
+            if (sameNameRecent) {
+                rsvpStatus.textContent = 'Похоже, этот гость уже отправлял ответ. Если нужно изменить статус — напишите нам.';
+                rsvpStatus.style.color = '#9a7b4a';
+                return;
+            }
+            events.push({ ts: now, nameKey });
+            localStorage.setItem(RSVP_RATE_KEY, JSON.stringify(events.slice(-20)));
         } catch {
             // noop: storage may be unavailable in private mode
         }
@@ -916,9 +944,14 @@ if (btnRevealRsvp && rsvpForm) {
         rsvpRevealAt = Date.now();
         btnRevealRsvp.style.display = 'none';
         rsvpForm.style.display = 'flex';
+        const rsvpStatus = document.getElementById('rsvp-status');
         const nameEl = document.getElementById('rsvp-name');
         if (nameEl && guestNameFromUrl && !nameEl.value.trim()) {
             nameEl.value = guestNameFromUrl;
+        }
+        if (rsvpStatus && guestNameFromUrl) {
+            rsvpStatus.textContent = `${guestNameFromUrl}, будем рады видеть вас.`;
+            rsvpStatus.style.color = 'rgba(18, 12, 8, 0.52)';
         }
         gsap.fromTo(
             rsvpForm,
