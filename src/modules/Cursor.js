@@ -14,12 +14,12 @@ export default class Cursor {
         gsap.set(this.cursorEl, { xPercent: -50, yPercent: -50 });
 
         this.xTo = gsap.quickTo(this.cursorEl, 'x', {
-            duration: 0.4,
-            ease: 'power2.out',
+            duration: 0.1,
+            ease: 'power3.out',
         });
         this.yTo = gsap.quickTo(this.cursorEl, 'y', {
-            duration: 0.4,
-            ease: 'power2.out',
+            duration: 0.1,
+            ease: 'power3.out',
         });
 
         this.bindEvents();

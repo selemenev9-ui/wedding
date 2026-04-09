@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **UX & art polish**: custom cursor `quickTo` shortened to 0.1s/`power3.out` for near 1:1 pointer tracking; glass ring gold roughness `0.15` and glass ring env fade target `1.6` to soften readable HDRI reflections; hero `#hero-names` (+ stacked) get stronger stroke and page-color halo `text-shadow` for contrast on dark WebGL areas.
 - **Typography boot gate**: `launchExperience()` now awaits `document.fonts.load` for Playfair Display and Manrope before preloader exit so SplitType runs against final font metrics (mitigates FOUT/swap layout crash on slow networks).
 - **Hero intro — luxury settle**: replaced elastic ring scale-in with 3.2s `expo.out` and paired rotation untwist (`power3.out`) from a slight Y/Z offset in `runHeroIntro()` (`src/main.js`).
 - **Rendering & PBR pass**: removed EffectComposer/SMAA/RT pipeline; `WebGLRenderer` uses native MSAA (`antialias: true`) and `toneMappingExposure` 1.15. GlassRing gold upgraded (`#d4af37`, clearcoat, roughness 0.05). World: sharper key light, stronger shadow catcher, `VSMShadowMap`, glass ring env intensity fade target 2.5. DPR capped at 2.0 for all pointers.

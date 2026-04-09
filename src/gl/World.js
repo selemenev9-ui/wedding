@@ -125,7 +125,7 @@ export default class World {
         };
 
         run(this.heroText?.goldMaterial, 1.5);
-        run(this.glassRing?.goldMaterial, 2.5);
+        run(this.glassRing?.goldMaterial, 1.6);
     }
 
     _setupEnvironment() {

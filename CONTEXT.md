@@ -69,6 +69,7 @@ public/CNAME
 - **Hero-name vertical separation tuning:** in `.hero-names--stacked`, top/bottom name parts now use stronger opposite Y offsets and tighter center ampersand line-height so `Катя` reads clearly above and `Артём` below with more visual air.
 - **Hero-name readability parity:** mobile stacked hero names now keep desktop-like subtle separation treatment (`-webkit-text-stroke` + lightweight text-shadow) for legibility over dark ring highlights.
 - **Desktop hero-name readability bump:** base `#hero-names` stroke/shadow contrast is slightly strengthened (`-webkit-text-stroke` + subtle top text-shadow) so separation remains visible on bright and dark ring areas.
+- **Hero-name halo (DOM):** `#hero-names` and `#hero-names.hero-names--stacked` use a stronger pearl stroke plus dual-layer `text-shadow` in `--color-page-bg` to keep truffle letterforms legible over dark 3D ring regions without fighting the canvas.
 - **Ring choreography:** `src/modules/Scroll.js` builds pinned `pathDomTl` (`+=1500`) and `glimpseDomTl` (`+=3000`), then a full-page `masterTl` (`0..160`) for rings and camera (`z 6.5 -> 5 -> 4.85 -> 4.55`), with Act-I hero scale-out and mobile DOM name scrub-out.
 - **Act I (Path):** full-viewport golden thread scrub + SplitType char choreography for two lines (`.path-text-1`, `.path-text-2`) inside pinned section.
 - **Act II (Glimpse):** mask expansion + label fade + staged image crossfades + gallery CTA reveal in pinned section.
@@ -97,6 +98,7 @@ public/CNAME
 | Lenis | Desktop defaults: duration `2.0`, wheelMultiplier `0.8`, smoothWheel true, syncTouch true; coarse pointer uses native-scroll shim path |
 | Rings timeline | Act I `0-30`, Act II `30-125`, Act III `125-145`, Act IV `145-160` |
 | Gallery | `TOTAL=24`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
+| Glass ring (gold) | `MeshPhysicalMaterial` roughness `0.15`; env reflection fade target `envMapIntensity` `1.6` for `glassRing.goldMaterial` in `tryFadeEnvReflections()` |
 
 ## 6. Next steps
 
