@@ -8,7 +8,7 @@ export default class Renderer {
      * @param {HTMLCanvasElement} [canvas]
      */
     constructor(sizes, scene, camera, canvas) {
-        const params = { antialias: true, alpha: false };
+        const params = { antialias: true, alpha: false, powerPreference: 'high-performance' };
         if (canvas) {
             params.canvas = canvas;
         }

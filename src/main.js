@@ -78,6 +78,20 @@ let glassRing = null;
 /** @type {import('./gl/world/HeroText.js').default | null} */
 let heroText = null;
 
+/** Settled after `GlassRing` / `HeroText` constructors run (idle/yield to cut TBT). */
+let meshInitResolve = () => {};
+const meshInitPromise = new Promise((resolve) => {
+    meshInitResolve = resolve;
+});
+
+function scheduleIdleMeshInit(fn) {
+    if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(() => fn(), { timeout: 250 });
+    } else {
+        setTimeout(fn, 0);
+    }
+}
+
 /** @type {InstanceType<typeof SplitType> | null} */
 let heroSplitTagline = null;
 /** @type {gsap.core.Timeline | null} */
@@ -235,26 +249,47 @@ scroll.resize();
 
 const { lenis } = scroll;
 
-glassRing = new GlassRing();
-glassRing.mesh.scale.setScalar(0);
+scheduleIdleMeshInit(() => {
+    try {
+        glassRing = new GlassRing();
+        glassRing.mesh.scale.setScalar(0);
 
-try {
-    heroText = new HeroText();
-    const w = getWorld();
-    if (w) {
-        w.heroText = heroText;
-        w.glassRing = glassRing;
+        try {
+            heroText = new HeroText();
+            const w = getWorld();
+            if (w) {
+                w.heroText = heroText;
+                w.glassRing = glassRing;
+            }
+        } catch (e) {
+            console.error('HeroText init failed:', e);
+        }
+
+        const _kickEnvFade = () => world.tryFadeEnvReflections?.();
+        _kickEnvFade();
+        heroText?.ready.then(_kickEnvFade);
+        glassRing.ready.then(_kickEnvFade);
+
+        setupHeroTextMedia(heroText);
+
+        if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
+            import('./modules/MouseParallax.js')
+                .then(({ default: MouseParallax }) => {
+                    mouseParallax.destroy();
+                    if (!glassRing?.mesh) return;
+                    mouseParallax = new MouseParallax([
+                        { object: glassRing.mesh, depth: 0.06 },
+                        ...(heroText?.root ? [{ object: heroText.root, depth: 0.035 }] : []),
+                    ]);
+                })
+                .catch((err) => {
+                    console.warn('MouseParallax lazy-load failed:', err);
+                });
+        }
+    } finally {
+        meshInitResolve();
     }
-} catch (e) {
-    console.error('HeroText init failed:', e);
-}
-
-const _kickEnvFade = () => world.tryFadeEnvReflections?.();
-_kickEnvFade();
-heroText?.ready.then(_kickEnvFade);
-glassRing.ready.then(_kickEnvFade);
-
-setupHeroTextMedia(heroText);
+});
 
 let ringScrollEffectsBound = false;
 function ensureRingScrollEffectsBound() {
@@ -262,20 +297,6 @@ function ensureRingScrollEffectsBound() {
     bindGlassRingScrollEffects(glassRing);
     ringScrollEffectsBound = true;
     scroll.resize();
-}
-
-if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
-    import('./modules/MouseParallax.js')
-        .then(({ default: MouseParallax }) => {
-            mouseParallax.destroy();
-            mouseParallax = new MouseParallax([
-                { object: glassRing.mesh, depth: 0.06 },
-                ...(heroText?.root ? [{ object: heroText.root, depth: 0.035 }] : []),
-            ]);
-        })
-        .catch((err) => {
-            console.warn('MouseParallax lazy-load failed:', err);
-        });
 }
 
 let loggedDrawCalls = false;
@@ -487,6 +508,7 @@ function runHeroIntro() {
 }
 
 async function launchExperience() {
+    await meshInitPromise;
     if (heroText) await heroText.ready;
 
     // Block experience until critical typography is fully loaded to prevent SplitType miscalculations

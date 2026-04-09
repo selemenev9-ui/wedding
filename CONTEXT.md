@@ -24,7 +24,7 @@
 | Scroll | Lenis + GSAP + ScrollTrigger |
 | Text splitting | SplitType |
 | Post FX | Native WebGLRenderer (`antialias: true`). Removed EffectComposer to achieve 60fps and remove mobile GPU bottleneck. |
-| Renderer | `alpha:false`, `antialias:true`, clear `#EAE7DC`, `ACESFilmicToneMapping`, `exposure 1.15`; shadow map type `VSMShadowMap` (set on instance in `World`) |
+| Renderer | `alpha:false`, `antialias:true`, `powerPreference: high-performance`, clear `#EAE7DC`, `ACESFilmicToneMapping`, `exposure 1.15`; shadow map type `VSMShadowMap` (set on instance in `World`) |
 | RSVP | Root `.env` with `VITE_TG_BOT_TOKEN`, `VITE_TG_CHAT_ID`; `vite.config.js` has `/api/rsvp` middleware and `/api/telegram` proxy |
 
 Core map:
@@ -59,7 +59,8 @@ public/CNAME
 
 ## 4. Implemented features (current, factual)
 
-- **Layered boot:** scene, scroll orchestration, and core DOM animation setup are initialized at T+0; heavy assets load asynchronously via `ResourceLoader` deferreds and `waitFor(name)`. `launchExperience()` awaits `document.fonts.load` for Playfair Display and Manrope before the preloader exits so SplitType measures final glyph metrics and FOUT-related layout break is avoided.
+- **Layered boot:** scene, scroll orchestration, and core DOM animation setup are initialized at T+0; heavy assets load asynchronously via `ResourceLoader` deferreds and `waitFor(name)`. `GlassRing` / `HeroText` mesh hosts are constructed inside `requestIdleCallback` (fallback `setTimeout(0)`) so the first paint can complete before GLB/geometry work; `launchExperience()` awaits `meshInitPromise` then `heroText.ready`, then `document.fonts.load` for Playfair and Manrope before the preloader exits so SplitType metrics stay correct. **Resource preloading** (`index.html`): `preconnect` to `gstatic.com` for Draco; `preload` `as="fetch"` for hero HDRI and `ring_a.glb` to tighten the critical network waterfall (LCP/TBT-oriented).
+- **Resource preloading and async mesh initialization** are implemented to optimize LCP/TBT toward Lighthouse 90+ class compliance (see layered boot and `index.html` hints).
 - **Startup TBT trim:** heavy ring scroll choreography wiring (`bindGlassRingScrollEffects` -> pinned timelines + master timeline) is deferred from early boot to intro start (`runHeroIntro`) so initial paint path does less main-thread setup work.
 - **Startup JS trim (non-critical modules):** `MouseParallax` now lazy-loads only on fine-pointer devices; reserved `GlimpseGallery` is removed from startup/update path to reduce initial parse/execute overhead.
 - **Frosted glass preloader:** `#preloader` is a frosted-glass overlay (`rgba(var(--color-page-bg-rgb), 0.6)` + `backdrop-filter` / `-webkit-backdrop-filter` blur) so the loading state inherits the live ACES-tonemapped WebGL backdrop instead of fighting it with a flat opaque panel.

@@ -37,6 +37,7 @@ export default class ResourceLoader {
         this._textureLoader = new THREE.TextureLoader();
         this._hdrLoader = new HDRLoader();
         this._dracoLoader = new DRACOLoader();
+        // Draco decoders load from Google CDN; warm TLS/DNS early via `<link rel="preconnect" href="https://www.gstatic.com">` in `index.html`.
         this._dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
         this._gltfLoader = new GLTFLoader();
         this._gltfLoader.setDRACOLoader(this._dracoLoader);

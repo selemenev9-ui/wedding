@@ -4,7 +4,7 @@
 
 ## [Unreleased]
 
----
+- **Lighthouse / boot perf**: Resource preloading and async mesh initialization implemented to optimize LCP/TBT for Lighthouse 90+ compliance (`index.html` preconnect/preloads, `main.js` idle-deferred `GlassRing`/`HeroText`, `Renderer.js` `powerPreference: high-performance`, `ResourceLoader` Draco CDN note).
 
 ## 2026-04-09 (Production Ready)
 
