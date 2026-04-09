@@ -70,7 +70,7 @@ const canvas = document.createElement('canvas');
 document.body.appendChild(canvas);
 
 const world = new World({ canvas, sizes });
-world.camera.resize(sizes);
+world.resize(sizes.width, sizes.height, sizes.pixelRatio);
 
 /** @type {import('./gl/world/GlassRing.js').default | null} */
 let glassRing = null;
@@ -232,6 +232,8 @@ async function ensureGalleryRibbon() {
         galleryRibbonPromise = import('./gl/world/GalleryRibbon.js')
             .then(({ default: GalleryRibbon }) => {
                 galleryRibbon = new GalleryRibbon();
+                const wr = getWorld();
+                if (wr) wr.galleryRibbon = galleryRibbon;
                 return galleryRibbon;
             })
             .catch((err) => {
@@ -278,10 +280,7 @@ scheduleIdleMeshInit(() => {
                 .then(({ default: MouseParallax }) => {
                     mouseParallax.destroy();
                     if (!glassRing?.mesh) return;
-                    mouseParallax = new MouseParallax([
-                        { object: glassRing.mesh, depth: 0.06 },
-                        ...(heroText?.root ? [{ object: heroText.root, depth: 0.035 }] : []),
-                    ]);
+                    mouseParallax = new MouseParallax([{ object: glassRing.mesh, depth: 0.06 }]);
                 })
                 .catch((err) => {
                     console.warn('MouseParallax lazy-load failed:', err);
@@ -435,14 +434,6 @@ function runHeroIntro() {
             gsap.to(glassRing.mesh.scale, ringScaleIn);
             gsap.to(glassRing.mesh.rotation, { x: 0, y: 0, z: 0, duration: 3.2, ease: 'power3.out' });
         });
-    }
-
-    if (heroText?.group) {
-        heroIntroTimeline.to(
-            heroText.group.scale,
-            { x: 1, y: 1, z: 1, duration: 1.15, ease: 'expo.out' },
-            0.1,
-        );
     }
 
     const introHeroIn = '-=0.8';
@@ -879,13 +870,10 @@ window.addEventListener('resize', () => {
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
     sizes.coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-    const dprCap = sizes.coarsePointer ? 1.5 : 2.0;
-    sizes.pixelRatio = Math.min(window.devicePixelRatio, dprCap);
+    sizes.pixelRatio = Math.min(window.devicePixelRatio, 2.0);
 
-    world.camera.resize(sizes);
-    world.renderer.resize(sizes);
+    world.resize(sizes.width, sizes.height, sizes.pixelRatio);
     scroll.resize();
-    galleryRibbon?.resize();
     fitHeroNamesToViewport();
 });
 

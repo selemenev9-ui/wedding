@@ -85,6 +85,8 @@ export default class World {
         this.heroText = null;
         /** @type {import('./world/GlassRing.js').default | null} */
         this.glassRing = null;
+        /** @type {import('./world/GalleryRibbon.js').default | null} */
+        this.galleryRibbon = null;
         /** Avoid double-running GSAP env fades on the same material instance. */
         this._envReflectionFadeStarted = new WeakSet();
 
@@ -141,12 +143,27 @@ export default class World {
         texture.dispose();
         delete this.resources.items.envMap;
 
-        this.heroText?._syncGoldEnvMap?.();
         this.tryFadeEnvReflections();
     }
 
     update() {
         this.renderer.update(this.scene, this.camera.instance);
+    }
+
+    /**
+     * Single resize orchestration for WebGL layer (camera + renderer + optional host resize hooks).
+     * @param {number} width
+     * @param {number} height
+     * @param {number} pixelRatio
+     */
+    resize(width, height, pixelRatio) {
+        const coarsePointer =
+            typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+        const sizes = { width, height, pixelRatio, coarsePointer };
+        this.camera.resize(sizes);
+        this.renderer.resize(sizes);
+        this.glassRing?.resize?.(sizes);
+        this.galleryRibbon?.resize?.();
     }
 
     destroy() {
@@ -159,6 +176,7 @@ export default class World {
 
         this.heroText = null;
         this.glassRing = null;
+        this.galleryRibbon = null;
 
         this.resources?.destroy();
         this.resources = null;

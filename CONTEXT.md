@@ -24,7 +24,7 @@
 | Scroll | Lenis + GSAP + ScrollTrigger |
 | Text splitting | SplitType |
 | Post FX | Native WebGLRenderer (`antialias: true`). Removed EffectComposer to achieve 60fps and remove mobile GPU bottleneck. |
-| Renderer | `alpha:false`, `antialias:true`, `powerPreference: high-performance`, clear `#EAE7DC`, `ACESFilmicToneMapping`, `exposure 1.15`; shadow map type `VSMShadowMap` (set on instance in `World`) |
+| Renderer | `alpha:false`, `antialias:true`, `powerPreference: high-performance`, clear `#EAE7DC`, `ACESFilmicToneMapping`, **`toneMappingExposure` `1.2`**; shadow map type `VSMShadowMap` (set on instance in `World`) |
 | RSVP | Root `.env` with `VITE_TG_BOT_TOKEN`, `VITE_TG_CHAT_ID`; `vite.config.js` has `/api/rsvp` middleware and `/api/telegram` proxy |
 
 Core map:
@@ -70,7 +70,8 @@ public/CNAME
 - **Preloader sequence:** SVG arc listens to global `resources:progress`; `launchExperience` waits for `heroText.ready`, then Font Loading API (Playfair + Manrope), then fades the frosted preloader and runs `runHeroIntro()`.
 - **StudioDome / HDRI isolation:** cyclorama `MeshStandardMaterial` uses `envMapIntensity: 0` so the matte dome fill stays on `#EAE7DC` and does not pick up hue shift when the scene environment map loads.
 - **Hero ring intro motion:** glass rings scale in with `expo.out` over 3.2s (no elastic bounce); initial Y/Z rotation offset untwists to rest via `power3.out` in parallel with scale (same timing in timeline; deferred `glassRing.ready` path mirrors with standalone tweens).
-- **Hero text architecture:** visible hero names are DOM (`#hero-names`) on all screens. `HeroText` is an API-compatible no-op Three.js stub (`root`, `group`, `ready`, `destroy`) so timelines and world hooks remain stable.
+- **Hero text architecture:** visible hero names are DOM (`#hero-names`) on all screens. `HeroText` is a zero-Three stub: `ready` resolves immediately, `goldMaterial` is `null`; no `root`/`group` in the scene (one fewer parallax/intro path). `World` keeps `heroText` for optional future env hooks only.
+- **World resize orchestration:** `World.resize(width, height, pixelRatio)` drives `camera.resize`, `renderer.resize`, `glassRing?.resize`, and `galleryRibbon?.resize`; `main.js` window `resize` updates `Sizes` and calls `world.resize` (plus Lenis/native `scroll.resize()` and DOM `fitHeroNamesToViewport`).
 - **Hero-name mobile-only stacked layout:** `fitHeroNamesToViewport()` now applies only on mobile coarse-pointer query (`(max-width: 767px) and (pointer: coarse)`), toggling `.hero-names--stacked` (`Катя` top, `&` center, `Артём` bottom). Desktop/tablet layouts remain unchanged.
 - **Hero-name vertical separation tuning:** in `.hero-names--stacked`, top/bottom name parts now use stronger opposite Y offsets and tighter center ampersand line-height so `Катя` reads clearly above and `Артём` below with more visual air.
 - **Hero-name readability parity:** mobile stacked hero names mirror the desktop diffused `text-shadow` glow (no stroke) for legibility over dark ring highlights.
@@ -84,7 +85,7 @@ public/CNAME
 - **Magnetic UI & difference-blend cursor (fine pointer):** `#cursor` is a small white disc with `mix-blend-mode: difference` so it inverts against light or dark regions (DOM and canvas). `Cursor.js` pairs snappy `quickTo` follow (`0.1s`, `power3.out`) with GSAP magnetic displacement on `.editorial-btn` (`mousemove` pull toward pointer, `mouseleave` elastic return to origin) and hover scale on the broader interactive set.
 - **Minimalist WebGL scope:** dormant particle layer removed (`Petals.js` deleted); no film grain or atmospheric particles—editorial clarity and PBR read take priority.
 - **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=24`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, throttled on-screen counter (`NN / 24`), and velocity-based chromatic aberration and optical zoom in the fragment shader.
-- **World/lighting:** singleton `World`, studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on materials when available.
+- **World/lighting:** singleton `World` (central WebGL resize + `glassRing` / optional `galleryRibbon` refs from `main.js`), studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on glass gold when available.
 - **Mobile behavior:** coarse-pointer path uses native scroll shim in `Scroll.js` (with passive scroll->ScrollTrigger sync), canvas is non-intercepting (`pointer-events:none`), touch controls use `touch-action: manipulation`, hero/pinned sections use `svh/dvh` handling, pull-to-refresh preserved (no overflow lock on `html`).
 - **Navigation/sections:** fixed nav with burger menu on small screens, three anchor links (`История`, `Галерея`, `Детали`), final section as scroll destination without nav item. `#site-nav` starts at `opacity: 0` with hero chrome and animates in during `runHeroIntro()` after `.hero-bottom`.
 - **RSVP delivery:** form reveal animation via GSAP; submit path uses env-backed Telegram flow with HTML-escaped payload: local tries `POST /api/rsvp` then direct Telegram fallback (`no-cors`), production static host uses direct fallback path.
@@ -98,7 +99,7 @@ public/CNAME
 |------|-------|
 | Camera | Perspective `fov: 35`; resize updates aspect/projection only |
 | Clear color | `#EAE7DC` opaque |
-| Tone mapping | `ACESFilmicToneMapping`, **`toneMappingExposure` `1.15`** (matches `Renderer.js`) |
+| Tone mapping | `ACESFilmicToneMapping`, **`toneMappingExposure` `1.2`** (matches `Renderer.js`) |
 | Lights | Ambient `0.5`; Directional `1.05` at `(-4.0, 5.0, 4.0)` |
 | Shadows | `VSMShadowMap`; coarse `512` + bias `-0.005` + radius `4`; fine `2048` + bias `-0.001` + radius `12` |
 | Shadow catcher | Plane `25x25`, `ShadowMaterial opacity 0.45`, `z=-1.5`, receives shadows |
@@ -107,7 +108,7 @@ public/CNAME
 | Lenis | Desktop defaults: duration `2.0`, wheelMultiplier `0.8`, smoothWheel true, syncTouch true; coarse pointer uses native-scroll shim path |
 | Rings timeline | Act I `0-30`, Act II `30-125`, Act III `125-145`, Act IV `145-160` |
 | Gallery | `TOTAL=24`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
-| Glass ring (gold) | `MeshPhysicalMaterial` **`roughness` `0.15`**; PMREM env reflection fade target **`envMapIntensity` `1.6`** for `glassRing.goldMaterial` in `World.tryFadeEnvReflections()` (production gold response) |
+| Glass ring (gold) | `MeshPhysicalMaterial`: **`roughness` `0.05`**, `metalness` `1`, **`clearcoat` `1`**, **`clearcoatRoughness` `0.02`**, **`ior` `2.5`**; initial `envMapIntensity` `0`, PMREM boost to **`1.6`** via `World.tryFadeEnvReflections()` only |
 
 ## 6. Next steps
 

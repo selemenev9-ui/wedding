@@ -22,7 +22,7 @@ export default class Renderer {
 
         this.instance.outputColorSpace = THREE.SRGBColorSpace;
         this.instance.toneMapping = THREE.ACESFilmicToneMapping;
-        this.instance.toneMappingExposure = 1.15;
+        this.instance.toneMappingExposure = 1.2;
         this.instance.shadowMap.enabled = true;
 
         if (!canvas) {
