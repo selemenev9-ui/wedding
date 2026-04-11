@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **RSVP Google Apps Script:** relay uses `application/x-www-form-urlencoded` + `fetch` `no-cors` for `script.google.com/macros/*` URLs so success does not depend on reading a CORS-wrapped JSON response (GAS often omits ACAO on the response). `Code.gs` reads `e.parameter` (urlencoded) or JSON body. Node/PHP relays accept both encodings.
 - **Prod console hygiene:** Vite `esbuild.drop` removes `console`/`debugger` from production bundles; RSVP catch logs errors only in `import.meta.env.DEV` and shows a guest-safe error line (no «проверьте консоль»). `.env.example` notes omitting `VITE_TG_*` in CI when relay-only.
 - **RSVP relay CORS (Google Apps Script):** relay `fetch` uses `Content-Type: text/plain` + JSON body so the browser skips CORS preflight (GAS does not answer OPTIONS with ACAO). Relay no longer sends `X-Rsvp-Secret` (custom headers trigger preflight); secret stays in JSON `secret` only. If `VITE_RSVP_RELAY_URL` is set, legacy direct Telegram `no-cors` fallback is disabled to avoid false “success” when delivery failed.
 - **RSVP relay (RU / blocked Telegram API):** production can use `VITE_RSVP_RELAY_URL` (+ optional `VITE_RSVP_RELAY_SECRET`) so guests POST to a relay; relay calls Telegram. **No VPS:** `rsvp-relay/php/rsvp.php` (Beget / shared PHP) or **Google Apps Script** (`rsvp-relay/google-apps-script/Code.gs`). Node `server.mjs` still supported. Relay POST body includes optional `secret` for GAS. `.env.example` updated.

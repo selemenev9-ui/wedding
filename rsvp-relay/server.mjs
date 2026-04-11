@@ -61,12 +61,23 @@ const server = http.createServer((req, res) => {
     const chunks = [];
     req.on('data', (c) => chunks.push(c));
     req.on('end', async () => {
+        const raw = Buffer.concat(chunks).toString('utf8');
+        const ct = String(req.headers['content-type'] || '').toLowerCase();
         let body;
-        try {
-            body = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}');
-        } catch {
-            sendJson(res, 400, { ok: false, description: 'Invalid JSON' });
-            return;
+        if (ct.includes('application/x-www-form-urlencoded')) {
+            const sp = new URLSearchParams(raw);
+            body = {
+                name: sp.get('name') ?? '',
+                attendance: sp.get('attendance') ?? '',
+                secret: sp.get('secret') ?? '',
+            };
+        } else {
+            try {
+                body = JSON.parse(raw || '{}');
+            } catch {
+                sendJson(res, 400, { ok: false, description: 'Invalid JSON' });
+                return;
+            }
         }
 
         if (RELAY_SECRET) {

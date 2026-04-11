@@ -11,8 +11,31 @@
  * 4) Скопировать URL вида https://script.google.com/macros/s/.../exec
  *    → VITE_RSVP_RELAY_URL="этот URL"
  *
- * Сайт шлёт JSON в теле с Content-Type: text/plain (без preflight CORS). Секрет в поле "secret".
+ * Сайт шлёт application/x-www-form-urlencoded (name, attendance, secret?) — простой POST для браузера.
+ * Старый вариант JSON в postData.contents тоже поддерживается.
  */
+
+function parseRelayPayload(e) {
+  var raw = (e.postData && e.postData.contents) ? String(e.postData.contents) : '';
+  if (raw && raw.charAt(0) === '{') {
+    try {
+      var jo = JSON.parse(raw);
+      return {
+        name: String(jo.name || '').trim(),
+        attendance: String(jo.attendance || ''),
+        secret: String(jo.secret || ''),
+      };
+    } catch (ignore) {
+      return null;
+    }
+  }
+  var p = e.parameter || {};
+  return {
+    name: String(p.name || '').trim(),
+    attendance: String(p.attendance || ''),
+    secret: String(p.secret || ''),
+  };
+}
 
 function doPost(e) {
   var props = PropertiesService.getScriptProperties();
@@ -24,11 +47,9 @@ function doPost(e) {
     return jsonOut({ ok: false, description: 'Server not configured' });
   }
 
-  var body;
-  try {
-    body = JSON.parse(e.postData.contents || '{}');
-  } catch (err) {
-    return jsonOut({ ok: false, description: 'Invalid JSON' });
+  var body = parseRelayPayload(e);
+  if (!body) {
+    return jsonOut({ ok: false, description: 'Invalid body' });
   }
 
   if (relaySecret) {
@@ -38,8 +59,8 @@ function doPost(e) {
     }
   }
 
-  var name = String(body.name || '').trim();
-  var attendance = String(body.attendance || '');
+  var name = body.name;
+  var attendance = body.attendance;
   if (!name) {
     return jsonOut({ ok: false, description: 'Name required' });
   }

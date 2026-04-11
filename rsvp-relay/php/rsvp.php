@@ -45,9 +45,20 @@ if (TG_BOT_TOKEN === 'PASTE_BOT_TOKEN_HERE' || TG_CHAT_ID === 'PASTE_CHAT_ID_HER
 }
 
 $raw = file_get_contents('php://input') ?: '';
-$body = json_decode($raw, true);
-if (!is_array($body)) {
-    json_response(400, ['ok' => false, 'description' => 'Invalid JSON']);
+$ct = strtolower($_SERVER['CONTENT_TYPE'] ?? '');
+if (strpos($ct, 'application/x-www-form-urlencoded') !== false) {
+    parse_str($raw, $parsed);
+    $body = [
+        'name' => (string) ($parsed['name'] ?? ''),
+        'attendance' => (string) ($parsed['attendance'] ?? ''),
+        'secret' => (string) ($parsed['secret'] ?? ''),
+    ];
+} else {
+    $decoded = json_decode($raw, true);
+    if (!is_array($decoded)) {
+        json_response(400, ['ok' => false, 'description' => 'Invalid JSON']);
+    }
+    $body = $decoded;
 }
 
 if (RELAY_SECRET !== '') {

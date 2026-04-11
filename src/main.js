@@ -733,29 +733,47 @@ if (rsvpForm) {
                 }
             }
 
-            // 2) Production bypass: POST to relay (GAS / PHP / Node). Use text/plain body so the browser
-            //    does not send a CORS preflight — Google Apps Script does not answer OPTIONS with ACAO.
-            //    Secret only in JSON body (custom headers also trigger preflight).
+            // 2) Production relay: x-www-form-urlencoded = simple POST (no preflight).
+            //    Google Apps Script often does not expose CORS headers on the response, so mode:cors fails
+            //    when reading JSON even though Telegram delivery succeeds — use no-cors for script.google.com only.
             if (!delivered && relayUrl) {
                 try {
-                    const relayBody = { name: nameInput, attendance };
+                    const params = new URLSearchParams();
+                    params.set('name', nameInput);
+                    params.set('attendance', attendance);
                     if (relaySecret) {
-                        relayBody.secret = relaySecret;
+                        params.set('secret', relaySecret);
                     }
-                    const rsvpRes = await fetch(relayUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify(relayBody),
-                        mode: 'cors',
-                        cache: 'no-store',
-                        credentials: 'omit',
-                    });
-                    const rsvpData = await rsvpRes.json().catch(() => ({ ok: false }));
-                    delivered = !!(rsvpRes.ok && rsvpData.ok);
-                    if (!delivered) {
-                        lastError = new Error(
-                            rsvpData.description || rsvpData.error || 'RSVP relay error',
-                        );
+                    const body = params.toString();
+                    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+                    const isGoogleAppsScript = /script\.google\.com\/macros\//i.test(relayUrl);
+
+                    if (isGoogleAppsScript) {
+                        await fetch(relayUrl, {
+                            method: 'POST',
+                            headers,
+                            body,
+                            mode: 'no-cors',
+                            cache: 'no-store',
+                            credentials: 'omit',
+                        });
+                        delivered = true;
+                    } else {
+                        const rsvpRes = await fetch(relayUrl, {
+                            method: 'POST',
+                            headers,
+                            body,
+                            mode: 'cors',
+                            cache: 'no-store',
+                            credentials: 'omit',
+                        });
+                        const rsvpData = await rsvpRes.json().catch(() => ({ ok: false }));
+                        delivered = !!(rsvpRes.ok && rsvpData.ok);
+                        if (!delivered) {
+                            lastError = new Error(
+                                rsvpData.description || rsvpData.error || 'RSVP relay error',
+                            );
+                        }
                     }
                 } catch (err) {
                     lastError = err;
