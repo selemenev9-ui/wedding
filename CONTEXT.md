@@ -19,7 +19,7 @@
 
 | Layer | Choice |
 |------|--------|
-| Build | Vite; production strips `console`/`debugger` via `esbuild.drop` |
+| Build | Vite; production strips `console`/`debugger` via `esbuild.drop`. **GitHub Pages:** `.github/workflows/deploy-gh-pages.yml` runs `npm run build` with `secrets.VITE_RSVP_RELAY_URL` (and optional `VITE_RSVP_RELAY_SECRET`, `VITE_TG_*`) — without `VITE_RSVP_RELAY_URL` in repo secrets, production RSVP has no relay in the bundle. |
 | 3D | Three.js `^0.183.2`; GLTF via `GLTFLoader` + Draco + Meshopt |
 | Scroll | Lenis + GSAP + ScrollTrigger |
 | Text splitting | SplitType |

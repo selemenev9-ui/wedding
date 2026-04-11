@@ -25,8 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Vite bakes VITE_* at build time. Without these, production RSVP has no relay URL (localhost still works via .env).
       - name: Build
         run: npm run build
+        env:
+          VITE_RSVP_RELAY_URL: ${{ secrets.VITE_RSVP_RELAY_URL }}
+          VITE_RSVP_RELAY_SECRET: ${{ secrets.VITE_RSVP_RELAY_SECRET }}
+          VITE_TG_BOT_TOKEN: ${{ secrets.VITE_TG_BOT_TOKEN }}
+          VITE_TG_CHAT_ID: ${{ secrets.VITE_TG_CHAT_ID }}
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
