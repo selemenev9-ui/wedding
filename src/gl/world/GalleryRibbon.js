@@ -5,7 +5,7 @@ import { getWorld } from '../World.js';
 /* ─────────────────────────────────────────────────────────────────────
    Configuration
 ───────────────────────────────────────────────────────────────────── */
-const TOTAL = 24;
+const TOTAL = 16;
 const POOL  = 7;
 const BASE_PATH = '/photos/gallery/';
 
@@ -125,7 +125,7 @@ function _makeMat() {
 
    • Spacing: uniform *edge* gap G between photos; centre step varies as
      w_i/2 + G + w_{i+1}/2 (w = itemH × aspect). No single global stride.
-   • Aspects from build-time gallery-manifest.json (no 24× Image probes); GL reflow if decode differs.
+   • Aspects from build-time gallery-manifest.json; GL reflow if decode differs.
    • Optional slow auto-pan when idle; pauses on interaction + tab hidden.
 ═════════════════════════════════════════════════════════════════════ */
 export default class GalleryRibbon {

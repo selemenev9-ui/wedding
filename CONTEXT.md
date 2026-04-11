@@ -48,7 +48,7 @@ src/gl/world/HeroText.js
 src/gl/world/GalleryRibbon.js
 src/gl/world/GlimpseGallery.js
 public/gallery-manifest.json
-public/photos/gallery/1.webp ... 24.webp
+public/photos/gallery/1.webp ... 16.webp
 public/photos/scroll/1.webp ... 3.webp
 public/models/ring_a.glb, ring_b.glb
 public/hdri/studio_small_09_1k.hdr
@@ -84,7 +84,7 @@ public/CNAME
 - **Lazy non-critical JS loading:** `Cursor` is dynamically imported only on fine-pointer devices; `GalleryRibbon` is dynamically imported on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial startup JS work before hero/scroll narrative.
 - **Magnetic UI & difference-blend cursor (fine pointer):** `#cursor` is a small white disc with `mix-blend-mode: difference` so it inverts against light or dark regions (DOM and canvas). `Cursor.js` pairs snappy `quickTo` follow (`0.1s`, `power3.out`) with GSAP magnetic displacement on `.editorial-btn` (`mousemove` pull toward pointer, `mouseleave` elastic return to origin) and hover scale on the broader interactive set.
 - **Minimalist WebGL scope:** dormant particle layer removed (`Petals.js` deleted); no full-screen post stack or particles—**gallery-only** in-shader film grain (~4% luminance noise via `filmGrainHash`) keeps editorial clarity elsewhere.
-- **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=24`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, throttled on-screen counter (`NN / 24`), velocity-based chromatic aberration and optical zoom, **dynamic in-shader film grain** (`uTime`-driven hash "sizzle", no EffectComposer), and **hover feedback**: shared `World.raycaster` + NDC `World.mouse`, per-card `uHover` uniform (GSAP tweens only when the hit mesh changes), subtle fragment “lift” (pinch, +brightness, −vignette). **Open choreography:** entry stagger **0.05s** and subtle `rotation.z` fan-in to flat. **Lifecycle:** `destroy()` disposes all `_texCache` textures and clears the map; `_resetState` / `close()` clear hover tweens and `uHover`.
+- **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=16`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, throttled on-screen counter (`NN / 16`), velocity-based chromatic aberration and optical zoom, **dynamic in-shader film grain** (`uTime`-driven hash "sizzle", no EffectComposer), and **hover feedback**: shared `World.raycaster` + NDC `World.mouse`, per-card `uHover` uniform (GSAP tweens only when the hit mesh changes), subtle fragment “lift” (pinch, +brightness, −vignette). **Open choreography:** entry stagger **0.05s** and subtle `rotation.z` fan-in to flat. **Lifecycle:** `destroy()` disposes all `_texCache` textures and clears the map; `_resetState` / `close()` clear hover tweens and `uHover`.
 - **World input (NDC):** `World` owns `THREE.Raycaster` + `THREE.Vector2` mouse; `main.js` updates `world.updateMouse(ndcX, ndcY)` on `mousemove` using current `sizes.width` / `sizes.height` so ray tests stay aligned with the WebGL viewport.
 - **World/lighting:** singleton `World` (central WebGL resize + `glassRing` / optional `galleryRibbon` refs from `main.js`, plus shared `raycaster` / `mouse` for gallery hover and future picks), studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on glass gold when available.
 - **Mobile behavior:** coarse-pointer path uses native scroll shim in `Scroll.js` (with passive scroll->ScrollTrigger sync), canvas is non-intercepting (`pointer-events:none`), touch controls use `touch-action: manipulation`, hero/pinned sections use `svh/dvh` handling, pull-to-refresh preserved (no overflow lock on `html`).
@@ -110,7 +110,7 @@ public/CNAME
 | Lenis | Desktop defaults: duration `2.0`, wheelMultiplier `0.8`, smoothWheel true, syncTouch true; coarse pointer uses native-scroll shim path |
 | Rings timeline | Act I `0-30`, Act II `30-125`, Act III `125-145`, Act IV `145-160` |
 | Act IV orbital (post-`#section-final` enter) | Root `glassRing.mesh.rotation.y` infinite loop **35s**; initial Z tilt **4.5s**, ease **`power2.inOut`** |
-| Gallery | `TOTAL=24`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
+| Gallery | `TOTAL=16`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
 | Glass ring (gold) | `MeshPhysicalMaterial`: **`roughness` `0.05`**, `metalness` `1`, **`clearcoat` `1`**, **`clearcoatRoughness` `0.02`**, **`ior` `2.5`**; initial `envMapIntensity` `0`, PMREM boost to **`1.6`** via `World.tryFadeEnvReflections()` only |
 
 ## 6. Next steps
@@ -120,7 +120,7 @@ public/CNAME
 - Optional: add ultrawide guardrails for `.final-tagline` (hard width cap) if composition breaks on very wide screens.
 - **Perf check:** with gallery open, spam-move the pointer over cards; expect stable FPS—raycast runs only while `container.visible`, only **7** meshes, and GSAP hover tweens fire on **hit change** only (not every raycast frame). Gallery grain is a few ALU ops/pixel in the existing ribbon shader (no extra RT/pass).
 - Release readiness checklist:
-  - [ ] Mobile stress-test: 3 full gallery cycles (`24` photos) on iOS/Android; verify no crash and no severe degradation.
+  - [ ] Mobile stress-test: 3 full gallery cycles (`16` photos) on iOS/Android; verify no crash and no severe degradation.
   - [ ] Refresh sync: after gallery close, verify Act III/IV pins and scrub states are stable (no jumps/desync).
   - [ ] RSVP validation: with `VITE_RSVP_RELAY_URL` deployed, submit from RU mobile/Wi‑Fi and confirm Telegram receives the message (relay path, not direct `api.telegram.org` from browser).
   - [ ] Run Lighthouse against `vite preview` / production URL (not `vite dev`), then re-evaluate LCP/TBT priorities from that report.

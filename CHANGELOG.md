@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Gallery content:** `public/photos/gallery` now **16** WebP slides; `GalleryRibbon` `TOTAL=16`; `npm run images` refreshed `gallery-manifest.json`; scroll section still `1–3.webp`. `index.html` counter seed `01 / 16`.
 - **GitHub Actions Pages deploy:** `deploy-gh-pages.yml` now passes `VITE_RSVP_RELAY_URL` (and optional `VITE_RSVP_RELAY_SECRET`, `VITE_TG_*`) from **repository secrets** into `npm run build`. CI builds previously had an empty relay URL → RSVP failed on the live site while `localhost` worked with local `.env`.
 - **RSVP Google Apps Script:** relay uses `application/x-www-form-urlencoded` + `fetch` `no-cors` for `script.google.com/macros/*` URLs so success does not depend on reading a CORS-wrapped JSON response (GAS often omits ACAO on the response). `Code.gs` reads `e.parameter` (urlencoded) or JSON body. Node/PHP relays accept both encodings.
 - **Prod console hygiene:** Vite `esbuild.drop` removes `console`/`debugger` from production bundles; RSVP catch logs errors only in `import.meta.env.DEV` and shows a guest-safe error line (no «проверьте консоль»). `.env.example` notes omitting `VITE_TG_*` in CI when relay-only.
