@@ -13,9 +13,14 @@
  *
  * Сайт шлёт application/x-www-form-urlencoded (name, attendance, secret?) — простой POST для браузера.
  * Старый вариант JSON в postData.contents тоже поддерживается.
+ *
+ * Не нажимайте «Выполнить» на doPost в редакторе — там нет HTTP-запроса (e пустой). Проверка: только с сайта или POST на URL /exec.
  */
 
 function parseRelayPayload(e) {
+  if (!e) {
+    return null;
+  }
   var raw = (e.postData && e.postData.contents) ? String(e.postData.contents) : '';
   if (raw && raw.charAt(0) === '{') {
     try {
@@ -45,6 +50,14 @@ function doPost(e) {
 
   if (!token || !chatId) {
     return jsonOut({ ok: false, description: 'Server not configured' });
+  }
+
+  if (!e) {
+    return jsonOut({
+      ok: false,
+      description:
+        'Запуск из редактора не передаёт POST. Разверните веб-приложение и проверьте форму на сайте (или POST на URL …/exec).',
+    });
   }
 
   var body = parseRelayPayload(e);
