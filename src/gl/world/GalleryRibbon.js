@@ -49,51 +49,36 @@ const FRAG = /* glsl */`
     uniform float     uAspect;
     uniform float     uVelocity;
     uniform float     uHover;
-    uniform float     uTime;
     varying vec2      vUv;
 
-    float filmGrainHash(vec2 p) {
-        vec2 f = fract(p * vec2(123.34, 345.45));
-        f += dot(f, f.yx + 19.19);
-        return fract(f.x * f.y);
-    }
-
     void main() {
-        // 1. Dynamic UV zoom based on scroll speed
         float speed = abs(uVelocity);
         vec2 uv = (vUv - 0.5) * (1.0 - speed * 0.035) + 0.5;
 
-        // 1b. Subtle “lift” on hover: slight pinching + brightening, less vignette
         float hLift = clamp(uHover, 0.0, 1.0);
         uv = (uv - 0.5) * (1.0 - hLift * 0.028) + 0.5;
 
-        // 2. Chromatic aberration (RGB split) tied to velocity direction
-        float shift = uVelocity * 0.012;
-        float r = texture2D(uTexture, vec2(uv.x + shift, uv.y)).r;
-        float g = texture2D(uTexture, uv).g;
-        float b = texture2D(uTexture, vec2(uv.x - shift, uv.y)).b;
-        vec3 col = vec3(r, g, b);
+        // Idle / slow pan: one sample = same pixels as opening the .webp in a viewer (no CA / vignette / grain)
+        vec3 col;
+        if (speed < 0.04) {
+            col = texture2D(uTexture, uv).rgb;
+        } else {
+            float shift = uVelocity * 0.012;
+            float r = texture2D(uTexture, vec2(uv.x + shift, uv.y)).r;
+            float g = texture2D(uTexture, uv).g;
+            float b = texture2D(uTexture, vec2(uv.x - shift, uv.y)).b;
+            col = vec3(r, g, b);
+        }
 
-        // 3. Rounded corners (use original vUv so the mask boundary stays rigid)
         vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0);
         float rad = 0.04;
         vec2 q = abs(p) - vec2(uAspect * 0.5 - rad, 0.5 - rad);
         float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rad;
         float roundMask = 1.0 - smoothstep(-0.008, 0.008, d);
 
-        // 4. Vignette (ease off slightly when hovered)
-        float vig = 1.0 - dot(vUv - 0.5, (vUv - 0.5) * 2.2);
-        vig = clamp(vig, 0.0, 1.0);
-        float vigMix = 0.22 * (1.0 - hLift * 0.62);
-        col *= mix(1.0, vig, vigMix);
-        col *= 1.0 + hLift * 0.065;
-
-        // 5. Cinematic film grain (in-shader, ~4% — no post stack)
-        vec2 grainUv = (vUv + vec2(mod(uTime * 0.07, 1.0), mod(uTime * 0.11, 1.0))) * 1400.0;
-        float gn = filmGrainHash(grainUv) - 0.5;
-        col += gn * 0.08;
-
         gl_FragColor = vec4(col, roundMask * uOpacity);
+        // ShaderMaterial must encode linear working color → canvas sRGB (same as MeshBasic map path)
+        #include <colorspace_fragment>
     }
 `;
 
@@ -111,12 +96,13 @@ function _makeMat() {
             uOpacity:  { value: 0 },
             uAspect:   { value: 2 / 3 },
             uHover:    { value: 0 },
-            uTime:     { value: 0 },
         },
         vertexShader:   VERT,
         fragmentShader: FRAG,
         transparent:    true,
         depthWrite:     false,
+        // Photos are display-referred sRGB; ACES (scene-wide) crushes shadows / shifts skin tones
+        toneMapped:     false,
     });
 }
 
@@ -564,7 +550,6 @@ export default class GalleryRibbon {
 
             m.position.x = this.scrollCurrent + m.userData.offset;
             m.material.uniforms.uVelocity.value = shaderVel;
-            m.material.uniforms.uTime.value = now * 0.001;
         }
 
         if (this._counterEl) {
@@ -711,7 +696,6 @@ export default class GalleryRibbon {
             m.material.uniforms.uAspect.value   = this._defaultRatio;
             m.material.uniforms.uTexture.value  = _FALLBACK;
             m.material.uniforms.uHover.value    = 0;
-            m.material.uniforms.uTime.value     = 0;
             gsap.killTweensOf(m.material.uniforms.uHover);
             this._applyScale(m);
         }

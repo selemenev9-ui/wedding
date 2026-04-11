@@ -933,8 +933,8 @@ if (btnOpenGallery) {
 
         if (glassRing) glassRing.mesh.visible = false;
 
-        // Dark "gallery room" — photos pop on near-black background
-        tweenSceneBg(13 / 255, 10 / 255, 7 / 255, 0.85);
+        // Dark gallery room — slightly lifted from pure black so cards feel less “filtered”
+        tweenSceneBg(26 / 255, 22 / 255, 18 / 255, 0.85);
 
         try {
             const ribbon = await ensureGalleryRibbon();
