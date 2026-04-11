@@ -698,44 +698,15 @@ if (rsvpForm) {
         submitBtn.textContent = 'Отправка...';
         submitBtn.disabled = true;
 
-        const escapeHtml = (value) =>
-            String(value)
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;');
-
-        const safeName = escapeHtml(nameInput);
-        const statusLabel = attendance === 'Буду' ? '✅ С удовольствием буду' : '❌ К сожалению, не смогу';
-        const safeStatus = escapeHtml(statusLabel);
-        const sentAt = new Date().toLocaleString('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-        const safeSentAt = escapeHtml(sentAt);
-        const source = escapeHtml(typeof window !== 'undefined' ? window.location.hostname : 'unknown');
-        const message =
-            `<b>RSVP • Катя & Артём</b>\n` +
-            `━━━━━━━━━━━━━━\n` +
-            `🕊 <b>Новый ответ на приглашение</b>\n\n` +
-            `👤 <b>Гость</b>\n` +
-            `${safeName}\n\n` +
-            `📌 <b>Статус</b>\n` +
-            `${safeStatus}\n\n` +
-            `🕒 <b>Время:</b> ${safeSentAt}\n` +
-            `🌐 <b>Источник:</b> ${source}`;
-
         try {
+            const relayUrl = (
+                import.meta.env.VITE_RSVP_RELAY_URL ||
+                import.meta.env.VITE_RSVP_API_URL ||
+                ''
+            ).trim();
+            const relaySecret = (import.meta.env.VITE_RSVP_RELAY_SECRET || '').trim();
             const token = import.meta.env.VITE_TG_BOT_TOKEN;
             const chatId = import.meta.env.VITE_TG_CHAT_ID;
-
-            console.log('Env Check:', { hasToken: !!token, hasChatId: !!chatId });
-            if (!token || !chatId) {
-                throw new Error('Missing VITE_TG_* env');
-            }
 
             let delivered = false;
             let lastError = null;
@@ -744,7 +715,7 @@ if (rsvpForm) {
                 (window.location.hostname === 'localhost' ||
                     window.location.hostname === '127.0.0.1');
 
-            // Preferred route when backend exists (dev/preview/custom server).
+            // 1) Vite dev / preview: same-origin middleware (token stays on machine).
             if (canUseLocalRsvpApi) {
                 try {
                     const rsvpRes = await fetch('/api/rsvp', {
@@ -762,8 +733,69 @@ if (rsvpForm) {
                 }
             }
 
-            // GitHub Pages fallback: direct Telegram request via no-cors.
-            if (!delivered) {
+            // 2) Production bypass: POST to relay (GAS / PHP / Node). Use text/plain body so the browser
+            //    does not send a CORS preflight — Google Apps Script does not answer OPTIONS with ACAO.
+            //    Secret only in JSON body (custom headers also trigger preflight).
+            if (!delivered && relayUrl) {
+                try {
+                    const relayBody = { name: nameInput, attendance };
+                    if (relaySecret) {
+                        relayBody.secret = relaySecret;
+                    }
+                    const rsvpRes = await fetch(relayUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify(relayBody),
+                        mode: 'cors',
+                        cache: 'no-store',
+                        credentials: 'omit',
+                    });
+                    const rsvpData = await rsvpRes.json().catch(() => ({ ok: false }));
+                    delivered = !!(rsvpRes.ok && rsvpData.ok);
+                    if (!delivered) {
+                        lastError = new Error(
+                            rsvpData.description || rsvpData.error || 'RSVP relay error',
+                        );
+                    }
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+
+            // 3) Legacy: browser → Telegram only if no relay URL. If relay is configured but failed, do not
+            //    use no-cors GET here — it often "completes" without a readable response and fakes success.
+            if (!delivered && token && chatId && !relayUrl) {
+                const escapeHtml = (value) =>
+                    String(value)
+                        .replaceAll('&', '&amp;')
+                        .replaceAll('<', '&lt;')
+                        .replaceAll('>', '&gt;')
+                        .replaceAll('"', '&quot;');
+                const safeName = escapeHtml(nameInput);
+                const statusLabel =
+                    attendance === 'Буду' ? '✅ С удовольствием буду' : '❌ К сожалению, не смогу';
+                const safeStatus = escapeHtml(statusLabel);
+                const sentAt = new Date().toLocaleString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+                const safeSentAt = escapeHtml(sentAt);
+                const source = escapeHtml(
+                    typeof window !== 'undefined' ? window.location.hostname : 'unknown',
+                );
+                const message =
+                    `<b>RSVP • Катя & Артём</b>\n` +
+                    `━━━━━━━━━━━━━━\n` +
+                    `🕊 <b>Новый ответ на приглашение</b>\n\n` +
+                    `👤 <b>Гость</b>\n` +
+                    `${safeName}\n\n` +
+                    `📌 <b>Статус</b>\n` +
+                    `${safeStatus}\n\n` +
+                    `🕒 <b>Время:</b> ${safeSentAt}\n` +
+                    `🌐 <b>Источник:</b> ${source}`;
                 const directTelegramUrl =
                     `https://api.telegram.org/bot${token}/sendMessage` +
                     `?chat_id=${encodeURIComponent(chatId)}` +
@@ -783,7 +815,10 @@ if (rsvpForm) {
             }
 
             if (!delivered) {
-                throw lastError || new Error('Telegram delivery failed');
+                const cfgHint =
+                    import.meta.env.DEV &&
+                    ' Укажите VITE_RSVP_RELAY_URL или VITE_TG_BOT_TOKEN + VITE_TG_CHAT_ID в .env.';
+                throw lastError || new Error(`Не удалось доставить RSVP.${cfgHint || ''}`);
             }
 
             submitBtn.classList.add('submit-btn--success');
@@ -794,8 +829,11 @@ if (rsvpForm) {
             rsvpForm.reset();
             submitBtn.style.display = 'none';
         } catch (err) {
-            console.error('RSVP Fatal Error:', err);
-            rsvpStatus.textContent = 'Ошибка отправки. Проверьте консоль.';
+            if (import.meta.env.DEV) {
+                console.error('RSVP Fatal Error:', err);
+            }
+            rsvpStatus.textContent =
+                'Не удалось отправить ответ. Попробуйте чуть позже или напишите нам в Telegram.';
             rsvpStatus.style.color = '#ff4b4b';
             submitBtn.textContent = 'Отправить';
             submitBtn.disabled = false;

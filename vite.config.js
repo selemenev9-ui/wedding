@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 
 /**
  * POST /api/rsvp — reads .env on the server, calls Telegram (no token in browser URL).
- * Works in `vite` and `vite preview`. Static hosting needs a real backend or VITE_RSVP_API_URL.
+ * Works in `vite` and `vite preview`. Static hosting: set VITE_RSVP_RELAY_URL → external relay (see rsvp-relay/).
  */
 function attachRsvpMiddleware(server, env) {
     server.middlewares.use((req, res, next) => {
@@ -122,6 +122,9 @@ export default defineConfig(({ mode }) => {
 
     return {
         plugins: [rsvpTelegramPlugin(env)],
+        esbuild: {
+            drop: mode === 'production' ? ['console', 'debugger'] : [],
+        },
         server: {
             proxy: {
                 '/api/telegram': telegramDevProxy,

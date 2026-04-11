@@ -19,13 +19,13 @@
 
 | Layer | Choice |
 |------|--------|
-| Build | Vite |
+| Build | Vite; production strips `console`/`debugger` via `esbuild.drop` |
 | 3D | Three.js `^0.183.2`; GLTF via `GLTFLoader` + Draco + Meshopt |
 | Scroll | Lenis + GSAP + ScrollTrigger |
 | Text splitting | SplitType |
 | Post FX | Native WebGLRenderer (`antialias: true`). Removed EffectComposer to achieve 60fps and remove mobile GPU bottleneck. |
 | Renderer | `alpha:false`, `antialias:true`, `powerPreference: high-performance`, clear `#EAE7DC`, `ACESFilmicToneMapping`, **`toneMappingExposure` `1.2`**; shadow map type `VSMShadowMap` (set on instance in `World`) |
-| RSVP | Root `.env` with `VITE_TG_BOT_TOKEN`, `VITE_TG_CHAT_ID`; `vite.config.js` has `/api/rsvp` middleware and `/api/telegram` proxy |
+| RSVP | Root `.env`: `VITE_TG_BOT_TOKEN`, `VITE_TG_CHAT_ID` (dev middleware); optional `VITE_RSVP_RELAY_URL` + `VITE_RSVP_RELAY_SECRET` (guest → relay → Telegram). Relays: `rsvp-relay/php/rsvp.php`, `rsvp-relay/google-apps-script`, or `rsvp-relay/server.mjs`. `vite.config.js`: `/api/rsvp` middleware, `/api/telegram` proxy |
 
 Core map:
 
@@ -89,7 +89,7 @@ public/CNAME
 - **World/lighting:** singleton `World` (central WebGL resize + `glassRing` / optional `galleryRibbon` refs from `main.js`, plus shared `raycaster` / `mouse` for gallery hover and future picks), studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on glass gold when available.
 - **Mobile behavior:** coarse-pointer path uses native scroll shim in `Scroll.js` (with passive scroll->ScrollTrigger sync), canvas is non-intercepting (`pointer-events:none`), touch controls use `touch-action: manipulation`, hero/pinned sections use `svh/dvh` handling, pull-to-refresh preserved (no overflow lock on `html`).
 - **Navigation/sections:** fixed nav with burger menu on small screens, three anchor links (`История`, `Галерея`, `Детали`), final section as scroll destination without nav item. `#site-nav` starts at `opacity: 0` with hero chrome and animates in during `runHeroIntro()` after `.hero-bottom`. **Mobile menu:** burger toggles `nav--menu-open` on `#site-nav`; overlay (`.nav-links.open`) and bar share `rgba(var(--color-page-bg-rgb), 0.92)` + `backdrop-filter: blur(20px)` for one continuous frosted sheet; nav anchors use smooth `transition` between targets.
-- **RSVP delivery:** form reveal animation via GSAP; submit path uses env-backed Telegram flow with HTML-escaped payload: local tries `POST /api/rsvp` then direct Telegram fallback (`no-cors`), production static host uses direct fallback path. Added low-cost anti-spam barriers for static hosting: hidden honeypot input, minimum form fill time check, and localStorage window throttling. Success state adds soft shimmer feedback on submit.
+- **RSVP delivery:** form reveal animation via GSAP; submit order: **localhost** → `POST /api/rsvp` (Vite middleware); **production** → `POST` to `VITE_RSVP_RELAY_URL` with **`Content-Type: text/plain`** and JSON body (avoids CORS preflight to Google Apps Script; GAS does not answer OPTIONS with ACAO). Secret only in JSON `secret` if used. If relay URL is set, **no** legacy direct Telegram `no-cors` fallback (prevents false success). Relays: GAS `Code.gs`, `php/rsvp.php`, Node `server.mjs`. Anti-spam: honeypot, min fill time, localStorage throttles. Success: shimmer on submit.
 - **Guest personalization:** URL param `?guest=Имя` adds a hero greeting line (`<name>, будем рады видеть вас`), pre-fills RSVP name on reveal, and personalizes success confirmation text.
 - **Metadata/OG:** absolute OG/Twitter meta tags in `index.html`; `public/og.webp` treated as immutable master per `public/OG_POLICY.md`.
 - **SEO meta baseline:** `index.html` now includes explicit `<meta name="description">` for Lighthouse SEO completeness and better search snippet summary.
@@ -122,5 +122,5 @@ public/CNAME
 - Release readiness checklist:
   - [ ] Mobile stress-test: 3 full gallery cycles (`24` photos) on iOS/Android; verify no crash and no severe degradation.
   - [ ] Refresh sync: after gallery close, verify Act III/IV pins and scrub states are stable (no jumps/desync).
-  - [ ] RSVP validation: submit from a real mobile device and confirm Telegram delivery path works as expected.
+  - [ ] RSVP validation: with `VITE_RSVP_RELAY_URL` deployed, submit from RU mobile/Wi‑Fi and confirm Telegram receives the message (relay path, not direct `api.telegram.org` from browser).
   - [ ] Run Lighthouse against `vite preview` / production URL (not `vite dev`), then re-evaluate LCP/TBT priorities from that report.
