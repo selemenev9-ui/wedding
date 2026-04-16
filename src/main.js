@@ -595,6 +595,33 @@ async function launchExperience() {
 
 launchExperience();
 
+// ── Mobile video autoplay fix ───────────────────────────────
+function ensureMobileVideoPlayback() {
+    const video = document.getElementById('glimpse-video');
+    if (!video) return;
+    
+    // Force video play on mobile devices
+    const playVideo = () => {
+        if (video.paused) {
+            video.play().catch(err => {
+                console.warn('Mobile video autoplay failed:', err);
+                // Fallback: try to play on first user interaction
+                document.addEventListener('touchstart', () => {
+                    video.play().catch(e => console.warn('Video play on touch failed:', e));
+                }, { once: true });
+            });
+        }
+    };
+    
+    // Try immediate play
+    playVideo();
+    
+    // Also try when section becomes visible (ScrollTrigger)
+    setTimeout(playVideo, 1000);
+}
+
+ensureMobileVideoPlayback();
+
 const navBurger = document.getElementById('nav-burger');
 const navLinksEl = document.querySelector('.nav-links');
 const siteNavEl = document.getElementById('site-nav');

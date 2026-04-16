@@ -910,6 +910,20 @@ canvas {
     object-fit: cover;
 }
 
+/* Mobile video fixes */
+@media (pointer: coarse) {
+    .glimpse-video {
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+        z-index: 1;
+    }
+}
+
 /* Landscape / desktop: full vertical frame, letterboxing on sides (editorial) */
 @media (min-aspect-ratio: 1/1) {
     .glimpse-video {
