@@ -95,6 +95,7 @@ public/CNAME
 - **Metadata/OG:** absolute OG/Twitter meta tags in `index.html`; `public/og.webp` treated as immutable master per `public/OG_POLICY.md`.
 - **SEO meta baseline:** `index.html` now includes explicit `<meta name="description">` for Lighthouse SEO completeness and better search snippet summary.
 - **Accessibility landmark:** primary narrative sits in a single `<main id="main">` (after `#site-nav`) so auditors and screen readers get a documented main region; Lenis `html` classes do not replace this landmark. All major in-main sections expose explicit `aria-label`s (`История`, `Галерея`, `Детали`, `Финал и RSVP`) for assistive-tech clarity.
+- **Accessibility contrast tuning:** muted UI copy (desktop nav links, countdown labels, destination meta labels, glimpse label, gallery counter, final date, and route-link accents) was darkened/lightened to improve WCAG contrast checks while keeping the same warm editorial palette.
 
 ## 5. Environment (scene/runtime constants)
 

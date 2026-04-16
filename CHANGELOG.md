@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Accessibility contrast pass:** increased muted text contrast in navigation/date labels/destination metadata/gallery counter and darkened route-link color to improve WCAG readability while preserving the warm visual palette.
 - **Event details update:** date/time moved to **19.09.2026, 16:00** across hero/details/final/meta; location changed to restaurant **«НАЛ»** (Советская ул., 1, село Большие Салы) with updated Yandex route URL.
 - **Destination section composition:** added a compact pre-event block for **«Выкуп невесты»** (**14:00**, Сумский переулок, 7) above the main venue, including a separate route link and visual divider to preserve layout rhythm.
 - **Gallery color pipeline fix:** `GalleryRibbon` custom shader now uses output colorspace conversion (`#include <colorspace_fragment>`), so photos in WebGL match standalone `.webp` rendering (no unintended dark/contrast cast from linear output mismatch).

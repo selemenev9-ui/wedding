@@ -267,7 +267,7 @@ body {
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: rgba(18, 12, 8, 0.5);
+    color: rgba(18, 12, 8, 0.68);
     text-decoration: none;
     transition: color 0.3s;
     text-shadow: none;
@@ -483,7 +483,7 @@ canvas {
     font-size: 0.55rem;
     font-weight: 500;
     letter-spacing: 0.22em;
-    color: rgba(18, 12, 8, 0.42);
+    color: rgba(18, 12, 8, 0.66);
     text-transform: uppercase;
     margin-top: 0.4rem;
 }
@@ -646,7 +646,7 @@ canvas {
     font-weight: 500;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: rgba(18, 12, 8, 0.48);
+    color: rgba(18, 12, 8, 0.66);
     margin-bottom: 1rem;
     text-shadow: none;
 }
@@ -663,7 +663,7 @@ canvas {
     letter-spacing: 0.28em;
     text-indent: 0.28em;
     text-transform: uppercase;
-    color: rgba(18, 12, 8, 0.42);
+    color: rgba(18, 12, 8, 0.64);
     margin: 0 0 1rem;
 }
 
@@ -704,12 +704,12 @@ canvas {
 .route-link {
     font-family: 'Manrope', sans-serif;
     font-weight: 500;
-    color: #8b6f3d;
+    color: #5f4921;
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     font-size: 0.7rem;
-    border-bottom: 1px solid rgba(139, 111, 61, 0.45);
+    border-bottom: 1px solid rgba(95, 73, 33, 0.6);
     padding-bottom: 4px;
     transition: border-color 0.3s ease;
     display: inline-block;
@@ -717,7 +717,7 @@ canvas {
 }
 
 .route-link:hover {
-    border-color: #6b5428;
+    border-color: #4e3b17;
 }
 
 #btn-reveal-rsvp {
@@ -872,7 +872,7 @@ canvas {
     letter-spacing: 0.28em;
     text-indent: 0.28em;
     text-transform: uppercase;
-    color: rgba(18, 12, 8, 0.42);
+    color: rgba(18, 12, 8, 0.62);
     pointer-events: none;
     text-align: center;
     /* no translateX — GSAP animates y on this node in glimpseDomTl */
@@ -1047,7 +1047,7 @@ body.gallery-active .gallery-overlay {
     font-weight: 400;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: rgba(234, 231, 220, 0.4);
+    color: rgba(234, 231, 220, 0.74);
     pointer-events: none;
     user-select: none;
     white-space: nowrap;
@@ -1149,7 +1149,7 @@ body.gallery-active .gallery-overlay {
     font-weight: 500;
     letter-spacing: 0.45em;
     text-indent: 0.45em;
-    color: rgba(18, 12, 8, 0.45);
+    color: rgba(18, 12, 8, 0.68);
     text-transform: uppercase;
 }
 
