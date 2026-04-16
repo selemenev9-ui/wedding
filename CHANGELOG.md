@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+- **Event details update:** date/time moved to **19.09.2026, 16:00** across hero/details/final/meta; location changed to restaurant **«НАЛ»** (Советская ул., 1, село Большие Салы) with updated Yandex route URL.
+- **Destination section composition:** added a compact pre-event block for **«Выкуп невесты»** (**14:00**, Сумский переулок, 7) above the main venue, including a separate route link and visual divider to preserve layout rhythm.
+- **Gallery color pipeline fix:** `GalleryRibbon` custom shader now uses output colorspace conversion (`#include <colorspace_fragment>`), so photos in WebGL match standalone `.webp` rendering (no unintended dark/contrast cast from linear output mismatch).
 - **Gallery content:** `public/photos/gallery` now **16** WebP slides; `GalleryRibbon` `TOTAL=16`; `npm run images` refreshed `gallery-manifest.json`; scroll section still `1–3.webp`. `index.html` counter seed `01 / 16`.
 - **GitHub Actions Pages deploy:** `deploy-gh-pages.yml` now passes `VITE_RSVP_RELAY_URL` (and optional `VITE_RSVP_RELAY_SECRET`, `VITE_TG_*`) from **repository secrets** into `npm run build`. CI builds previously had an empty relay URL → RSVP failed on the live site while `localhost` worked with local `.env`.
 - **RSVP Google Apps Script:** relay uses `application/x-www-form-urlencoded` + `fetch` `no-cors` for `script.google.com/macros/*` URLs so success does not depend on reading a CORS-wrapped JSON response (GAS often omits ACAO on the response). `Code.gs` reads `e.parameter` (urlencoded) or JSON body. Node/PHP relays accept both encodings.

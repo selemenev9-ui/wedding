@@ -434,6 +434,18 @@ canvas {
     max-width: min(100%, 42rem);
 }
 
+.hero-time {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.68rem, 1.65vw, 0.82rem);
+    font-weight: 500;
+    letter-spacing: 0.42em;
+    color: rgba(18, 12, 8, 0.62);
+    text-indent: 0.42em;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.45);
+    margin: -0.35rem 0 0;
+    white-space: nowrap;
+}
+
 #countdown {
     display: flex;
     gap: 2.5rem;
@@ -629,6 +641,46 @@ canvas {
     color: rgba(18, 12, 8, 0.48);
     margin-bottom: 1rem;
     text-shadow: none;
+}
+
+/* Выкуп — тот же ритм, что у «Детали», отделён от торжества */
+.dest-ransom {
+    width: 100%;
+}
+
+.dest-event-label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.42);
+    margin: 0 0 1rem;
+}
+
+.dest-ransom .dest-date {
+    margin-bottom: 0.65rem;
+}
+
+.dest-ransom .dest-address {
+    margin-bottom: 1rem;
+}
+
+.route-link--ransom {
+    margin-bottom: 0;
+}
+
+.dest-between {
+    width: min(12rem, 72%);
+    height: 1px;
+    margin: 2rem auto 2.25rem;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(18, 12, 8, 0.1),
+        transparent
+    );
 }
 
 .dest-title {

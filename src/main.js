@@ -351,7 +351,8 @@ ScrollTrigger.create({
     toggleClass: { targets: '#site-nav', className: 'nav--scrolled' },
 });
 
-const WEDDING_COUNTDOWN_TARGET = new Date('2026-08-08T15:00:00Z');
+/** Local ceremony time (MSK, UTC+3) */
+const WEDDING_COUNTDOWN_TARGET = new Date('2026-09-19T16:00:00+03:00');
 
 /** Started after hero intro completes (or resize-aborted intro) so the 1s timer does not compete with boot TBT. */
 let weddingCountdownIntervalId = 0;
