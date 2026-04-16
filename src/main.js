@@ -636,6 +636,22 @@ function ensureMobileVideoPlayback() {
   window.addEventListener('load', tryPlay, { once: true });
   window.addEventListener('scroll', tryPlay, { once: true, passive: true });
   document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
+
+  // Scrolling until the clip is half-visible often counts as user activation (incl. Opera mobile).
+  if (typeof IntersectionObserver === 'function') {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tryPlay();
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(video);
+  }
 }
 
 ensureMobileVideoPlayback();
