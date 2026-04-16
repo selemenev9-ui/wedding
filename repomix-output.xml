@@ -1,0 +1,5128 @@
+This file is a merged representation of a subset of the codebase, containing files not matching ignore patterns, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching these patterns are excluded: public/**, node_modules/**, dist/**, .git/**
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.cursorrules
+.env.example
+.github/workflows/deploy-gh-pages.yml
+.gitignore
+CHANGELOG.md
+CONTEXT.md
+index.html
+package.json
+scripts/convert-images.js
+src/assets/hero.png
+src/assets/javascript.svg
+src/assets/vite.svg
+src/gl/Camera.js
+src/gl/Renderer.js
+src/gl/ResourceLoader.js
+src/gl/Scene.js
+src/gl/World.js
+src/gl/world/GalleryRibbon.js
+src/gl/world/GlassRing.js
+src/gl/world/GlimpseGallery.js
+src/gl/world/HeroText.js
+src/gl/world/StudioDome.js
+src/main.js
+src/modules/Cursor.js
+src/modules/MouseParallax.js
+src/modules/Scroll.js
+src/style.css
+src/utils/Sizes.js
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".env.example">
+VITE_TG_BOT_TOKEN=""
+VITE_TG_CHAT_ID=""
+# Used only by Vite dev server / preview middleware (not exposed in the RSVP fetch URL).
+# Optional: absolute URL of your production RSVP endpoint (Netlify function, etc.).
+# VITE_RSVP_API_URL="https://your-site.netlify.app/.netlify/functions/rsvp"
+</file>
+
+<file path=".github/workflows/deploy-gh-pages.yml">
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Secrets (Telegram bot, etc.)
+.env
+.env.*
+!.env.example
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="src/assets/javascript.svg">
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="32" height="32" viewBox="0 0 256 256"><path fill="#F7DF1E" d="M0 0h256v256H0V0Z"/><path d="m67.312 213.932l19.59-11.856c3.78 6.701 7.218 12.371 15.465 12.371c7.905 0 12.89-3.092 12.89-15.12v-81.798h24.057v82.138c0 24.917-14.606 36.259-35.916 36.259c-19.245 0-30.416-9.967-36.087-21.996m85.07-2.576l19.588-11.341c5.157 8.421 11.859 14.607 23.715 14.607c9.969 0 16.325-4.984 16.325-11.858c0-8.248-6.53-11.17-17.528-15.98l-6.013-2.58c-17.357-7.387-28.87-16.667-28.87-36.257c0-18.044 13.747-31.792 35.228-31.792c15.294 0 26.292 5.328 34.196 19.247l-18.732 12.03c-4.125-7.389-8.591-10.31-15.465-10.31c-7.046 0-11.514 4.468-11.514 10.31c0 7.217 4.468 10.14 14.778 14.608l6.014 2.577c20.45 8.765 31.963 17.7 31.963 37.804c0 21.654-17.012 33.51-39.867 33.51c-22.339 0-36.774-10.654-43.819-24.574"/></svg>
+</file>
+
+<file path="src/assets/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="77" height="47" fill="none" aria-labelledby="vite-logo-title" viewBox="0 0 77 47"><title id="vite-logo-title">Vite</title><style>.parenthesis{fill:#000}@media (prefers-color-scheme:dark){.parenthesis{fill:#fff}}</style><path fill="#9135ff" d="M40.151 45.71c-.663.844-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.493c-.92 0-1.457-1.04-.92-1.788l7.479-10.471c1.07-1.498 0-3.578-1.842-3.578H15.443c-.92 0-1.456-1.04-.92-1.788l9.696-13.576c.213-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.472c-1.07 1.497 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.087.89 1.83L40.153 45.712z"/><mask id="a" width="48" height="47" x="14" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M40.047 45.71c-.663.843-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.389c-.92 0-1.457-1.04-.92-1.788l7.479-10.472c1.07-1.497 0-3.578-1.842-3.578H15.34c-.92 0-1.456-1.04-.92-1.788l9.696-13.575c.213-.297.556-.474.92-.474H53.93c.92 0 1.456 1.04.92 1.788L47.37 13.03c-1.07 1.498 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.088.89 1.831L40.049 45.712z"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#eee6ff" rx="5.508" ry="14.704" transform="rotate(269.814 20.96 11.29)scale(-1 1)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#eee6ff" rx="10.399" ry="29.851" transform="rotate(89.814 -16.902 -8.275)scale(1 -1)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#8900ff" rx="5.508" ry="30.487" transform="rotate(89.814 -19.197 -7.127)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.928 4.177)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.738 5.52)scale(1 -1)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#eee6ff" rx="14.072" ry="22.078" transform="rotate(93.35 31.245 55.578)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx="14.592" cy="9.743" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(39.51 14.592 9.743)"/></g><g filter="url(#k)"><ellipse cx="61.728" cy="-5.321" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 61.728 -5.32)"/></g><g filter="url(#l)"><ellipse cx="55.618" cy="7.104" fill="#00c2ff" rx="5.971" ry="9.665" transform="rotate(37.892 55.618 7.104)"/></g><g filter="url(#m)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#n)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#o)"><ellipse cx="49.857" cy="30.678" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 49.857 30.678)"/></g><g filter="url(#p)"><ellipse cx="52.623" cy="33.171" fill="#00c2ff" rx="5.971" ry="15.297" transform="rotate(37.892 52.623 33.17)"/></g></g><path d="M6.919 0c-9.198 13.166-9.252 33.575 0 46.789h6.215c-9.25-13.214-9.196-33.623 0-46.789zm62.424 0h-6.215c9.198 13.166 9.252 33.575 0 46.789h6.215c9.25-13.214 9.196-33.623 0-46.789" class="parenthesis"/><defs><filter id="b" width="60.045" height="41.654" x="-5.564" y="16.92" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-40.407" y="-6.762" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-35.435" y="2.801" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-30.84" y="20.8" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-29.307" y="21.949" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="29.961" y="-17.13" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-13.43" y="-22.082" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="34.321" y="-37.644" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="38.847" y="-10.552" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="22.45" y="-1.645" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="32.919" y="11.36" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter></defs></svg>
+</file>
+
+<file path="src/gl/Camera.js">
+import * as THREE from 'three';
+
+export default class Camera {
+    constructor(sizes, scene) {
+        this.instance = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100);
+        this.instance.position.set(0, 0, 5);
+        scene.add(this.instance);
+    }
+
+    setPosition(x, y, z) {
+        this.instance.position.set(x, y, z);
+    }
+
+    /** Does not touch **`position`** — **`y`/`z`** are scrubbed by **`Scroll.js`** `masterTl`. */
+    resize(sizes) {
+        this.instance.aspect = sizes.width / sizes.height;
+        this.instance.updateProjectionMatrix();
+    }
+}
+</file>
+
+<file path="src/gl/Scene.js">
+import * as THREE from 'three';
+
+export default class Scene {
+    constructor() {
+        this.instance = new THREE.Scene();
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+        const directional = new THREE.DirectionalLight(0xffffff, 1.6);
+        directional.position.set(6, 10, 7);
+        this.instance.add(ambient, directional);
+    }
+}
+</file>
+
+<file path="src/gl/world/GlimpseGallery.js">
+import * as THREE from 'three';
+import { getWorld } from '../World.js';
+
+/* ─────────────────────────────────────────────
+   Vertex shader — horizontal Z-bow
+   Bends the quad toward/away from camera at
+   the horizontal midpoint, driven by scroll velocity.
+───────────────────────────────────────────── */
+const VERT = /* glsl */ `
+    varying vec2 vUv;
+    uniform float uScrollVelocity;
+
+    void main() {
+        vUv = uv;
+        vec3 pos = position;
+        // Smooth bow: 0 at edges (uv.x = 0 / 1), max at centre (uv.x = 0.5)
+        float bow = sin(uv.x * 3.14159265) * clamp(uScrollVelocity * 0.18, -0.22, 0.22);
+        pos.z += bow;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+`;
+
+/* ─────────────────────────────────────────────
+   Fragment shader — chromatic aberration + liquid wave
+   All effects proportional to |uScrollVelocity|.
+───────────────────────────────────────────── */
+const FRAG = /* glsl */ `
+    uniform sampler2D tDiffuse;
+    uniform float uScrollVelocity;
+    uniform float uTime;
+    varying vec2 vUv;
+
+    void main() {
+        vec2 uv = vUv;
+        float vel = uScrollVelocity;
+        float absVel = abs(vel);
+
+        // Liquid wave distortion — both axes, counter-phase for organic feel
+        float waveMag = absVel * 0.013;
+        uv.x += sin(uv.y * 10.0 + uTime * 1.8) * waveMag;
+        uv.y += cos(uv.x * 8.0  + uTime * 1.4) * waveMag * 0.5;
+
+        // Chromatic aberration — horizontal RGB split
+        float aberr = absVel * 0.016;
+        float r = texture2D(tDiffuse, uv + vec2( aberr, 0.0)).r;
+        float g = texture2D(tDiffuse, uv                    ).g;
+        float b = texture2D(tDiffuse, uv - vec2( aberr, 0.0)).b;
+
+        gl_FragColor = vec4(r, g, b, 1.0);
+    }
+`;
+
+export default class GlimpseGallery {
+    constructor() {
+        this._world = getWorld();
+        if (!this._world) throw new Error('GlimpseGallery: World not initialised');
+
+        this._meshes    = [];
+        this._trackers  = [];
+        this._time      = 0;
+
+        // Shared geometry — 24 horizontal segments for smooth Z-bow
+        this._geo = new THREE.PlaneGeometry(1, 1, 24, 1);
+
+        this._build();
+    }
+
+    _build() {
+        const nodes = document.querySelectorAll('.glimpse-tracker');
+        nodes.forEach((el) => {
+            const src = el.dataset.src;
+            if (!src) return;
+
+            const tex = new THREE.TextureLoader().load(src);
+            tex.colorSpace = THREE.SRGBColorSpace;
+
+            const mat = new THREE.ShaderMaterial({
+                uniforms: {
+                    tDiffuse:        { value: tex },
+                    uScrollVelocity: { value: 0 },
+                    uTime:           { value: 0 },
+                },
+                vertexShader:   VERT,
+                fragmentShader: FRAG,
+                transparent:    false,
+                depthTest:      true,
+                depthWrite:     true,
+            });
+
+            const mesh = new THREE.Mesh(this._geo, mat);
+            mesh.position.z = 0;
+            mesh.visible = false;
+            this._world.scene.add(mesh);
+
+            this._meshes.push(mesh);
+            this._trackers.push(el);
+        });
+    }
+
+    /**
+     * Call every RAF frame.
+     * @param {number} scrollVelocity  — smoothed scroll velocity (px / frame)
+     */
+    update(scrollVelocity = 0) {
+        this._time += 0.016;
+
+        const camera  = this._world.camera.instance;
+        const camZ    = camera.position.z;
+        const vFOV    = THREE.MathUtils.degToRad(camera.fov);
+        // Frustum dimensions at z = 0 plane
+        const worldH  = 2 * camZ * Math.tan(vFOV * 0.5);
+        const worldW  = worldH * camera.aspect;
+
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        for (let i = 0; i < this._trackers.length; i++) {
+            const rect = this._trackers[i].getBoundingClientRect();
+            const mesh = this._meshes[i];
+
+            // Cull when fully off-screen
+            if (rect.bottom < 0 || rect.top > vh || rect.right < 0 || rect.left > vw) {
+                mesh.visible = false;
+                continue;
+            }
+            mesh.visible = true;
+
+            // Centre of DOM element in NDC [-1, 1]
+            const ndcX =  ((rect.left + rect.right)  / 2 / vw) * 2 - 1;
+            const ndcY = -(((rect.top  + rect.bottom) / 2 / vh) * 2 - 1);
+
+            // Map NDC → world position at z = 0
+            mesh.position.x = ndcX * worldW * 0.5;
+            mesh.position.y = ndcY * worldH * 0.5;
+
+            // Scale to match DOM element pixel dimensions
+            mesh.scale.x = (rect.width  / vw) * worldW;
+            mesh.scale.y = (rect.height / vh) * worldH;
+
+            // Shader uniforms
+            mesh.material.uniforms.uScrollVelocity.value = scrollVelocity;
+            mesh.material.uniforms.uTime.value           = this._time;
+        }
+    }
+
+    destroy() {
+        for (const mesh of this._meshes) {
+            this._world.scene.remove(mesh);
+            const tex = mesh.material.uniforms.tDiffuse?.value;
+            if (tex) tex.dispose();
+            mesh.material.dispose();
+        }
+        this._geo.dispose();
+        this._meshes   = [];
+        this._trackers = [];
+    }
+}
+</file>
+
+<file path="src/modules/MouseParallax.js">
+import * as THREE from 'three';
+import gsap from 'gsap';
+
+/**
+ * Mouse parallax layer. Each tracked object is re-parented into a transparent
+ * THREE.Group (wrapper). Parallax offsets live on the wrapper so they never
+ * conflict with GSAP ScrollTrigger tweens or animation loops that write to
+ * the inner object's own position.
+ *
+ * @typedef {{ object: THREE.Object3D; depth: number }} ParallaxLayer
+ */
+export default class MouseParallax {
+    /**
+     * @param {ParallaxLayer[]} layers
+     */
+    constructor(layers) {
+        this._entries = layers.map(({ object, depth }) => {
+            const originalParent = object.parent;
+
+            // Create a transparent wrapper group in the same parent
+            const wrapper = new THREE.Group();
+            if (originalParent) {
+                originalParent.remove(object);
+                wrapper.add(object);
+                originalParent.add(wrapper);
+            }
+
+            // quickTo targets wrapper.position directly
+            const qx = gsap.quickTo(wrapper.position, 'x', {
+                duration: 1.2,
+                ease: 'power3.out',
+            });
+            const qy = gsap.quickTo(wrapper.position, 'y', {
+                duration: 1.2,
+                ease: 'power3.out',
+            });
+
+            return { wrapper, object, originalParent, depth, qx, qy };
+        });
+
+        this._nx = 0;
+        this._ny = 0;
+
+        this._onMove = (e) => {
+            this._nx =  (e.clientX / window.innerWidth)  * 2 - 1;
+            this._ny = -((e.clientY / window.innerHeight) * 2 - 1);
+
+            for (const { qx, qy, depth } of this._entries) {
+                qx(this._nx * depth);
+                qy(this._ny * depth);
+            }
+        };
+
+        window.addEventListener('mousemove', this._onMove);
+    }
+
+    /**
+     * Called every frame inside the main rAF tick.
+     * quickTo drives its own GSAP tween; this hook is reserved for any
+     * future per-frame supplemental logic.
+     */
+    update() {
+        // GSAP quickTo handles interpolation via its internal ticker.
+        // Nothing needs to happen here each frame unless we add velocity
+        // or secondary motion later.
+    }
+
+    destroy() {
+        window.removeEventListener('mousemove', this._onMove);
+
+        // Restore original parenting so the scene stays consistent
+        for (const { wrapper, object, originalParent } of this._entries) {
+            if (object && originalParent) {
+                wrapper.remove(object);
+                originalParent.remove(wrapper);
+                originalParent.add(object);
+            }
+        }
+    }
+}
+</file>
+
+<file path=".cursorrules">
+# MISSION: Awwwards Site of the Day (SOTD) Creative Engine
+
+## ROLE: Elite Creative Technologist (WebGL/GLSL Expert)
+You are an expert in high-end web experiences. Your goal is to build a project with 100/100 performance and 100/100 visual marks.
+
+## TECH STACK: 
+- Core: Vanilla JavaScript (ES6+), Vite.
+- 3D: Three.js (Core), GLSL (Custom Shaders).
+- Animation: GSAP + ScrollTrigger + Lenis (Smooth Scroll).
+- Assets: Draco/KTX2 for GLB, WebP/AVIF for textures.
+
+## ARCHITECTURAL COMMANDS:
+1. **Singleton Pattern**: Use a World/Experience singleton to manage the scene, camera, and renderer globally.
+2. **Resource Management**: Implement a strict "Asset Loader" with progress tracking. All textures must be compressed. Use KTX2 for GPU-ready textures.
+3. **Memory Hygiene**: Every component must have a `destroy()` or `dispose()` method. ZERO memory leaks. Monitor `renderer.info`.
+4. **Shader Workflow**: For complex materials, prefer custom ShaderMaterial or RawShaderMaterial. Use noise (Perlin, Simplex), fbm, and vertex displacements for "organic" feel.
+
+## PERFORMANCE & CRITIQUE (MANDATORY):
+- Target: Stable 60fps on Mid-range mobile and High-end desktop.
+- No "Crutches": If a solution involves excessive DOM manipulation or heavy Three.js calculations in `requestAnimationFrame`, CRITICIZE IT.
+- Draw Calls: Group geometries (BufferGeometryUtils) and use InstancedMesh for repetitive objects.
+- Selective Bloom & Post-processing: Only use professional EffectComposer passes (UnrealBloom, Grain, Chromatic Aberration).
+
+## INTERACTION & EXPERIENCE:
+- Implement custom Smooth Scroll (Lenis) integrated with GSAP.
+- Micro-interactions: Mouse follow, Raycasting-based hover effects, and spring-physics (GSAP QuickSetter).
+- Progressive Loading: Optimize for Vietnam network conditions; prioritize LCP and essential WebGL initialization.
+
+## INSTRUCTION STYLE:
+- Be direct, cynical about bad code, and uncompromising on quality.
+- If an idea leads to "junk" or "jank" (stuttering), stop and propose a WebGL-alternative.
+- Never suggest React/Vue wrappers.
+
+## CONTEXT MANAGEMENT (CRITICAL):
+- There is a **`CONTEXT.md`** file in the project root — the **authoritative save state** for stack, boot flow, and behaviour.
+- After **every** successful feature, architecture change, or non-trivial bug fix, you **must** update **`CONTEXT.md`** so it stays true to the code (no stale event names, no wrong boot order).
+- Add a short line under **`CHANGELOG.md`** → **`[Unreleased]`** when the change matters for handoff (load strategy, scroll, gallery, deploy).
+- Typical **`CONTEXT.md`** sections to keep current: stack / folder map, **asset & boot lifecycle**, implemented features, env / tuning table, next steps.
+- Do not wait for a separate prompt: refresh context docs as part of the same task that changes behaviour.
+## WORKFLOW & EXECUTION PIPELINE
+- The user works with an external Lead Architect (AI).
+- The user will provide you with exact, surgical commands wrapped in quotes.
+- You are the Executor. You do not argue. You read the command, read CONTEXT.md, and apply the exact changes to the files.
+- Never output raw code for the user to manual copy-paste. Generate the files directly.
+</file>
+
+<file path="package.json">
+{
+  "name": "awwwards-wedding",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/convert-images.js && vite build",
+    "preview": "vite preview",
+    "images": "node scripts/convert-images.js"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5",
+    "vite": "^8.0.1"
+  },
+  "dependencies": {
+    "gsap": "^3.14.2",
+    "lenis": "^1.3.21",
+    "split-type": "^0.3.4",
+    "three": "^0.183.2"
+  }
+}
+</file>
+
+<file path="scripts/convert-images.js">
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PHOTOS_DIR  = path.join(__dirname, '..', 'public', 'photos');
+const GALLERY_DIR = path.join(PHOTOS_DIR, 'gallery');
+const JPEG_EXT = /\.jpe?g$/i;
+
+async function buildGalleryManifest() {
+    let entries;
+    try {
+        entries = await fs.readdir(GALLERY_DIR);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            console.warn('buildGalleryManifest: public/photos/gallery not found, skip');
+            return;
+        }
+        throw err;
+    }
+
+    const webps = entries
+        .filter((f) => /^(\d+)\.webp$/i.test(f))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    if (webps.length === 0) {
+        console.warn('buildGalleryManifest: no N.webp in gallery, skip');
+        return;
+    }
+
+    const manifest = {};
+    for (const file of webps) {
+        const n = parseInt(file.match(/^(\d+)/)[1], 10);
+        const idx = n - 1;
+        const meta = await sharp(path.join(GALLERY_DIR, file)).metadata();
+        const w = meta.width ?? 1;
+        const h = meta.height ?? 1;
+        manifest[idx] = parseFloat((w / h).toFixed(4));
+    }
+
+    const outPath = path.join(__dirname, '..', 'public', 'gallery-manifest.json');
+    await fs.writeFile(outPath, `${JSON.stringify(manifest)}\n`, 'utf8');
+    console.log(`✓ gallery-manifest.json (${Object.keys(manifest).length} ratios)`);
+}
+
+async function main() {
+    await buildGalleryManifest();
+
+    let entries;
+    try {
+        entries = await fs.readdir(PHOTOS_DIR);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            console.error('public/photos/ does not exist');
+            process.exit(1);
+        }
+        throw err;
+    }
+
+    const jpegs = entries.filter((name) => JPEG_EXT.test(name));
+    if (jpegs.length === 0) {
+        console.log('No .jpg/.jpeg files in public/photos/ (webp conversion skipped)');
+        return;
+    }
+
+    for (const file of jpegs) {
+        const inputPath = path.join(PHOTOS_DIR, file);
+        const stat = await fs.stat(inputPath);
+        if (!stat.isFile()) continue;
+
+        const base = file.replace(JPEG_EXT, '');
+        const outName = `${base}.webp`;
+        const outputPath = path.join(PHOTOS_DIR, outName);
+
+        await sharp(inputPath)
+            .resize({ width: 1920, withoutEnlargement: true })
+            .webp({ quality: 85 })
+            .toFile(outputPath);
+
+        console.log(`✓ ${outName}`);
+    }
+}
+
+main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});
+</file>
+
+<file path="src/gl/world/StudioDome.js">
+import * as THREE from 'three';
+
+/**
+ * Interior cyclorama: large inverted sphere, matte studio fill — does not receive shadows (shadow catcher only).
+ */
+export default class StudioDome {
+    constructor() {
+        /** @type {THREE.Mesh | null} */
+        this.mesh = null;
+        /** @type {THREE.SphereGeometry | null} */
+        this._geometry = null;
+        /** @type {THREE.MeshStandardMaterial | null} */
+        this._material = null;
+    }
+
+    /**
+     * @param {{ scene: THREE.Scene }} options
+     */
+    init(options) {
+        const scene = options?.scene;
+        if (!(scene instanceof THREE.Scene)) {
+            return;
+        }
+
+        this.disposeMesh();
+
+        this._geometry = new THREE.SphereGeometry(40, 64, 64);
+        this._material = new THREE.MeshStandardMaterial({
+            color: '#EAE7DC',
+            side: THREE.BackSide,
+            roughness: 1.0,
+            metalness: 0.0,
+            envMapIntensity: 0,
+        });
+
+        this.mesh = new THREE.Mesh(this._geometry, this._material);
+        this.mesh.receiveShadow = false;
+    }
+
+    disposeMesh() {
+        if (this.mesh) {
+            this.mesh.removeFromParent();
+            this.mesh = null;
+        }
+        if (this._geometry) {
+            this._geometry.dispose();
+            this._geometry = null;
+        }
+        if (this._material) {
+            this._material.dispose();
+            this._material = null;
+        }
+    }
+
+    dispose() {
+        this.disposeMesh();
+    }
+}
+</file>
+
+<file path="src/gl/ResourceLoader.js">
+import * as THREE from 'three';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+
+/**
+ * @typedef {{ name: string; type: 'hdri' | 'texture' | 'font' | 'gltf'; path: string }} AssetDescriptor
+ */
+
+export default class ResourceLoader {
+    /**
+     * @param {AssetDescriptor[]} assets
+     */
+    constructor(assets) {
+        this.assets = assets;
+        /** @type {Record<string, THREE.Texture | string | import('three/examples/jsm/loaders/GLTFLoader.js').GLTF>} */
+        this.items = {};
+
+        /** @type {Map<string, { promise: Promise<unknown>; resolve: (v: unknown) => void; reject: (e: unknown) => void }>} */
+        this._deferreds = new Map();
+
+        for (const asset of assets) {
+            let resolve;
+            let reject;
+            const promise = new Promise((res, rej) => {
+                resolve = res;
+                reject = rej;
+            });
+            this._deferreds.set(asset.name, {
+                promise,
+                resolve: /** @type {(v: unknown) => void} */ (resolve),
+                reject: /** @type {(e: unknown) => void} */ (reject),
+            });
+        }
+
+        this._textureLoader = new THREE.TextureLoader();
+        this._hdrLoader = new HDRLoader();
+        this._dracoLoader = new DRACOLoader();
+        // Draco decoders load from Google CDN; warm TLS/DNS early via `<link rel="preconnect" href="https://www.gstatic.com">` in `index.html`.
+        this._dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+        this._gltfLoader = new GLTFLoader();
+        this._gltfLoader.setDRACOLoader(this._dracoLoader);
+        this._gltfLoader.setMeshoptDecoder(MeshoptDecoder);
+        /** @type {string[]} */
+        this._fontBlobUrls = [];
+
+        this._loadedCount = 0;
+        this._loadAll();
+    }
+
+    /**
+     * @param {string} name
+     * @returns {Promise<unknown>}
+     */
+    waitFor(name) {
+        const d = this._deferreds.get(name);
+        if (!d) return Promise.reject(new Error(`ResourceLoader: asset "${name}" not in manifest`));
+        return d.promise;
+    }
+
+    _loadAll() {
+        const total = this.assets.length;
+
+        /** @param {unknown} result */
+        const onSuccess = (name, result) => {
+            this.items[name] = result;
+            const def = this._deferreds.get(name);
+            if (def) def.resolve(result);
+
+            this._loadedCount++;
+            window.dispatchEvent(
+                new CustomEvent('resources:progress', {
+                    detail: { loaded: this._loadedCount, total, ratio: this._loadedCount / total },
+                }),
+            );
+        };
+
+        const tasks = this.assets.map((desc) => this._loadOne(desc, onSuccess));
+
+        // Never block the aggregate on a single rejection or hang ALL listeners on Promise.all —
+        // boot already uses per-asset `waitFor()`. `resources:ready` = “all load attempts settled”.
+        Promise.allSettled(tasks).then((results) => {
+            const rejected = results.filter((r) => r.status === 'rejected');
+            if (rejected.length) {
+                console.warn(
+                    `ResourceLoader: ${rejected.length}/${results.length} asset(s) failed (see errors above).`,
+                );
+            }
+            window.dispatchEvent(
+                new CustomEvent('resources:ready', {
+                    detail: {
+                        ok: rejected.length === 0,
+                        failed: rejected.length,
+                        total: results.length,
+                    },
+                }),
+            );
+        });
+    }
+
+    /**
+     * @param {AssetDescriptor} desc
+     * @param {(name: string, result: unknown) => void} onSuccess
+     * @returns {Promise<void>}
+     */
+    _loadOne(desc, onSuccess) {
+        const { name, type, path } = desc;
+        const def = this._deferreds.get(name);
+        if (!def) return Promise.reject(new Error(`ResourceLoader: no deferred for "${name}"`));
+
+        const fail = (err) => {
+            def.reject(err);
+            return Promise.reject(err);
+        };
+
+        if (type === 'hdri') {
+            return new Promise((resolve, reject) => {
+                this._hdrLoader.load(
+                    path,
+                    (texture) => {
+                        onSuccess(name, texture);
+                        resolve();
+                    },
+                    undefined,
+                    (err) => { fail(err); reject(err); },
+                );
+            });
+        }
+
+        if (type === 'texture') {
+            return new Promise((resolve, reject) => {
+                this._textureLoader.load(
+                    path,
+                    (texture) => {
+                        onSuccess(name, texture);
+                        resolve();
+                    },
+                    undefined,
+                    (err) => { fail(err); reject(err); },
+                );
+            });
+        }
+
+        if (type === 'font') {
+            return fetch(path)
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error(`ResourceLoader font "${name}": ${res.status} ${path}`);
+                    }
+                    return res.blob();
+                })
+                .then((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    this._fontBlobUrls.push(url);
+                    onSuccess(name, url);
+                })
+                .catch((err) => fail(err));
+        }
+
+        if (type === 'gltf') {
+            return new Promise((resolve, reject) => {
+                this._gltfLoader.load(
+                    path,
+                    (gltf) => {
+                        onSuccess(name, gltf);
+                        resolve();
+                    },
+                    undefined,
+                    (err) => { fail(err); reject(err); },
+                );
+            });
+        }
+
+        return fail(new Error(`ResourceLoader: unknown type "${type}" for "${name}"`));
+    }
+
+    /**
+     * @param {string} name
+     * @returns {THREE.Texture | string | import('three/examples/jsm/loaders/GLTFLoader.js').GLTF | undefined}
+     */
+    get(name) {
+        return this.items[name];
+    }
+
+    destroy() {
+        for (const url of this._fontBlobUrls) {
+            URL.revokeObjectURL(url);
+        }
+        this._fontBlobUrls = [];
+
+        for (const key of Object.keys(this.items)) {
+            const item = this.items[key];
+            if (item && typeof item.dispose === 'function') {
+                item.dispose();
+            }
+        }
+
+        this.items = {};
+        this._deferreds.clear();
+
+        this._dracoLoader?.dispose();
+        this._dracoLoader = null;
+    }
+}
+</file>
+
+<file path="src/gl/world/HeroText.js">
+import * as THREE from 'three';
+import { getWorld } from '../World.js';
+
+/**
+ * No-op stub — hero names are now rendered as DOM #hero-names on all screens.
+ * Keeps the same public API so GSAP intro (group.scale 0→1) and World references
+ * continue to work without modification.
+ */
+export default class HeroText {
+    constructor() {
+        const world = getWorld();
+        if (!world) {
+            throw new Error('HeroText: World singleton is not initialized');
+        }
+
+        this.scene = world.scene;
+
+        this.root = new THREE.Group();
+        this.root.name = 'HeroTextRoot';
+
+        this.group = new THREE.Group();
+        this.group.name = 'HeroText';
+        this.group.visible = true;
+        this.group.scale.setScalar(0);
+        this.root.add(this.group);
+        this.scene.add(this.root);
+
+        /** Compatibility stub for World.tryFadeEnvReflections() */
+        this.goldMaterial = null;
+
+        this._built = true;
+        this.ready = Promise.resolve();
+    }
+
+    _syncGoldEnvMap() {}
+
+    destroy() {
+        if (this.scene && this.root) this.scene.remove(this.root);
+        this.goldMaterial = null;
+        this.root = null;
+        this.group = null;
+        this._built = false;
+    }
+}
+</file>
+
+<file path="src/modules/Cursor.js">
+import gsap from 'gsap';
+
+const HOVER_SELECTOR =
+    'a, button, [role="button"], label[for], .editorial-btn, .route-link, [data-hover], .rsvp-radio-label';
+
+export default class Cursor {
+    constructor() {
+        this.cursorEl = document.querySelector('#cursor');
+        if (!this.cursorEl || !window.matchMedia('(pointer: fine)').matches) return;
+
+        this.isHovering = false;
+        this._didSnap = false;
+
+        gsap.set(this.cursorEl, { xPercent: -50, yPercent: -50 });
+
+        this.xTo = gsap.quickTo(this.cursorEl, 'x', {
+            duration: 0.1,
+            ease: 'power3.out',
+        });
+        this.yTo = gsap.quickTo(this.cursorEl, 'y', {
+            duration: 0.1,
+            ease: 'power3.out',
+        });
+
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        window.addEventListener('pointermove', this.onPointerMove, { passive: true });
+        document.addEventListener('mouseleave', this.onDocumentLeave);
+        document.addEventListener('mouseenter', this.onDocumentEnter);
+
+        document.querySelectorAll(HOVER_SELECTOR).forEach((el) => {
+            el.addEventListener('mouseenter', this.onMouseEnter);
+            el.addEventListener('mouseleave', this.onMouseLeave);
+        });
+
+        document.querySelectorAll('.editorial-btn').forEach((btn) => {
+            btn.addEventListener('mousemove', this.onMagneticMove);
+            btn.addEventListener('mouseleave', this.onMagneticLeave);
+        });
+    }
+
+    onDocumentLeave = () => {
+        this.cursorEl.classList.add('cursor--hidden');
+    };
+
+    onDocumentEnter = () => {
+        this.cursorEl.classList.remove('cursor--hidden');
+    };
+
+    onPointerMove = (e) => {
+        if (!this._didSnap) {
+            gsap.set(this.cursorEl, { x: e.clientX, y: e.clientY });
+            this._didSnap = true;
+            this.cursorEl.classList.remove('cursor--hidden');
+        }
+        this.xTo(e.clientX);
+        this.yTo(e.clientY);
+    };
+
+    onMouseEnter = () => {
+        this.isHovering = true;
+        gsap.to(this.cursorEl, {
+            scale: 1.5,
+            duration: 0.3,
+            ease: 'power2.out',
+        });
+    };
+
+    onMouseLeave = () => {
+        this.isHovering = false;
+        gsap.to(this.cursorEl, {
+            scale: 1,
+            duration: 0.3,
+            ease: 'power2.out',
+        });
+    };
+
+    onMagneticMove = (e) => {
+        const btn = e.currentTarget;
+        const rect = btn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const distX = (e.clientX - centerX) * 0.3;
+        const distY = (e.clientY - centerY) * 0.3;
+
+        gsap.to(btn, {
+            x: distX,
+            y: distY,
+            duration: 0.4,
+            ease: 'power2.out',
+        });
+    };
+
+    onMagneticLeave = (e) => {
+        const btn = e.currentTarget;
+        gsap.to(btn, {
+            x: 0,
+            y: 0,
+            duration: 0.7,
+            ease: 'elastic.out(1.1, 0.4)',
+        });
+    };
+
+    destroy() {
+        window.removeEventListener('pointermove', this.onPointerMove);
+        document.removeEventListener('mouseleave', this.onDocumentLeave);
+        document.removeEventListener('mouseenter', this.onDocumentEnter);
+        document.querySelectorAll(HOVER_SELECTOR).forEach((el) => {
+            el.removeEventListener('mouseenter', this.onMouseEnter);
+            el.removeEventListener('mouseleave', this.onMouseLeave);
+        });
+        document.querySelectorAll('.editorial-btn').forEach((btn) => {
+            btn.removeEventListener('mousemove', this.onMagneticMove);
+            btn.removeEventListener('mouseleave', this.onMagneticLeave);
+        });
+    }
+}
+</file>
+
+<file path="src/utils/Sizes.js">
+export default class Sizes {
+    constructor() {
+        this.width  = window.innerWidth;
+        this.height = window.innerHeight;
+
+        const coarse = typeof window !== 'undefined' &&
+            window.matchMedia('(pointer: coarse)').matches;
+        this.coarsePointer = coarse;
+
+        this.pixelRatio = Math.min(window.devicePixelRatio, 2.0);
+    }
+}
+</file>
+
+<file path="vite.config.js">
+import { defineConfig, loadEnv } from 'vite';
+
+/**
+ * POST /api/rsvp — reads .env on the server, calls Telegram (no token in browser URL).
+ * Works in `vite` and `vite preview`. Static hosting needs a real backend or VITE_RSVP_API_URL.
+ */
+function attachRsvpMiddleware(server, env) {
+    server.middlewares.use((req, res, next) => {
+        const pathOnly = req.url?.split('?')[0];
+        if (pathOnly !== '/api/rsvp' || req.method !== 'POST') {
+            return next();
+        }
+
+        const chunks = [];
+        req.on('data', (c) => chunks.push(c));
+        req.on('end', async () => {
+            let body;
+            try {
+                body = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}');
+            } catch {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ ok: false, description: 'Invalid JSON' }));
+                return;
+            }
+
+            const name = String(body.name || '').trim();
+            const attendance = String(body.attendance || '');
+            if (!name) {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ ok: false, description: 'Name required' }));
+                return;
+            }
+
+            const token = env.VITE_TG_BOT_TOKEN;
+            const chatId = env.VITE_TG_CHAT_ID;
+            if (!token || !chatId) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ ok: false, description: 'Missing VITE_TG_* in .env' }));
+                return;
+            }
+
+            const escapeHtml = (value) =>
+                String(value)
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;');
+            const safeName = escapeHtml(name);
+            const statusLabel = attendance === 'Буду' ? '✅ С удовольствием буду' : '❌ К сожалению, не смогу';
+            const safeStatus = escapeHtml(statusLabel);
+            const sentAt = new Date().toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+            const safeSentAt = escapeHtml(sentAt);
+            const source = escapeHtml(req.headers.host || 'local-dev');
+            const message =
+                `<b>RSVP • Катя & Артём</b>\n` +
+                `━━━━━━━━━━━━━━\n` +
+                `🕊 <b>Новый ответ на приглашение</b>\n\n` +
+                `👤 <b>Гость</b>\n` +
+                `${safeName}\n\n` +
+                `📌 <b>Статус</b>\n` +
+                `${safeStatus}\n\n` +
+                `🕒 <b>Время:</b> ${safeSentAt}\n` +
+                `🌐 <b>Источник:</b> ${source}`;
+
+            try {
+                const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'HTML',
+                    }),
+                });
+                const data = await tgRes.json();
+                res.setHeader('Content-Type', 'application/json');
+                res.statusCode = tgRes.ok && data.ok ? 200 : 502;
+                res.end(JSON.stringify(data));
+            } catch (err) {
+                res.statusCode = 502;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(
+                    JSON.stringify({
+                        ok: false,
+                        description: err instanceof Error ? err.message : 'Network error',
+                    }),
+                );
+            }
+        });
+    });
+}
+
+function rsvpTelegramPlugin(env) {
+    return {
+        name: 'rsvp-telegram',
+        configureServer(server) {
+            attachRsvpMiddleware(server, env);
+        },
+        configurePreviewServer(server) {
+            attachRsvpMiddleware(server, env);
+        },
+    };
+}
+
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+
+    const telegramDevProxy = {
+        target: 'https://api.telegram.org',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/telegram/, ''),
+    };
+
+    return {
+        plugins: [rsvpTelegramPlugin(env)],
+        server: {
+            proxy: {
+                '/api/telegram': telegramDevProxy,
+            },
+        },
+        preview: {
+            proxy: {
+                '/api/telegram': telegramDevProxy,
+            },
+        },
+    };
+});
+</file>
+
+<file path="src/gl/world/GlassRing.js">
+import * as THREE from 'three';
+import { getWorld } from '../World.js';
+
+export default class GlassRing {
+    constructor() {
+        const world = getWorld();
+        if (!world) {
+            throw new Error('GlassRing: World singleton is not initialized');
+        }
+
+        this.scene = world.scene;
+        this.resources = world.resources;
+
+        this.mesh = new THREE.Group();
+
+        /** ScrollTrigger scrubs these; each ring is its own “orbit”. */
+        this.groupA = new THREE.Group();
+        this.groupB = new THREE.Group();
+
+        /** Local Y/Z sine drift — additive under GSAP-driven groups. */
+        this.floatA = new THREE.Group();
+        this.floatB = new THREE.Group();
+
+        this.groupA.add(this.floatA);
+        this.groupB.add(this.floatB);
+
+        this.groupA.position.set(-0.35, 0.1, 0.5);
+        this.groupB.position.set(0.28, -0.1, -0.5);
+
+        this.mesh.add(this.groupA, this.groupB);
+        this.scene.add(this.mesh);
+
+        /** @type {THREE.MeshPhysicalMaterial | null} */
+        this.goldMaterial = null;
+        /** @type {Set<THREE.BufferGeometry>} */
+        this._geometries = new Set();
+        this._built = false;
+
+        this.ready = this._init();
+    }
+
+    async _init() {
+        try {
+            const [gltfA, gltfB] = await Promise.all([
+                this.resources.waitFor('ringA'),
+                this.resources.waitFor('ringB'),
+            ]);
+
+            this.goldMaterial = new THREE.MeshPhysicalMaterial({
+                color:               new THREE.Color('#d4af37'),
+                metalness:           1.0,
+                roughness:           0.15,
+                clearcoat:           0.4,
+                clearcoatRoughness:  0.1,
+                envMapIntensity:     0,
+            });
+
+            this._ingestGltf(gltfA, this.floatA);
+            this._ingestGltf(gltfB, this.floatB);
+            this._built = true;
+        } catch (e) {
+            console.error('GlassRing: failed to load ring GLBs', e);
+        }
+    }
+
+    /**
+     * Fit glTF to scene units. Uses mesh-only world AABB so empties/cameras/lights in the export
+     * cannot shrink scale to invisibility; clamps scale if bounds are degenerate.
+     *
+     * Blender: Apply Scale/Rotation (Ctrl+A), export only the ring mesh(es), remove stray empties.
+     * @param {THREE.Object3D} root
+     * @param {number} targetMaxDim - max axis length after normalize (~0.9–1.2 for hero rings at z≈5)
+     */
+    _normalizeModelToScene(root, targetMaxDim) {
+        root.updateMatrixWorld(true);
+
+        const _unionMeshWorldBox = (outBox) => {
+            let found = false;
+            root.traverse((child) => {
+                if (!(child.isMesh || child.isSkinnedMesh) || !child.geometry) return;
+                const g = child.geometry;
+                if (!g.boundingBox) g.computeBoundingBox();
+                const bb = g.boundingBox;
+                if (!bb || bb.isEmpty()) return;
+                child.updateWorldMatrix(true, false);
+                const meshBox = bb.clone().applyMatrix4(child.matrixWorld);
+                if (!found) {
+                    outBox.copy(meshBox);
+                    found = true;
+                } else {
+                    outBox.union(meshBox);
+                }
+            });
+            return found;
+        };
+
+        const box = new THREE.Box3();
+        let ok = _unionMeshWorldBox(box);
+        if (!ok || box.isEmpty()) {
+            console.warn(
+                'GlassRing: no mesh AABB — falling back to setFromObject. Check GLB has visible Mesh geometry.',
+            );
+            box.setFromObject(root);
+        }
+
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z, 1e-6);
+        let s = targetMaxDim / maxDim;
+        s = THREE.MathUtils.clamp(s, 0.03, 3000);
+
+        root.scale.setScalar(s);
+        root.updateMatrixWorld(true);
+
+        const box2 = new THREE.Box3();
+        ok = _unionMeshWorldBox(box2);
+        if (!ok || box2.isEmpty()) {
+            box2.setFromObject(root);
+        }
+        const center = box2.getCenter(new THREE.Vector3());
+        root.position.sub(center);
+    }
+
+    /**
+     * @param {import('three/examples/jsm/loaders/GLTFLoader.js').GLTF} gltf
+     * @param {THREE.Group} floatRoot
+     */
+    _ingestGltf(gltf, floatRoot) {
+        gltf.scene.traverse((child) => {
+            if (!child.isMesh) return;
+            if (child.geometry) {
+                this._geometries.add(child.geometry);
+            }
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            for (const m of mats) {
+                if (m) m.dispose();
+            }
+            child.material = this.goldMaterial;
+            child.castShadow = true;
+        });
+        this._normalizeModelToScene(gltf.scene, 1.0);
+        floatRoot.add(gltf.scene);
+    }
+
+    update() {
+        const t = performance.now() * 0.001;
+
+        this.floatA.position.y = Math.sin(t * 0.88) * 0.024 + Math.sin(t * 0.31 + 0.7) * 0.008;
+        this.floatA.position.z = Math.sin(t * 0.62 + 1.15) * 0.019;
+
+        this.floatB.position.y = Math.sin(t * 1.12 + 2.1) * 0.027 + Math.sin(t * 0.41) * 0.009;
+        this.floatB.position.z = Math.sin(t * 0.71 + 0.25) * 0.021;
+    }
+
+    destroy() {
+        if (this.scene && this.mesh) {
+            this.scene.remove(this.mesh);
+        }
+
+        if (this.goldMaterial) {
+            this.goldMaterial.dispose();
+            this.goldMaterial = null;
+        }
+
+        for (const geo of this._geometries) {
+            geo.dispose();
+        }
+        this._geometries.clear();
+
+        this.floatA = null;
+        this.floatB = null;
+        this.groupA = null;
+        this.groupB = null;
+        this.mesh = null;
+        this._built = false;
+    }
+}
+</file>
+
+<file path="src/gl/Renderer.js">
+import * as THREE from 'three';
+
+export default class Renderer {
+    /**
+     * @param {import('../utils/Sizes.js').default | { width: number; height: number; pixelRatio: number }} sizes
+     * @param {THREE.Scene} scene
+     * @param {THREE.PerspectiveCamera} camera
+     * @param {HTMLCanvasElement} [canvas]
+     */
+    constructor(sizes, scene, camera, canvas) {
+        const params = { antialias: true, alpha: false, powerPreference: 'high-performance' };
+        if (canvas) {
+            params.canvas = canvas;
+        }
+        this.instance = new THREE.WebGLRenderer(params);
+        this.instance.setSize(sizes.width, sizes.height);
+        this.instance.domElement.style.width = `${sizes.width}px`;
+        this.instance.domElement.style.height = `${sizes.height}px`;
+        this.instance.setPixelRatio(sizes.pixelRatio);
+        // Matches StudioDome interior (#EAE7DC); avoids flash while loading
+        this.instance.setClearColor('#EAE7DC', 1);
+
+        this.instance.outputColorSpace = THREE.SRGBColorSpace;
+        this.instance.toneMapping = THREE.ACESFilmicToneMapping;
+        this.instance.toneMappingExposure = 1.15;
+        this.instance.shadowMap.enabled = true;
+
+        if (!canvas) {
+            document.body.appendChild(this.instance.domElement);
+        }
+    }
+
+    resize(sizes) {
+        this.instance.setSize(sizes.width, sizes.height);
+        this.instance.domElement.style.width = `${sizes.width}px`;
+        this.instance.domElement.style.height = `${sizes.height}px`;
+        this.instance.setPixelRatio(sizes.pixelRatio);
+    }
+
+    update(scene, camera) {
+        this.instance.render(scene, camera);
+    }
+
+    dispose() {}
+}
+</file>
+
+<file path="src/gl/World.js">
+import * as THREE from 'three';
+import { PMREMGenerator } from 'three';
+import gsap from 'gsap';
+import Camera from './Camera.js';
+import Renderer from './Renderer.js';
+import ResourceLoader from './ResourceLoader.js';
+import StudioDome from './world/StudioDome.js';
+
+export default class World {
+    static instance = null;
+
+    /**
+     * @param {{ canvas?: HTMLCanvasElement; sizes: { width: number; height: number; pixelRatio: number; coarsePointer?: boolean } }} config
+     */
+    constructor(config) {
+        if (World.instance) {
+            return World.instance;
+        }
+
+        if (!config) {
+            throw new Error('World: config is required');
+        }
+        const { canvas, sizes } = config;
+        if (!sizes) {
+            throw new Error('World: config.sizes is required');
+        }
+        const { width, height, pixelRatio } = sizes;
+        if (typeof width !== 'number' || typeof height !== 'number' || typeof pixelRatio !== 'number') {
+            throw new Error('World: sizes must include numeric width, height, and pixelRatio');
+        }
+        if (width <= 0 || height <= 0) {
+            throw new Error('World: sizes width and height must be positive');
+        }
+        if (canvas != null && !(canvas instanceof HTMLCanvasElement)) {
+            throw new Error('World: canvas must be an HTMLCanvasElement when provided');
+        }
+
+        World.instance = this;
+
+        this.scene = new THREE.Scene();
+        this.camera = new Camera(sizes, this.scene);
+        this.renderer = new Renderer(sizes, this.scene, this.camera.instance, canvas);
+        this.renderer.instance.shadowMap.type = THREE.VSMShadowMap;
+
+        this.studioDome = new StudioDome();
+        this.studioDome.init({ scene: this.scene });
+        if (this.studioDome.mesh) {
+            this.scene.add(this.studioDome.mesh);
+        }
+
+        // Softer key (less directional “hot” edges); fill from ambient compensates brightness
+        this.ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.05);
+        this.directionalLight.position.set(-4.0, 5.0, 4.0);
+        this.directionalLight.castShadow = true;
+        const sh = this.directionalLight.shadow;
+        const lowShadow = sizes.coarsePointer === true;
+        sh.mapSize.width  = lowShadow ? 512 : 2048;
+        sh.mapSize.height = lowShadow ? 512 : 2048;
+        sh.camera.near = 0.5;
+        sh.camera.far = 25;
+        // Hero rings ~±1.5 world XY; ±6 sufficient with catcher z=-1.5 (behind rear ring ~-0.85)
+        sh.camera.left = -6;
+        sh.camera.right = 6;
+        sh.camera.top = 6;
+        sh.camera.bottom = -6;
+        sh.bias   = lowShadow ? -0.005 : -0.001;
+        sh.radius = lowShadow ? 4 : 12;
+        this.scene.add(this.ambientLight, this.directionalLight);
+
+        const shadowGeo = new THREE.PlaneGeometry(25, 25);
+        const shadowMat = new THREE.ShadowMaterial({ opacity: 0.45 });
+        this.shadowCatcher = new THREE.Mesh(shadowGeo, shadowMat);
+        this.shadowCatcher.position.z = -1.5;
+        this.shadowCatcher.receiveShadow = true;
+        this.scene.add(this.shadowCatcher);
+
+        this.resources = new ResourceLoader([
+            { name: 'envMap', type: 'hdri', path: '/hdri/studio_small_09_1k.hdr' },
+            { name: 'ringA', type: 'gltf', path: '/models/ring_a.glb' },
+            { name: 'ringB', type: 'gltf', path: '/models/ring_b.glb' },
+        ]);
+
+        /** Set from `main.js` when `HeroText` is created (layered load). */
+        this.heroText = null;
+        /** @type {import('./world/GlassRing.js').default | null} */
+        this.glassRing = null;
+        /** Avoid double-running GSAP env fades on the same material instance. */
+        this._envReflectionFadeStarted = new WeakSet();
+
+        this.resources.waitFor('envMap').then(() => {
+            this._setupEnvironment();
+        }).catch((err) => {
+            console.error('World: envMap failed', err);
+        });
+    }
+
+    /**
+     * Smooth env reflection reveal on metal (avoids HDRI “pop”). Safe to call repeatedly as hosts appear.
+     * @param {{ duration?: number }} [opts]
+     */
+    tryFadeEnvReflections(opts = {}) {
+        const duration = opts.duration ?? 2;
+        const env = this.scene?.environment;
+        if (!env) return;
+
+        /**
+         * @param {THREE.MeshPhysicalMaterial | null | undefined} mat
+         * @param {number} destIntensity
+         */
+        const run = (mat, destIntensity) => {
+            if (!mat || this._envReflectionFadeStarted.has(mat)) return;
+            this._envReflectionFadeStarted.add(mat);
+            mat.envMap = env;
+            mat.envMapIntensity = 0;
+            mat.needsUpdate = true;
+            gsap.to(mat, {
+                envMapIntensity: destIntensity,
+                duration,
+                ease: 'power2.inOut',
+                onUpdate: () => {
+                    mat.needsUpdate = true;
+                },
+            });
+        };
+
+        run(this.heroText?.goldMaterial, 1.5);
+        run(this.glassRing?.goldMaterial, 1.6);
+    }
+
+    _setupEnvironment() {
+        const texture = this.resources.get('envMap');
+        if (!texture) {
+            return;
+        }
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        const pmrem = new PMREMGenerator(this.renderer.instance);
+        const envTexture = pmrem.fromEquirectangular(texture).texture;
+        this.scene.environment = envTexture;
+        pmrem.dispose();
+        texture.dispose();
+        delete this.resources.items.envMap;
+
+        this.heroText?._syncGoldEnvMap?.();
+        this.tryFadeEnvReflections();
+    }
+
+    update() {
+        this.renderer.update(this.scene, this.camera.instance);
+    }
+
+    destroy() {
+        if (this.scene) {
+            if (this.scene.environment) {
+                this.scene.environment.dispose();
+            }
+            this.scene.environment = null;
+        }
+
+        this.heroText = null;
+        this.glassRing = null;
+
+        this.resources?.destroy();
+        this.resources = null;
+
+        this.studioDome?.dispose();
+        this.studioDome = null;
+
+        if (this.shadowCatcher) {
+            this.shadowCatcher.removeFromParent();
+            this.shadowCatcher.geometry?.dispose();
+            const m = this.shadowCatcher.material;
+            if (m) m.dispose();
+            this.shadowCatcher = null;
+        }
+
+        this.ambientLight = null;
+        this.directionalLight = null;
+
+        if (this.renderer) {
+            this.renderer.dispose();
+            if (this.renderer.instance) {
+                this.renderer.instance.dispose();
+                const el = this.renderer.instance.domElement;
+                if (el?.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            }
+        }
+
+        this.scene.clear();
+
+        World.instance = null;
+    }
+}
+
+export const getWorld = () => World.instance;
+</file>
+
+<file path="src/gl/world/GalleryRibbon.js">
+import * as THREE from 'three';
+import gsap from 'gsap';
+import { getWorld } from '../World.js';
+
+/* ─────────────────────────────────────────────────────────────────────
+   Configuration
+───────────────────────────────────────────────────────────────────── */
+const TOTAL = 24;
+const POOL  = 7;
+const BASE_PATH = '/photos/gallery/';
+
+/** Clear gap between photo *edges* (fraction of card height) — editorial rhythm */
+const EDGE_GAP_FRAC = 0.055;
+
+/** Idle auto-pan (world units / sec, same sign as wheel «next»). ~0 = off. */
+const AUTO_SCROLL_WORLD_PER_SEC = 0.1;
+
+/** After drag / wheel, pause auto-pan so it doesn’t fight the user */
+const AUTO_PAUSE_AFTER_USER_MS = 2800;
+
+/* ─────────────────────────────────────────────────────────────────────
+   GLSL — Vertex
+───────────────────────────────────────────────────────────────────── */
+const VERT = /* glsl */`
+    uniform float uVelocity;
+    varying vec2  vUv;
+
+    #define PI 3.14159265
+
+    void main() {
+        vUv = uv;
+        vec3 pos = position;
+
+        float curveZ = sin(uv.x * PI) * uVelocity * 0.8;
+        float curveY = sin(uv.y * PI) * uVelocity * 0.12;
+        pos.z += curveZ;
+        pos.y += curveY;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+`;
+
+/* ─────────────────────────────────────────────────────────────────────
+   GLSL — Fragment
+───────────────────────────────────────────────────────────────────── */
+const FRAG = /* glsl */`
+    uniform sampler2D uTexture;
+    uniform float     uOpacity;
+    uniform float     uAspect;
+    uniform float     uVelocity;
+    varying vec2      vUv;
+
+    void main() {
+        // 1. Dynamic UV zoom based on scroll speed
+        float speed = abs(uVelocity);
+        vec2 uv = (vUv - 0.5) * (1.0 - speed * 0.035) + 0.5;
+
+        // 2. Chromatic aberration (RGB split) tied to velocity direction
+        float shift = uVelocity * 0.012;
+        float r = texture2D(uTexture, vec2(uv.x + shift, uv.y)).r;
+        float g = texture2D(uTexture, uv).g;
+        float b = texture2D(uTexture, vec2(uv.x - shift, uv.y)).b;
+        vec3 col = vec3(r, g, b);
+
+        // 3. Rounded corners (use original vUv so the mask boundary stays rigid)
+        vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0);
+        float rad = 0.04;
+        vec2 q = abs(p) - vec2(uAspect * 0.5 - rad, 0.5 - rad);
+        float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rad;
+        float roundMask = 1.0 - smoothstep(-0.008, 0.008, d);
+
+        // 4. Vignette
+        float vig = 1.0 - dot(vUv - 0.5, (vUv - 0.5) * 2.2);
+        vig = clamp(vig, 0.0, 1.0);
+        col *= mix(1.0, vig, 0.22);
+
+        gl_FragColor = vec4(col, roundMask * uOpacity);
+    }
+`;
+
+const _FALLBACK = (() => {
+    const t = new THREE.DataTexture(new Uint8Array([24, 16, 12, 255]), 1, 1);
+    t.needsUpdate = true;
+    return t;
+})();
+
+function _makeMat() {
+    return new THREE.ShaderMaterial({
+        uniforms: {
+            uTexture:  { value: _FALLBACK },
+            uVelocity: { value: 0 },
+            uOpacity:  { value: 0 },
+            uAspect:   { value: 2 / 3 },
+        },
+        vertexShader:   VERT,
+        fragmentShader: FRAG,
+        transparent:    true,
+        depthWrite:     false,
+    });
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   GalleryRibbon — Infinite Object-Pool WebGL Carousel
+
+   • Spacing: uniform *edge* gap G between photos; centre step varies as
+     w_i/2 + G + w_{i+1}/2 (w = itemH × aspect). No single global stride.
+   • Aspects from build-time gallery-manifest.json (no 24× Image probes); GL reflow if decode differs.
+   • Optional slow auto-pan when idle; pauses on interaction + tab hidden.
+═════════════════════════════════════════════════════════════════════ */
+export default class GalleryRibbon {
+
+    constructor() {
+        this._w = getWorld();
+        if (!this._w) throw new Error('GalleryRibbon: World not ready');
+
+        this._geo = new THREE.PlaneGeometry(1, 1.5, 32, 32);
+
+        this._texCache   = new Map();
+        this._texPending = new Set();
+        this._ratioByIdx = new Map();
+
+        this._defaultRatio = 2 / 3;
+
+        this.scrollTarget  = 0;
+        this.scrollCurrent = 0;
+        this._prevScroll   = 0;
+        this._velocity     = 0;
+        this._rawVel       = 0;
+        this._momentum     = 0;
+
+        this._dragging    = false;
+        this._dragLastX   = 0;
+        this._dragVel     = 0;
+        this._isTouchDrag = false;
+
+        this._itemH  = 1.5;
+        this._velNorm = 1;
+
+        this._autoPausedUntil = 0;
+        this._lastAutoTs      = 0;
+
+        this._counterEl        = document.getElementById('gallery-counter');
+        this._overlayEl        = document.getElementById('gallery-overlay');
+        this._lastCounterVal   = -1;
+        this._counterThrottle  = 0;
+        this._capturePointerId = null;
+
+        this.container = new THREE.Group();
+        this.container.visible = false;
+        this._meshes = [];
+        this._buildPool();
+        this._w.scene.add(this.container);
+
+        this._downBound   = (e) => this._onPointerDown(e);
+        this._moveBound   = (e) => this._onPointerMove(e);
+        this._upBound     = (e) => this._onPointerUp(e);
+        this._cancelBound = (e) => this._onPointerCancel(e);
+        this._wheelBound  = (e) => this._onWheel(e);
+
+        this._visBound = () => {
+            if (!document.hidden) this._lastAutoTs = performance.now();
+        };
+
+        window.addEventListener('pointerdown',   this._downBound);
+        window.addEventListener('pointermove',   this._moveBound);
+        window.addEventListener('pointerup',     this._upBound);
+        window.addEventListener('pointercancel', this._cancelBound);
+        window.addEventListener('wheel',         this._wheelBound, { passive: true });
+        document.addEventListener('visibilitychange', this._visBound);
+
+        this._manifestPromise = this._loadGalleryManifest();
+    }
+
+    async _loadGalleryManifest() {
+        try {
+            const res = await fetch('/gallery-manifest.json');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            for (let i = 0; i < TOTAL; i++) {
+                const r = data[i];
+                if (typeof r === 'number' && r > 0) this._ratioByIdx.set(i, r);
+            }
+        } catch (e) {
+            console.warn('GalleryRibbon: gallery-manifest.json — using defaults until textures decode', e);
+        }
+    }
+
+    _suppressAutoPan() {
+        this._autoPausedUntil = performance.now() + AUTO_PAUSE_AFTER_USER_MS;
+    }
+
+    _buildPool() {
+        this._computeLayout();
+        for (let i = 0; i < POOL; i++) {
+            const mesh = new THREE.Mesh(this._geo, _makeMat());
+            mesh.userData.imgIdx = i % TOTAL;
+            mesh.position.z = 0;
+            this.container.add(mesh);
+            this._meshes.push(mesh);
+        }
+        this._setPoolOffsetsFromChain(0);
+        for (const m of this._meshes) this._applyScale(m);
+    }
+
+    _edgeGapWorld() {
+        return this._itemH * EDGE_GAP_FRAC;
+    }
+
+    _ratioAt(idx) {
+        idx = ((idx % TOTAL) + TOTAL) % TOTAL;
+        return this._ratioByIdx.get(idx) ?? this._defaultRatio;
+    }
+
+    _cardWorldW(idx) {
+        return this._itemH * this._ratioAt(idx);
+    }
+
+    /** World distance from centre of slide i to centre of slide i+1 (mod TOTAL). */
+    _centerStep(i) {
+        i = ((i % TOTAL) + TOTAL) % TOTAL;
+        const j = (i + 1) % TOTAL;
+        return this._cardWorldW(i) * 0.5 + this._edgeGapWorld() + this._cardWorldW(j) * 0.5;
+    }
+
+    _loopLength() {
+        let L = 0;
+        for (let i = 0; i < TOTAL; i++) L += this._centerStep(i);
+        return L;
+    }
+
+    _maxRatioInSet() {
+        let m = this._defaultRatio;
+        for (let i = 0; i < TOTAL; i++) {
+            const r = this._ratioAt(i);
+            if (r > m) m = r;
+        }
+        return m;
+    }
+
+    _forwardPoolFrom(i) {
+        let s   = 0;
+        let idx = ((i % TOTAL) + TOTAL) % TOTAL;
+        for (let k = 0; k < POOL; k++) {
+            s += this._centerStep(idx);
+            idx = (idx + 1) % TOTAL;
+        }
+        return s;
+    }
+
+    _backwardPoolFrom(i) {
+        let s   = 0;
+        let idx = ((i % TOTAL) + TOTAL) % TOTAL;
+        for (let k = 0; k < POOL; k++) {
+            const prev = (idx - 1 + TOTAL) % TOTAL;
+            s += this._centerStep(prev);
+            idx = prev;
+        }
+        return s;
+    }
+
+    _recomputeLayoutMetrics() {
+        this._velNorm = Math.max(0.001, this._loopLength() / TOTAL);
+    }
+
+    /** Pool slot k shows image (firstIdx + k) mod TOTAL; centres streak, middle at 0. */
+    _setPoolOffsetsFromChain(firstIdx) {
+        firstIdx = ((firstIdx % TOTAL) + TOTAL) % TOTAL;
+        const centers = [0];
+        for (let k = 1; k < POOL; k++) {
+            const prevImg = (firstIdx + k - 1) % TOTAL;
+            centers[k] = centers[k - 1] + this._centerStep(prevImg);
+        }
+        const mid   = Math.floor(POOL / 2);
+        const midC = centers[mid];
+        for (let k = 0; k < POOL; k++) {
+            this._meshes[k].userData.imgIdx = (firstIdx + k) % TOTAL;
+            this._meshes[k].userData.offset = centers[k] - midC;
+        }
+    }
+
+    _halfBoundDynamic() {
+        const offs = this._meshes.map((m) => m.userData.offset);
+        const spread = Math.max(...offs) - Math.min(...offs);
+        return spread * 0.5 + 0.5 * this._itemH * this._maxRatioInSet() + this._edgeGapWorld() +
+            this._itemH * 0.1;
+    }
+
+    /**
+     * After a ratio refines, rebuild offsets from left→right order; keep anchor world-X.
+     */
+    _reflowPreserveAnchor() {
+        const scroll = this.scrollCurrent;
+        const anchor = this._nearestCenterMesh();
+        const worldA = scroll + anchor.userData.offset;
+
+        const sorted = [...this._meshes].sort((a, b) => a.userData.offset - b.userData.offset);
+        const idxs   = sorted.map((m) => m.userData.imgIdx);
+
+        const p = [0];
+        for (let k = 1; k < POOL; k++) p[k] = p[k - 1] + this._centerStep(idxs[k - 1]);
+
+        const ia = sorted.indexOf(anchor);
+        for (let k = 0; k < POOL; k++) {
+            sorted[k].userData.offset = p[k] - p[ia] + worldA - scroll;
+        }
+        this._prevScroll = this.scrollCurrent;
+        this._velocity   = 0;
+    }
+
+    _nearestCenterMesh() {
+        let best = this._meshes[0], bestDist = Infinity;
+        for (const m of this._meshes) {
+            const d = Math.abs(this.scrollCurrent + m.userData.offset);
+            if (d < bestDist) { bestDist = d; best = m; }
+        }
+        return best;
+    }
+
+    async _ensureRatiosForAllSlides() {
+        await this._manifestPromise;
+        for (let i = 0; i < TOTAL; i++) {
+            if (!this._ratioByIdx.has(i)) this._ratioByIdx.set(i, this._defaultRatio);
+        }
+    }
+
+    _computeLayout() {
+        const cam    = this._w.camera.instance;
+        const camZ   = Math.max(0.5, cam.position.z);
+        const vFOV   = THREE.MathUtils.degToRad(cam.fov);
+        const worldH = 2 * camZ * Math.tan(vFOV * 0.5);
+        this._itemH  = worldH * 0.80;
+        this._recomputeLayoutMetrics();
+    }
+
+    _applyScale(mesh) {
+        const idx   = mesh.userData.imgIdx;
+        const ratio = this._ratioAt(idx);
+        mesh.scale.set(this._itemH * ratio, this._itemH / 1.5, 1);
+        mesh.material.uniforms.uAspect.value = ratio;
+    }
+
+    _applyTexture(mesh, idx) {
+        idx = ((idx % TOTAL) + TOTAL) % TOTAL;
+
+        if (this._texCache.has(idx)) {
+            mesh.material.uniforms.uTexture.value = this._texCache.get(idx);
+            this._applyScale(mesh);
+            return;
+        }
+
+        mesh.material.uniforms.uTexture.value = _FALLBACK;
+        if (this._texPending.has(idx)) return;
+        this._texPending.add(idx);
+
+        new THREE.TextureLoader().load(
+            `${BASE_PATH}${idx + 1}.webp`,
+            (tex) => {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                tex.minFilter = THREE.LinearMipmapLinearFilter;
+                tex.magFilter = THREE.LinearFilter;
+                const img = tex.image;
+                const ratio = img?.width && img?.height
+                    ? img.width / img.height
+                    : this._defaultRatio;
+
+                const had = this._ratioByIdx.get(idx);
+                this._ratioByIdx.set(idx, ratio);
+                this._texCache.set(idx, tex);
+                this._texPending.delete(idx);
+
+                if (this.container.visible && had != null &&
+                    Math.abs(had - ratio) > 1e-4) {
+                    this._recomputeLayoutMetrics();
+                    this._reflowPreserveAnchor();
+                }
+
+                for (const m of this._meshes) {
+                    if (m.userData.imgIdx === idx) {
+                        m.material.uniforms.uTexture.value = tex;
+                        this._applyScale(m);
+                    }
+                }
+            },
+            undefined,
+            () => { this._texPending.delete(idx); },
+        );
+    }
+
+    async open() {
+        await this._ensureRatiosForAllSlides();
+        this._computeLayout();
+        this._resetState();
+        this.container.visible = true;
+        this._lastAutoTs       = performance.now();
+        this._autoPausedUntil  = performance.now() + 2200;
+
+        for (const m of this._meshes) {
+            this._applyTexture(m, m.userData.imgIdx);
+        }
+
+        const entryOrder = [3, 2, 4, 1, 5, 0, 6];
+        entryOrder.forEach((poolIdx, staggerI) => {
+            const m     = this._meshes[poolIdx];
+            const delay = staggerI * 0.07;
+
+            m.position.y = -this._itemH * 0.65;
+
+            gsap.to(m.position, {
+                y:        0,
+                duration: 1.3,
+                delay,
+                ease:     'expo.out',
+            });
+            gsap.to(m.material.uniforms.uOpacity, {
+                value:    1,
+                duration: 0.9,
+                delay,
+                ease:     'power2.out',
+            });
+        });
+    }
+
+    close(onComplete) {
+        this._dragging = false;
+        this._momentum = 0;
+        this._releasePointerCaptureIfAny();
+        this._autoPausedUntil = 0;
+
+        const exitOrder = [0, 6, 1, 5, 2, 4, 3];
+        const tl = gsap.timeline({
+            onComplete: () => {
+                this.container.visible = false;
+                for (const m of this._meshes) m.position.y = 0;
+                onComplete?.();
+            },
+        });
+
+        exitOrder.forEach((poolIdx, staggerI) => {
+            const m = this._meshes[poolIdx];
+            const t = staggerI * 0.04;
+            tl.to(m.position,
+                { y: -this._itemH * 0.45, duration: 0.5, ease: 'power2.in' },
+                t,
+            );
+            tl.to(m.material.uniforms.uOpacity,
+                { value: 0, duration: 0.38, ease: 'power2.in' },
+                t,
+            );
+        });
+    }
+
+    resize() {
+        if (!this.container.visible) return;
+        const prevH = this._itemH;
+        this._computeLayout();
+        const sc = prevH > 1e-6 ? this._itemH / prevH : 1;
+        if (Math.abs(sc - 1) > 1e-6) {
+            this.scrollCurrent *= sc;
+            this.scrollTarget  *= sc;
+            for (const m of this._meshes) m.userData.offset *= sc;
+            this._prevScroll = this.scrollCurrent;
+        }
+        this._recomputeLayoutMetrics();
+        for (const m of this._meshes) this._applyScale(m);
+    }
+
+    update() {
+        if (!this.container.visible) return;
+
+        const now = performance.now();
+        let frameDt = this._lastAutoTs > 0 ? (now - this._lastAutoTs) / 1000 : 0;
+        this._lastAutoTs = now;
+        if (frameDt > 0.08) frameDt = 0.08;
+
+        if (!this._dragging) {
+            this._momentum    *= 0.91;
+            this.scrollTarget += this._momentum;
+        }
+
+        if (AUTO_SCROLL_WORLD_PER_SEC !== 0 &&
+            !this._dragging &&
+            !document.hidden &&
+            now >= this._autoPausedUntil &&
+            Math.abs(this._momentum) < 0.015) {
+            this.scrollTarget -= AUTO_SCROLL_WORLD_PER_SEC * frameDt;
+        }
+
+        const lerpF = this._isTouchDrag ? 0.14 : 0.085;
+        this.scrollCurrent += (this.scrollTarget - this.scrollCurrent) * lerpF;
+
+        this._rawVel     = this.scrollCurrent - this._prevScroll;
+        this._prevScroll = this.scrollCurrent;
+        this._velocity   += (this._rawVel - this._velocity) * 0.18;
+
+        const shaderVel = THREE.MathUtils.clamp(
+            this._velocity / this._velNorm,
+            -2.0, 2.0,
+        );
+
+        const halfBound = this._halfBoundDynamic();
+
+        for (const m of this._meshes) {
+            const worldX = this.scrollCurrent + m.userData.offset;
+
+            if (worldX < -halfBound) {
+                const i = m.userData.imgIdx;
+                m.userData.offset += this._forwardPoolFrom(i);
+                m.userData.imgIdx = (i + POOL) % TOTAL;
+                this._applyTexture(m, m.userData.imgIdx);
+            } else if (worldX > halfBound) {
+                const i = m.userData.imgIdx;
+                m.userData.offset -= this._backwardPoolFrom(i);
+                m.userData.imgIdx = ((i - POOL) % TOTAL + TOTAL) % TOTAL;
+                this._applyTexture(m, m.userData.imgIdx);
+            }
+
+            m.position.x = this.scrollCurrent + m.userData.offset;
+            m.material.uniforms.uVelocity.value = shaderVel;
+        }
+
+        if (this._counterEl) {
+            this._counterThrottle++;
+            if (this._counterThrottle >= 6) {
+                this._counterThrottle = 0;
+                let bestDist = Infinity, bestIdx = 0;
+                for (const m of this._meshes) {
+                    const dx = Math.abs(this.scrollCurrent + m.userData.offset);
+                    if (dx < bestDist) { bestDist = dx; bestIdx = m.userData.imgIdx; }
+                }
+                const displayNum = bestIdx + 1;
+                if (displayNum !== this._lastCounterVal) {
+                    this._lastCounterVal = displayNum;
+                    this._counterEl.textContent =
+                        String(displayNum).padStart(2, '0') +
+                        ' / ' +
+                        String(TOTAL).padStart(2, '0');
+                }
+            }
+        }
+    }
+
+    _px2world() {
+        const cam    = this._w.camera.instance;
+        const camZ   = Math.max(0.5, cam.position.z);
+        const vFOV   = THREE.MathUtils.degToRad(cam.fov);
+        const worldH = 2 * camZ * Math.tan(vFOV * 0.5);
+        return worldH / window.innerHeight;
+    }
+
+    _releasePointerCaptureIfAny() {
+        if (this._capturePointerId == null || !this._overlayEl) return;
+        try {
+            this._overlayEl.releasePointerCapture(this._capturePointerId);
+        } catch {
+            /* noop */
+        }
+        this._capturePointerId = null;
+    }
+
+    _onPointerDown(e) {
+        if (!this.container.visible) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        if (e.target?.closest?.('.gallery-close-btn')) return;
+
+        this._dragging    = true;
+        this._dragLastX   = e.clientX;
+        this._dragVel     = 0;
+        this._momentum    = 0;
+        this._isTouchDrag = e.pointerType === 'touch';
+        this._suppressAutoPan();
+
+        if (this._overlayEl && (e.pointerType === 'touch' || e.pointerType === 'pen')) {
+            try {
+                this._overlayEl.setPointerCapture(e.pointerId);
+                this._capturePointerId = e.pointerId;
+            } catch {
+                this._capturePointerId = null;
+            }
+        }
+    }
+
+    _onPointerMove(e) {
+        if (!this._dragging || !this.container.visible) return;
+        const delta = (e.clientX - this._dragLastX) * this._px2world();
+        this.scrollTarget += delta;
+        this._dragVel      = this._dragVel * 0.65 + delta * 0.35;
+        this._dragLastX    = e.clientX;
+    }
+
+    _onPointerUp(e) {
+        if (e?.pointerType === 'mouse' && e.button !== 0) return;
+        if (e && this._capturePointerId != null && e.pointerId !== this._capturePointerId)
+            return;
+        this._endDragInteraction();
+    }
+
+    _onPointerCancel(e) {
+        if (e && this._capturePointerId != null && e.pointerId !== this._capturePointerId)
+            return;
+        this._endDragInteraction();
+    }
+
+    _endDragInteraction() {
+        if (!this._dragging) {
+            this._releasePointerCaptureIfAny();
+            return;
+        }
+        this._dragging = false;
+        this._releasePointerCaptureIfAny();
+        this._momentum = this._dragVel * 9;
+    }
+
+    _onWheel(e) {
+        if (!this.container.visible) return;
+        this._suppressAutoPan();
+        this._momentum = 0;
+        const rawDelta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 120);
+        this.scrollTarget -= rawDelta * this._px2world() * 2.5;
+    }
+
+    _resetState() {
+        this.scrollTarget     = 0;
+        this.scrollCurrent    = 0;
+        this._prevScroll      = 0;
+        this._velocity        = 0;
+        this._rawVel          = 0;
+        this._momentum        = 0;
+        this._dragVel         = 0;
+        this._dragging        = false;
+        this._lastCounterVal  = -1;
+        this._counterThrottle = 0;
+
+        this._recomputeLayoutMetrics();
+        this._setPoolOffsetsFromChain(0);
+
+        for (const m of this._meshes) {
+            m.position.y                        = 0;
+            m.material.uniforms.uOpacity.value  = 0;
+            m.material.uniforms.uVelocity.value = 0;
+            m.material.uniforms.uAspect.value   = this._defaultRatio;
+            m.material.uniforms.uTexture.value  = _FALLBACK;
+            this._applyScale(m);
+        }
+    }
+
+    destroy() {
+        this._releasePointerCaptureIfAny();
+        window.removeEventListener('pointerdown',   this._downBound);
+        window.removeEventListener('pointermove',   this._moveBound);
+        window.removeEventListener('pointerup',     this._upBound);
+        window.removeEventListener('pointercancel', this._cancelBound);
+        window.removeEventListener('wheel',         this._wheelBound);
+        document.removeEventListener('visibilitychange', this._visBound);
+
+        this._w.scene.remove(this.container);
+        this._geo.dispose();
+        for (const m of this._meshes) m.material.dispose();
+        for (const [, tex] of this._texCache) tex.dispose();
+
+        this._texCache.clear();
+        this._ratioByIdx.clear();
+        this._meshes = [];
+    }
+}
+</file>
+
+<file path="src/modules/Scroll.js">
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import SplitType from 'split-type';
+import { getWorld } from '../gl/World.js';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const LENIS_DEFAULTS = {
+    duration: 2.0,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    wheelMultiplier: 0.8,
+    smoothWheel: true,
+    syncTouch: true,
+    touchMultiplier: 1.0,
+    autoRaf: false,
+};
+
+export default class Scroll {
+    constructor(lenisOptions = {}) {
+        this.isNativeTouch =
+            typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
+        if (this.isNativeTouch) {
+            // Mobile: keep native browser scroll path for reliable touch + pull-to-refresh.
+            // Register a passive scroll listener so ScrollTrigger.update() fires on every
+            // native scroll tick — same role that lenis.on('scroll', ...) plays on desktop.
+            this._nativeScrollHandler = () => ScrollTrigger.update();
+            window.addEventListener('scroll', this._nativeScrollHandler, { passive: true });
+
+            this.lenis = {
+                on: () => {},
+                off: () => {},
+                raf: () => {},
+                resize: () => {},
+                destroy: () => {
+                    if (this._nativeScrollHandler) {
+                        window.removeEventListener('scroll', this._nativeScrollHandler);
+                    }
+                },
+                start: () => {
+                    document.documentElement.style.overflow = '';
+                    document.body.style.overflow = '';
+                },
+                stop: () => {
+                    document.documentElement.style.overflow = 'hidden';
+                    document.body.style.overflow = 'hidden';
+                },
+                scrollTo: (target, opts = {}) => {
+                    if (typeof target === 'number') {
+                        window.scrollTo({ top: target, behavior: opts.immediate ? 'auto' : 'smooth' });
+                        return;
+                    }
+                    if (target === 0 || target === 'top') {
+                        window.scrollTo({ top: 0, behavior: opts.immediate ? 'auto' : 'smooth' });
+                    }
+                },
+            };
+            return;
+        }
+
+        this.lenis = new Lenis({
+            ...LENIS_DEFAULTS,
+            ...lenisOptions,
+        });
+    }
+
+    raf(time) {
+        if (!this.isNativeTouch) this.lenis.raf(time);
+    }
+
+    resize() {
+        if (!this.isNativeTouch) this.lenis.resize();
+        ScrollTrigger.refresh();
+    }
+
+    destroy() {
+        if (!this.isNativeTouch) {
+            this.lenis.off('scroll', ScrollTrigger.update);
+            this.lenis.destroy();
+            return;
+        }
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+    }
+}
+
+/** Desktop vs portrait: lateral spread and uniform ring scale multipliers. */
+const RING_RESP_DESKTOP = { xMul: 1, scaleMul: 1 };
+const RING_RESP_MOBILE = { xMul: 0.28, scaleMul: 0.82 };
+
+/** ~32° — ring band faces camera instead of edge-on (thin line). */
+const RING_FACE_TILT_X = Math.PI * 0.18;
+
+/** @type {InstanceType<typeof SplitType> | null} */
+let pathTextSplit1 = null;
+/** @type {InstanceType<typeof SplitType> | null} */
+let pathTextSplit2 = null;
+
+/**
+ * Dual-ring scroll: one master timeline scrubs rings + camera across the full document;
+ * DOM beats use dedicated ScrollTriggers on their sections.
+ * @param {{ mesh: import('three').Object3D; groupA: import('three').Object3D; groupB: import('three').Object3D }} glassRing
+ */
+export function bindGlassRingScrollEffects(glassRing) {
+    const ga = glassRing.groupA;
+    const gb = glassRing.groupB;
+    const st = { invalidateOnRefresh: true };
+    const easeSeg = 'power2.inOut';
+
+    const world = getWorld();
+    const camPos = world?.camera?.instance?.position;
+
+    /**
+     * @param {{ xMul: number; scaleMul: number }} m
+     */
+    function buildRingChoreography(m) {
+        const X = (v) => v * m.xMul;
+        const S = (v) => v * m.scaleMul;
+
+        /* ── Absolute position constants for masterTl (total span 0 → 160)
+           Act II crossover stretched for path pin (+=1500) + glimpse pin (+=3000) scroll budget ── */
+        const A1_DUR = 30;   // Act I:    0   → 30
+        const A2_DUR = 95;   // Act II:   30  → 125  (slow crossover during glimpse photo pin)
+        const A3_DUR = 20;   // Act III:  125 → 145
+        const A4_DUR = 15;   // Act IV:   145 → 160
+        const A2_START = 30;
+        const A3_START = 125;
+        const A4_START = 145;
+
+        const curtainGa = { x: X(-2), y: 0.58, z: 2.4 };
+        const curtainGb = { x: X(2), y: -0.48, z: -2.9 };
+        const curtainGaScale = { x: S(0.52), y: S(0.52), z: S(0.52) };
+        const curtainGbScale = { x: S(0.22), y: S(0.22), z: S(0.22) };
+        const curtainGaRot = { x: RING_FACE_TILT_X + 0.12, y: 0.82, z: 0.1 };
+        const curtainGbRot = { x: RING_FACE_TILT_X + 0.06, y: -0.76, z: -0.08 };
+
+        const crossGa = { x: X(1.5), y: -1.2, z: 1.0 };
+        const crossGb = { x: X(-1.5), y: 1.2, z: -2.0 };
+        const crossGaScale = { x: S(0.48), y: S(0.48), z: S(0.48) };
+        const crossGbScale = { x: S(0.26), y: S(0.26), z: S(0.26) };
+        const crossGaRot = { x: RING_FACE_TILT_X + 0.42, y: -0.38, z: 0.92 };
+        const crossGbRot = { x: RING_FACE_TILT_X + 0.36, y: 0.44, z: -0.88 };
+
+        const unityGa = { x: 0, y: 0.15, z: 0.6 };
+        const unityGb = { x: 0, y: -0.15, z: -0.6 };
+        const unityScale = { x: S(0.55), y: S(0.55), z: S(0.55) };
+        const unityGaRot = { x: RING_FACE_TILT_X + 0.2, y: 0.72, z: 0.45 };
+        const unityGbRot = { x: RING_FACE_TILT_X + 0.14, y: -0.7, z: -0.42 };
+
+        const persistGa = { x: 0, y: 0, z: 0.6 };
+        const persistGb = { x: 0, y: 0, z: -0.6 };
+        const persistScale = { x: S(0.65), y: S(0.65), z: S(0.65) };
+
+        gsap.set('.golden-thread', { scaleY: 0, transformOrigin: 'top center' });
+
+        gsap.set('.destination-content, .final-date, .final-tagline', {
+            autoAlpha: 0,
+            y: 30,
+        });
+        pathTextSplit1?.revert();
+        pathTextSplit2?.revert();
+        pathTextSplit1 = new SplitType('.path-text-1', { types: 'chars' });
+        pathTextSplit2 = new SplitType('.path-text-2', { types: 'chars' });
+
+        gsap.set('.path-text-1, .path-text-2', {
+            autoAlpha: 1,
+            xPercent: -50,
+            yPercent: -50,
+        });
+        gsap.set(pathTextSplit1.chars, { opacity: 0, y: 26 });
+        gsap.set(pathTextSplit2.chars, { opacity: 0, y: 26 });
+
+        /* ── Path DOM timeline: pinned — 1500px virtual scroll budget ── */
+        const pathDomTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#section-path',
+                start: 'top top',
+                end: '+=1500',
+                pin: true,
+                scrub: 1.2,
+                ...st,
+            },
+        });
+
+        pathDomTl.to('.golden-thread', { scaleY: 1, ease: 'none', duration: 100 }, 0);
+
+        pathDomTl.to(pathTextSplit1.chars, {
+            opacity: 1,
+            y: 0,
+            ease: 'power2.out',
+            stagger: { amount: 10, from: 'start' },
+            duration: 15,
+        }, 0);
+        pathDomTl.to(pathTextSplit1.chars, {
+            opacity: 0,
+            y: -22,
+            ease: 'power2.in',
+            stagger: { amount: 6.5, from: 'end' },
+            duration: 10,
+        }, 35);
+
+        pathDomTl.to(pathTextSplit2.chars, {
+            opacity: 1,
+            y: 0,
+            ease: 'power2.out',
+            stagger: { amount: 10, from: 'start' },
+            duration: 15,
+        }, 50);
+        pathDomTl.to(pathTextSplit2.chars, {
+            opacity: 0,
+            y: -22,
+            ease: 'power2.in',
+            stagger: { amount: 9, from: 'end' },
+            duration: 15,
+        }, 85);
+
+        /* ── Glimpse: img crossfade prep + button (btn tween unchanged below) ── */
+        gsap.set('.glimpse-img-2, .glimpse-img-3', { opacity: 0 });
+        gsap.set('#btn-open-gallery', { autoAlpha: 0 });
+        gsap.set('.glimpse-label', { autoAlpha: 1 });
+
+        /* ── Glimpse DOM: pin +=3000px, scrubbed mask + crossfades (0–100) + button ── */
+        const glimpseDomTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#section-glimpse',
+                start: 'top top',
+                end: '+=3000',
+                pin: true,
+                scrub: 1,
+                ...st,
+            },
+        });
+
+        /* 0–40 — mask → viewport window; label fades with expansion */
+        glimpseDomTl.to('.glimpse-expand-mask', {
+            width: '100vw',
+            height: '100vh',
+            borderRadius: '0px',
+            duration: 40,
+            ease: 'power2.inOut',
+        }, 0);
+        glimpseDomTl.to('.glimpse-label', {
+            autoAlpha: 0,
+            y: -12,
+            duration: 40,
+            ease: 'power2.inOut',
+        }, 0);
+
+        /* 40–70 — crossfade 1 */
+        glimpseDomTl.to('.glimpse-img-2', {
+            opacity: 1,
+            duration: 30,
+            ease: 'power2.inOut',
+        }, 40);
+
+        /* 70–100 — crossfade 2 */
+        glimpseDomTl.to('.glimpse-img-3', {
+            opacity: 1,
+            duration: 30,
+            ease: 'power2.inOut',
+        }, 70);
+
+        /* #btn-open-gallery — left exactly as before (do not modify) */
+        glimpseDomTl.to('#btn-open-gallery', {
+            autoAlpha: 1,
+            y: -10,
+            duration: 15,
+        }, '-=10');
+
+        /* masterTl MUST follow pathDomTl + glimpseDomTl so body scrub includes +=1500 and +=3000 pinSpacing */
+        const masterTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 1.5,
+                ...st,
+            },
+        });
+
+        /* Act I — curtain: 0 → 30 */
+        masterTl
+            .to(ga.position, { ...curtainGa, duration: A1_DUR, ease: 'none' }, 0)
+            .to(gb.position, { ...curtainGb, duration: A1_DUR, ease: 'none' }, 0)
+            .to(ga.scale, { ...curtainGaScale, duration: A1_DUR, ease: 'none' }, 0)
+            .to(gb.scale, { ...curtainGbScale, duration: A1_DUR, ease: 'none' }, 0)
+            .to(ga.rotation, { ...curtainGaRot, duration: A1_DUR, ease: 'none' }, 0)
+            .to(gb.rotation, { ...curtainGbRot, duration: A1_DUR, ease: 'none' }, 0);
+
+        // 3D hero names: scale out by end of Act I (before Act II crossover / path copy)
+        const heroRoot = world?.heroText?.root;
+        if (heroRoot) {
+            masterTl.to(
+                heroRoot.scale,
+                {
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                    duration: A1_DUR,
+                    ease: 'power2.inOut',
+                },
+                0,
+            );
+        }
+
+        /* Mobile: DOM hero names scrub out with Act I (WebGL group is hidden). */
+        if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches) {
+            masterTl.fromTo(
+                '#hero-names',
+                { opacity: 1, y: 0, scale: 1, xPercent: -50, yPercent: -50, x: 0 },
+                {
+                    opacity: 0,
+                    y: 50,
+                    scale: 0.9,
+                    xPercent: -50,
+                    yPercent: -50,
+                    x: 0,
+                    ease: 'power2.inOut',
+                    duration: A1_DUR,
+                    immediateRender: false,
+                },
+                0,
+            );
+        }
+
+        /* Act II — crossover: 30 → 125 */
+        masterTl
+            .to(ga.position, { ...crossGa, duration: A2_DUR, ease: 'power1.inOut' }, A2_START)
+            .to(gb.position, { ...crossGb, duration: A2_DUR, ease: 'power1.inOut' }, A2_START)
+            .to(ga.scale, { ...crossGaScale, duration: A2_DUR, ease: 'power1.inOut' }, A2_START)
+            .to(gb.scale, { ...crossGbScale, duration: A2_DUR, ease: 'power1.inOut' }, A2_START)
+            .to(ga.rotation, { ...crossGaRot, duration: A2_DUR, ease: 'power1.inOut' }, A2_START)
+            .to(gb.rotation, { ...crossGbRot, duration: A2_DUR, ease: 'power1.inOut' }, A2_START);
+
+        /* Act III — unity: 125 → 145 */
+        masterTl
+            .to(ga.position, { ...unityGa, duration: A3_DUR, ease: 'power2.inOut' }, A3_START)
+            .to(gb.position, { ...unityGb, duration: A3_DUR, ease: 'power2.inOut' }, A3_START)
+            .to(ga.scale, { ...unityScale, duration: A3_DUR, ease: 'power2.inOut' }, A3_START)
+            .to(gb.scale, { ...unityScale, duration: A3_DUR, ease: 'power2.inOut' }, A3_START)
+            .to(ga.rotation, { ...unityGaRot, duration: A3_DUR, ease: 'power2.inOut' }, A3_START)
+            .to(gb.rotation, { ...unityGbRot, duration: A3_DUR, ease: 'power2.inOut' }, A3_START);
+
+        /* Act IV — persistent Unity backdrop: 145 → 160 */
+        masterTl
+            .to(ga.position, { ...persistGa, duration: A4_DUR, ease: 'none' }, A4_START)
+            .to(gb.position, { ...persistGb, duration: A4_DUR, ease: 'none' }, A4_START)
+            .to(ga.scale, { ...persistScale, duration: A4_DUR, ease: 'none' }, A4_START)
+            .to(gb.scale, { ...persistScale, duration: A4_DUR, ease: 'none' }, A4_START)
+            .to(ga.rotation, { y: '+=1.5', ease: 'none', duration: A4_DUR }, A4_START)
+            .to(gb.rotation, { y: '-=1.5', ease: 'none', duration: A4_DUR }, A4_START);
+
+        if (camPos) {
+            masterTl
+                .to(camPos, { z: 6.5, y: 0.4, duration: A1_DUR, ease: 'none' }, 0)
+                .to(camPos, { z: 5, y: 0, duration: A2_DUR, ease: 'power1.inOut' }, A2_START)
+                .to(camPos, { z: 4.85, y: 0, duration: A3_DUR, ease: 'power2.inOut' }, A3_START)
+                .to(camPos, { z: 4.55, y: 0, duration: A4_DUR, ease: 'none' }, A4_START);
+        }
+
+        gsap.to('.destination-content', {
+            autoAlpha: 1,
+            y: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#section-destination',
+                start: 'top 75%',
+                end: 'center center',
+                scrub: true,
+                ...st,
+            },
+        });
+
+        gsap.to(['.final-date', '.final-tagline'], {
+            autoAlpha: 1,
+            y: 0,
+            stagger: 0.15,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#section-final',
+                start: 'top 60%',
+                end: 'bottom 90%',
+                scrub: true,
+                ...st,
+            },
+        });
+
+        /* ── Final climax: perpetual slow mesh rotation when section enters ── */
+        ScrollTrigger.create({
+            trigger: '#section-final',
+            start: 'top 70%',
+            once: true,
+            onEnter: () => {
+                // Majestic slow Y-rotation on the parent mesh (safe: masterTl only
+                // scrubs groupA / groupB children, never the root mesh rotation)
+                gsap.to(glassRing.mesh.rotation, {
+                    y: `+=${Math.PI * 2}`,
+                    duration: 28,
+                    ease: 'none',
+                    repeat: -1,
+                });
+                // Subtle counter-tilt on Z — rings drift into orbital stance
+                gsap.to(glassRing.mesh.rotation, {
+                    z: Math.PI * 0.08,
+                    duration: 4.5,
+                    ease: 'power2.out',
+                });
+            },
+        });
+    }
+
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 768px)', () => {
+        buildRingChoreography(RING_RESP_DESKTOP);
+    });
+    mm.add('(max-width: 767px)', () => {
+        buildRingChoreography(RING_RESP_MOBILE);
+    });
+
+    const { floatA, floatB } = glassRing;
+    if (floatA && floatB) {
+        const twoPi = Math.PI * 2;
+        gsap.to(floatA.rotation, {
+            y: `+=${twoPi}`,
+            duration: 52,
+            repeat: -1,
+            ease: 'none',
+        });
+        gsap.to(floatB.rotation, {
+            y: `-=${twoPi}`,
+            duration: 60,
+            repeat: -1,
+            ease: 'none',
+        });
+    }
+}
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+    <link rel="preload" href="/hdri/studio_small_09_1k.hdr" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="/models/ring_a.glb" as="fetch" crossorigin="anonymous" />
+    <meta name="theme-color" content="#EAE7DC" />
+    <meta
+      name="description"
+      content="Свадебное приглашение Кати и Артёма — 08.08.2026. История, галерея и RSVP."
+    />
+    <meta property="og:title" content="Катя & Артём · 08.08.2026" />
+    <meta property="og:description" content="Приглашаем на свадьбу" />
+    <meta property="og:url" content="https://katyartemwedding.ru/" />
+    <meta property="og:site_name" content="Катя & Артём" />
+    <meta property="og:image" content="https://katyartemwedding.ru/og.webp?v=4" />
+    <meta property="og:image:secure_url" content="https://katyartemwedding.ru/og.webp?v=4" />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Катя & Артём · 08.08.2026" />
+    <meta name="twitter:description" content="Приглашаем на свадьбу" />
+    <meta name="twitter:image" content="https://katyartemwedding.ru/og.webp?v=4" />
+    <title>Катя &amp; Артём · 08.08.2026</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div id="cursor" aria-hidden="true"></div>
+    <div id="preloader">
+      <div class="preloader-ring-wrap">
+        <svg class="preloader-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle class="preloader-track" cx="50" cy="50" r="38" />
+          <circle class="preloader-progress" id="preloader-arc" cx="50" cy="50" r="38" />
+        </svg>
+        <p class="preloader-text">К &amp; А</p>
+      </div>
+    </div>
+    <div id="hero-spacer"></div>
+    <nav id="site-nav">
+      <div class="nav-logo">К & А</div>
+      <button id="nav-burger" type="button" aria-label="Меню" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="#section-path">История</a></li>
+        <li><a href="#section-glimpse">Галерея</a></li>
+        <li><a href="#section-destination">Детали</a></li>
+      </ul>
+    </nav>
+    <main id="main">
+    <div id="hero-overlay" class="hero-overlay" role="banner">
+      <div class="hero-overlay__inner">
+        <p class="hero-tagline">ПРИГЛАШАЕМ НА СВАДЬБУ</p>
+        <div id="hero-names" class="hero-names" aria-label="Имена">
+          <span class="hero-names__part">Катя</span>
+          <span class="hero-names__amp">&amp;</span>
+          <span class="hero-names__part">Артём</span>
+        </div>
+        <div class="hero-bottom">
+          <p class="hero-date">08 · 08 · 2026</p>
+          <div id="countdown">
+            <div class="cd-unit">
+              <span class="cd-num" id="cd-days">000</span>
+              <span class="cd-label">дней</span>
+            </div>
+            <div class="cd-unit">
+              <span class="cd-num" id="cd-hours">00</span>
+              <span class="cd-label">часов</span>
+            </div>
+            <div class="cd-unit">
+              <span class="cd-num" id="cd-minutes">00</span>
+              <span class="cd-label">минут</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-scroll-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <section id="section-path">
+      <div class="path-container">
+        <div class="golden-thread" aria-hidden="true"></div>
+        <p class="path-text path-text-1">Две истории...</p>
+        <p class="path-text path-text-2">...становятся одной</p>
+      </div>
+    </section>
+
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <section id="section-glimpse">
+      <div class="glimpse-pin-container">
+        <p class="glimpse-label">Наша история</p>
+        <div class="glimpse-expand-mask">
+          <img src="/photos/scroll/1.webp" class="glimpse-img glimpse-img-1" alt="" />
+          <img src="/photos/scroll/2.webp" class="glimpse-img glimpse-img-2" alt="" />
+          <img src="/photos/scroll/3.webp" class="glimpse-img glimpse-img-3" alt="" />
+        </div>
+        <div class="glimpse-action">
+          <button id="btn-open-gallery" class="editorial-btn">Смотреть всю историю</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <section id="section-destination">
+      <div class="destination-content">
+        <p class="dest-date">08 августа 2026</p>
+        <h2 class="dest-title">Ресторан «SKY»</h2>
+        <p class="dest-address">Ворошиловский проспект, 41/112</p>
+        <a
+          href="https://yandex.ru/maps/?text=%D0%A0%D0%BE%D1%81%D1%82%D0%BE%D0%B2-%D0%BD%D0%B0-%D0%94%D0%BE%D0%BD%D1%83%2C%20%D0%92%D0%BE%D1%80%D0%BE%D1%88%D0%B8%D0%BB%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%20%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82%2C%2041%2F112%20%D0%A0%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%20SKY"
+          class="route-link"
+          rel="noopener noreferrer"
+          >Проложить маршрут</a>
+        <button id="btn-reveal-rsvp" class="editorial-btn" type="button">Подтвердить присутствие</button>
+        <form id="rsvp-form" class="rsvp-form" style="display: none;">
+          <input
+            type="text"
+            id="rsvp-name"
+            class="rsvp-input"
+            placeholder="Ваши имя и фамилия"
+            required
+          />
+          <div class="rsvp-options">
+            <label class="rsvp-radio-label">
+              <input type="radio" name="attendance" value="Буду" checked />
+              <span class="radio-custom"></span> С удовольствием буду
+            </label>
+            <label class="rsvp-radio-label">
+              <input type="radio" name="attendance" value="Не смогу" />
+              <span class="radio-custom"></span> К сожалению, не смогу
+            </label>
+          </div>
+          <button type="submit" class="editorial-btn submit-btn">Отправить</button>
+          <p id="rsvp-status" class="rsvp-status"></p>
+        </form>
+      </div>
+    </section>
+
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <section id="section-final" aria-label="RSVP">
+      <div class="final-content">
+        <p class="final-date">08 · 08 · 2026</p>
+        <p class="final-tagline">До встречи</p>
+      </div>
+    </section>
+
+    <div id="gallery-overlay" class="gallery-overlay" aria-hidden="true" aria-label="Галерея">
+      <button id="btn-close-gallery" class="editorial-btn gallery-close-btn" tabindex="-1">Закрыть</button>
+      <span id="gallery-counter" class="gallery-counter" aria-live="polite">01 / 24</span>
+    </div>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+</file>
+
+<file path="src/style.css">
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Sync with WebGL StudioDome + Renderer clear */
+    --color-page-bg: #eae7dc;
+    --color-page-bg-rgb: 234, 231, 220;
+}
+
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('/fonts/Manrope-Light-300.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/Manrope-Regular-400.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/Manrope-Medium-500.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/Manrope-SemiBold-600.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-Italic-400.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-Regular-400.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-SemiBold-600.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/PlayfairDisplay-Bold-700.ttf') format('truetype');
+}
+
+html {
+    width: 100%;
+    background-color: var(--color-page-bg);
+    cursor: none;
+}
+
+body {
+    overflow-x: hidden;
+    width: 100%;
+    background-color: var(--color-page-bg);
+    cursor: none;
+}
+
+body.gallery-active {
+    overscroll-behavior-y: none;
+}
+
+a, button, [role="button"], label[for], .editorial-btn, .route-link, .rsvp-radio-label {
+    cursor: none;
+}
+
+#cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffffff;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+    transition: width 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.3s ease;
+}
+
+#cursor.cursor--hidden {
+    opacity: 0;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    html, body {
+        cursor: auto;
+    }
+    a, button, [role="button"], label[for], .editorial-btn, .route-link, .rsvp-radio-label {
+        cursor: auto;
+    }
+    #cursor {
+        display: none;
+    }
+}
+
+body {
+    min-height: 100vh;
+    position: relative;
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+}
+
+#preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(var(--color-page-bg-rgb), 0.6);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.preloader-ring-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preloader-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.preloader-track {
+    stroke: rgba(18, 12, 8, 0.08);
+    stroke-width: 1;
+    fill: none;
+}
+
+.preloader-progress {
+    stroke: #9a7b4a;
+    stroke-width: 1;
+    fill: none;
+    stroke-linecap: round;
+    /* circumference of r=38: 2π×38 ≈ 238.76 */
+    stroke-dasharray: 238.76;
+    stroke-dashoffset: 238.76;
+    will-change: stroke-dashoffset;
+}
+
+.preloader-text {
+    position: relative;
+    z-index: 1;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.38em;
+    text-indent: 0.38em;
+    color: rgba(18, 12, 8, 0.45);
+    text-transform: uppercase;
+    user-select: none;
+}
+
+#site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 3rem;
+    transition: background 0.5s ease;
+}
+
+#site-nav.nav--scrolled {
+    background: rgba(var(--color-page-bg-rgb), 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(18, 12, 8, 0.06);
+}
+
+@media (pointer: coarse) {
+    #site-nav.nav--scrolled {
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border-bottom: none;
+    }
+}
+
+.nav-logo {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #120c08;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+#nav-burger {
+    display: none;
+}
+
+.nav-links a {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+    text-shadow: none;
+}
+
+.nav-links a:hover {
+    color: #120c08;
+}
+
+#hero-spacer {
+    height: 100vh;
+    pointer-events: none;
+}
+
+/* Fixed canvas behind DOM; hero overlay at z-index 10. Desktop #hero-names is display:none so
+   Playfair DOM never stacks on WebGL lettering (no “ghost” aliasing). */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    outline: none;
+    pointer-events: none;
+}
+
+.hero-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.hero-overlay__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0 1.5rem;
+}
+
+.hero-tagline {
+    position: absolute;
+    top: calc(clamp(48px, 10vh, 96px) + env(safe-area-inset-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.62);
+    overflow: hidden;
+    max-width: min(100%, 42rem);
+    margin: 0;
+}
+
+.hero-names {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.2em 0.35em;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 600;
+    line-height: 1.05;
+    color: #120c08;
+    overflow: hidden;
+}
+
+.hero-names .char {
+    display: inline-block;
+}
+
+.hero-tagline .word {
+    display: inline-block;
+}
+
+.hero-names__amp {
+    color: #9a7b4a;
+    font-weight: 400;
+    padding: 0 0.08em;
+}
+
+/* DOM hero names: all screens — `top`/`left` 50%; GSAP `xPercent`/`yPercent` -50 (see main.js). */
+#hero-names {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.2rem, 10vw, 10rem);
+    line-height: 1.1;
+    color: #120c08;
+    text-align: center;
+    text-shadow: 0 0 16px rgba(234, 231, 220, 0.9), 0 0 32px rgba(234, 231, 220, 0.6);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    overflow: visible;
+    max-width: none;
+    will-change: transform, opacity;
+    margin: 0;
+}
+
+#hero-names .hero-names__amp {
+    color: #9a7b4a;
+}
+
+/* Narrow-device editorial stack: "Катя" / "&" / "Артём" */
+#hero-names.hero-names--stacked {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    white-space: normal;
+    line-height: 0.82;
+    text-align: center;
+    gap: 0.08em;
+    text-shadow: 0 0 16px rgba(234, 231, 220, 0.9), 0 0 32px rgba(234, 231, 220, 0.6);
+}
+
+#hero-names.hero-names--stacked .hero-names__part:first-of-type {
+    transform: translateY(-0.14em);
+}
+
+#hero-names.hero-names--stacked .hero-names__amp {
+    transform: translateY(0);
+    line-height: 0.72;
+}
+
+#hero-names.hero-names--stacked .hero-names__part:last-of-type {
+    transform: translateY(0.14em);
+}
+
+.hero-bottom {
+    position: absolute;
+    bottom: clamp(20px, 5vh, 56px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(10px, 2vh, 24px);
+}
+
+.hero-date {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+    font-weight: 400;
+    letter-spacing: 0.55em;
+    color: rgba(18, 12, 8, 0.75);
+    text-indent: 0.55em;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    margin: 0;
+    white-space: nowrap;
+    max-width: min(100%, 42rem);
+}
+
+#countdown {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    margin: 0;
+    max-width: min(100%, 42rem);
+}
+
+.cd-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cd-num {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: #120c08;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.05em;
+}
+
+.cd-label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.55rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: rgba(18, 12, 8, 0.42);
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+}
+
+.hero-scroll-indicator {
+    position: absolute;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 3rem;
+    margin: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(18, 12, 8, 0.35),
+        rgba(18, 12, 8, 0.04)
+    );
+}
+
+/* Hero mobile: same absolute rails; shorter horizontal padding */
+@media (max-width: 767px) and (pointer: coarse) {
+    html, body {
+        min-height: 100svh;
+        min-height: 100dvh;
+    }
+
+    .hero-overlay__inner {
+        min-height: 100svh;
+        min-height: 100dvh;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+
+    .hero-bottom {
+        bottom: clamp(12px, 3vh, 28px);
+        gap: 0.5rem;
+    }
+
+    #hero-names {
+        font-size: min(clamp(3.6rem, 22vw, 8.5rem), 32vh);
+        line-height: 0.94;
+        pointer-events: none;
+        overflow: visible;
+        white-space: normal;
+        display: flex;
+        flex-wrap: nowrap;
+        max-width: calc(100vw - 32px);
+        gap: 0.04em 0.18em;
+        justify-content: center;
+    }
+
+    #countdown {
+        gap: 1.25rem;
+    }
+
+    #hero-spacer,
+    #section-path,
+    #section-glimpse,
+    #section-final,
+    .path-container,
+    .glimpse-pin-container,
+    .golden-thread {
+        height: 100svh;
+        height: 100dvh;
+        min-height: 100svh;
+        min-height: 100dvh;
+    }
+
+    a,
+    button,
+    .editorial-btn,
+    .route-link,
+    .rsvp-radio-label,
+    .rsvp-input {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* —— Scroll sections: transparent DOM over fixed WebGL (no panel fills) —— */
+
+.section-divider {
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(18, 12, 8, 0.06),
+        rgba(18, 12, 8, 0.14),
+        rgba(18, 12, 8, 0.06),
+        transparent
+    );
+    margin: 0 auto;
+}
+
+/* —— Scroll Protagonist: narrative sections —— */
+#section-path {
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+}
+
+#section-destination {
+    min-height: 150vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8vh 6vw;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+}
+
+#section-final {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 8vh 6vw;
+    z-index: 5;
+    background: transparent;
+}
+
+#section-glimpse {
+    min-height: 100vh;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+}
+
+/* —— Act III: #section-destination — focal typography + RSVP —— */
+.destination-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 5;
+    position: relative;
+    max-width: 36rem;
+    width: 100%;
+    padding: 0 1.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+}
+
+.dest-date,
+.dest-address {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.48);
+    margin-bottom: 1rem;
+    text-shadow: none;
+}
+
+.dest-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: #120c08;
+    text-shadow: 0 2px 24px rgba(255, 255, 255, 0.45);
+    margin: 0 0 2rem;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+.route-link {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 500;
+    color: #8b6f3d;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.7rem;
+    border-bottom: 1px solid rgba(139, 111, 61, 0.45);
+    padding-bottom: 4px;
+    transition: border-color 0.3s ease;
+    display: inline-block;
+    margin-bottom: 40px;
+}
+
+.route-link:hover {
+    border-color: #6b5428;
+}
+
+#btn-reveal-rsvp {
+    margin-top: 0;
+}
+
+.rsvp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 32px;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.rsvp-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(18, 12, 8, 0.2);
+    color: #120c08;
+    padding: 12px 0;
+    width: 100%;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.3s;
+    text-align: center;
+}
+
+.rsvp-input:focus {
+    border-color: #8b6f3d;
+}
+
+.rsvp-options {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.rsvp-radio-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgba(18, 12, 8, 0.62);
+    transition: color 0.3s;
+    min-height: 44px;
+    padding: 6px 4px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.rsvp-radio-label:hover {
+    color: #120c08;
+}
+
+.rsvp-radio-label input {
+    display: none;
+}
+
+.radio-custom {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(18, 12, 8, 0.28);
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition:
+        background 0.3s,
+        border-color 0.3s;
+}
+
+.rsvp-radio-label input:checked + .radio-custom {
+    background: #8b6f3d;
+    border-color: #8b6f3d;
+}
+
+.rsvp-radio-label:has(input:checked) {
+    color: #120c08;
+}
+
+.rsvp-status {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    margin-top: 10px;
+    height: 20px;
+    color: rgba(18, 12, 8, 0.55);
+}
+
+.submit-btn {
+    margin-top: 0;
+}
+
+/* —— Act II: #section-glimpse — absolute stack: mask + button overlay —— */
+
+.glimpse-label {
+    position: absolute;
+    top: 6vh;
+    left: 0;
+    right: 0;
+    z-index: 8;
+    margin: 0;
+    padding: 0 1.5rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.42);
+    pointer-events: none;
+    text-align: center;
+    /* no translateX — GSAP animates y on this node in glimpseDomTl */
+}
+
+.glimpse-pin-container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.glimpse-expand-mask {
+    position: relative;
+    width: 30vw;
+    aspect-ratio: 3 / 4;
+    border-radius: 12px;
+    overflow: hidden;
+    will-change: width, height, border-radius;
+    z-index: 1;
+}
+
+/* Viewport-sized layers — mask is a window; image scale does not follow card shrink */
+.glimpse-img {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    max-width: none;
+    pointer-events: none;
+    display: block;
+}
+
+/* Landscape / desktop: full vertical frame, letterboxing on sides (editorial) */
+@media (min-aspect-ratio: 1/1) {
+    .glimpse-img {
+        object-fit: contain;
+    }
+}
+
+.glimpse-img-1 {
+    z-index: 1;
+    opacity: 1;
+}
+
+.glimpse-img-2 {
+    z-index: 2;
+    opacity: 0;
+}
+
+.glimpse-img-3 {
+    z-index: 3;
+    opacity: 0;
+}
+
+/* Button sits over the full-bleed mask (same stacking context as pin container) */
+.glimpse-action {
+    position: absolute;
+    bottom: 8vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+}
+
+/* —— Shared editorial button —— */
+.editorial-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    color: #120c08;
+    border: 1px solid rgba(18, 12, 8, 0.22);
+    padding: 12px 32px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition:
+        border-color 0.3s ease,
+        color 0.3s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+    white-space: nowrap;
+}
+
+.editorial-btn:hover {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(18, 12, 8, 0.35);
+    color: #120c08;
+    box-shadow: 0 4px 24px rgba(18, 12, 8, 0.06);
+}
+
+.editorial-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px rgba(18, 12, 8, 0.25);
+}
+
+/* Glimpse CTA — solid dark chip on light photography */
+.glimpse-action .editorial-btn,
+#btn-open-gallery {
+    background: #120c08;
+    color: var(--color-page-bg);
+    border-color: #120c08;
+}
+
+.glimpse-action .editorial-btn:hover,
+#btn-open-gallery:hover {
+    background: #1c1510;
+    color: var(--color-page-bg);
+    border-color: #2a2118;
+    box-shadow: 0 6px 28px rgba(18, 12, 8, 0.35);
+}
+
+.glimpse-action .editorial-btn:focus-visible,
+#btn-open-gallery:focus-visible {
+    box-shadow: 0 0 0 2px rgba(var(--color-page-bg-rgb), 0.45);
+}
+
+/* —— Gallery overlay — UI chrome layer over the WebGL canvas ——
+   No background: scene background is tweened by tweenSceneBg() in main.js.
+   Only pointer-events, z-index, and UI positioning matter here. ——————— */
+.gallery-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    background: transparent;
+}
+
+/* Horizontal gallery pan — suppress browser scroll/default touch gestures while open */
+body.gallery-active .gallery-overlay {
+    touch-action: none;
+}
+
+/* Close button — anchored top-right */
+.gallery-close-btn {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    /* Inherit .editorial-btn styles; override text colour for dark bg */
+    color: rgba(234, 231, 220, 0.75);
+    border-color: rgba(234, 231, 220, 0.2);
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.gallery-close-btn:hover {
+    color: rgba(234, 231, 220, 1);
+    border-color: rgba(234, 231, 220, 0.45);
+}
+
+/* Counter — bottom centre; updates via GalleryRibbon.update() */
+.gallery-counter {
+    position: absolute;
+    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(234, 231, 220, 0.4);
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .gallery-close-btn {
+        top: 24px;
+        right: 20px;
+        padding: 10px 22px;
+        font-size: 0.6rem;
+    }
+    .gallery-counter {
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        font-size: 0.6rem;
+    }
+}
+
+/* —— Act I: #section-path — pinned stage + glowing DOM thread —— */
+.path-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.golden-thread {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 1px);
+    width: 2px;
+    height: 100vh;
+    transform-origin: top center;
+    /* scaleY only — no translateX so GSAP owns full transform during scrub */
+    transform: scaleY(0);
+    pointer-events: none;
+    z-index: 5;
+    will-change: transform;
+
+    /* Gradient beam on light studio — deeper gold for contrast */
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(154, 123, 74, 0.45) 8%,
+        rgba(139, 111, 61, 0.85) 30%,
+        rgba(120, 95, 50, 0.95) 50%,
+        rgba(139, 111, 61, 0.85) 70%,
+        rgba(154, 123, 74, 0.45) 92%,
+        transparent 100%
+    );
+
+    box-shadow:
+        0 0 4px 1px rgba(139, 111, 61, 0.55),
+        0 0 20px 5px rgba(139, 111, 61, 0.18);
+}
+
+.path-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 5vw;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 5vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: 0.02em;
+    color: #120c08;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.path-text .char {
+    display: inline-block;
+}
+
+.final-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.final-date {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.65rem, 1.4vw, 0.85rem);
+    font-weight: 500;
+    letter-spacing: 0.45em;
+    text-indent: 0.45em;
+    color: rgba(18, 12, 8, 0.45);
+    text-transform: uppercase;
+}
+
+.final-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(4.5rem, 14vw, 14rem);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: #120c08;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    will-change: transform, opacity;
+}
+
+@media (max-width: 768px) {
+    #site-nav {
+        padding: 1rem 1.4rem;
+    }
+
+    .nav-links {
+        gap: 1.4rem;
+    }
+
+    .nav-links a {
+        font-size: 0.6rem;
+    }
+
+    #section-path,
+    #section-destination,
+    #section-final {
+        padding: 6vh 5vw;
+    }
+
+    .glimpse-expand-mask {
+        width: 78vw;
+    }
+
+    #countdown {
+        gap: 1.5rem;
+    }
+
+    .cd-num {
+        font-size: clamp(1.4rem, 8vw, 2.2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    #nav-burger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        z-index: 60;
+    }
+
+    #nav-burger > span {
+        display: block;
+        width: 22px;
+        height: 1.5px;
+        background: rgba(18, 12, 8, 0.85);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #nav-burger.active > span:nth-child(1) {
+        transform: rotate(45deg) translate(4.5px, 4.5px);
+    }
+
+    #nav-burger.active > span:nth-child(2) {
+        opacity: 0;
+    }
+
+    #nav-burger.active > span:nth-child(3) {
+        transform: rotate(-45deg) translate(4.5px, -4.5px);
+    }
+
+    .nav-links {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+        z-index: 55;
+    }
+
+    .nav-links.open {
+        display: flex;
+        background: rgba(var(--color-page-bg-rgb), 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav-links a {
+        font-size: 1.1rem;
+        letter-spacing: 0.15em;
+        color: #120c08;
+        text-shadow: none;
+    }
+}
+
+/* Failsafe: hide custom cursor dot on touch / coarse-pointer devices */
+@media (pointer: coarse) {
+    #cursor {
+        display: none !important;
+    }
+}
+</file>
+
+<file path="src/main.js">
+import './style.css';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import SplitType from 'split-type';
+import Sizes from './utils/Sizes.js';
+import World, { getWorld } from './gl/World.js';
+import GlassRing from './gl/world/GlassRing.js';
+import HeroText from './gl/world/HeroText.js';
+import Scroll, { bindGlassRingScrollEffects } from './modules/Scroll.js';
+
+if (!gsap.plugins?.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+}
+
+
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+if (window.scrollY === 0) {
+    gsap.set('#hero-overlay', { opacity: 1 });
+}
+
+// `#hero-names` visibility: `setupHeroTextMedia` once `HeroText` exists (asynchronous layered loading).
+gsap.set('.hero-bottom, .hero-scroll-indicator, #site-nav', { opacity: 0 });
+
+if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
+    import('./modules/Cursor.js')
+        .then(({ default: Cursor }) => {
+            new Cursor();
+        })
+        .catch((err) => {
+            console.warn('Cursor lazy-load failed:', err);
+        });
+}
+
+// ── Preloader SVG ring progress ───────────────────────────────────────
+const CIRCUMFERENCE = 238.76;
+const preloaderArc = document.getElementById('preloader-arc');
+
+// Idle slow rotation on the SVG wrap while loading
+const preloaderWrap = document.querySelector('.preloader-ring-wrap');
+if (preloaderWrap) {
+    gsap.to(preloaderWrap, {
+        rotation: 360,
+        duration: 18,
+        ease: 'none',
+        repeat: -1,
+        transformOrigin: '50% 50%',
+    });
+}
+
+if (preloaderArc) {
+    gsap.set(preloaderArc, { attr: { 'stroke-dashoffset': CIRCUMFERENCE } });
+
+    window.addEventListener('resources:progress', (e) => {
+        const ratio = e.detail?.ratio ?? 0;
+        gsap.to(preloaderArc, {
+            attr: { 'stroke-dashoffset': CIRCUMFERENCE * (1 - ratio) },
+            duration: 0.5,
+            ease: 'power2.out',
+            overwrite: 'auto',
+        });
+    });
+}
+// ─────────────────────────────────────────────────────────────────────
+
+const sizes = new Sizes();
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+
+const world = new World({ canvas, sizes });
+world.camera.resize(sizes);
+
+/** @type {import('./gl/world/GlassRing.js').default | null} */
+let glassRing = null;
+
+/** @type {import('./gl/world/HeroText.js').default | null} */
+let heroText = null;
+
+/** Settled after `GlassRing` / `HeroText` constructors run (idle/yield to cut TBT). */
+let meshInitResolve = () => {};
+const meshInitPromise = new Promise((resolve) => {
+    meshInitResolve = resolve;
+});
+
+function scheduleIdleMeshInit(fn) {
+    if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(() => fn(), { timeout: 250 });
+    } else {
+        setTimeout(fn, 0);
+    }
+}
+
+/** @type {InstanceType<typeof SplitType> | null} */
+let heroSplitTagline = null;
+/** @type {gsap.core.Timeline | null} */
+let heroIntroTimeline = null;
+let heroIntroCompleted = false;
+let heroSplitResizeTimer = 0;
+const HERO_SPLIT_DEBOUNCE_MS = 150;
+const HERO_NAMES_MIN_PX = 60;
+const HERO_NAMES_MAX_PX = 148;
+const HERO_NAMES_SIDE_PADDING_PX = 32;
+
+function fitHeroNamesToViewport() {
+    if (typeof window === 'undefined') return;
+    const heroNamesDOM = document.querySelector('#hero-names');
+    if (!heroNamesDOM) return;
+
+    const shouldStack = window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches;
+    heroNamesDOM.classList.toggle('hero-names--stacked', shouldStack);
+    if (!shouldStack) {
+        heroNamesDOM.style.removeProperty('max-width');
+        heroNamesDOM.style.removeProperty('white-space');
+        heroNamesDOM.style.removeProperty('display');
+        heroNamesDOM.style.removeProperty('flex-wrap');
+        heroNamesDOM.style.removeProperty('justify-content');
+        heroNamesDOM.style.removeProperty('font-size');
+        return;
+    }
+
+    const maxWidth = Math.max(0, window.innerWidth - HERO_NAMES_SIDE_PADDING_PX);
+    let sizePx = Math.min(
+        HERO_NAMES_MAX_PX,
+        window.innerWidth * 0.27,
+        window.innerHeight * 0.215,
+    );
+    sizePx = Math.max(HERO_NAMES_MIN_PX, Math.floor(sizePx));
+
+    // Stacked intent (all narrow devices): keep title large while fitting viewport width.
+    heroNamesDOM.style.maxWidth = `${maxWidth}px`;
+    heroNamesDOM.style.whiteSpace = 'normal';
+    heroNamesDOM.style.display = 'flex';
+    heroNamesDOM.style.flexWrap = 'nowrap';
+    heroNamesDOM.style.justifyContent = 'center';
+    heroNamesDOM.style.fontSize = `${sizePx}px`;
+
+    // If a narrow viewport still overflows due to glyph metrics, reduce gradually.
+    let guard = 0;
+    while (heroNamesDOM.getBoundingClientRect().width > maxWidth && sizePx > HERO_NAMES_MIN_PX && guard < 200) {
+        sizePx -= 1;
+        heroNamesDOM.style.fontSize = `${sizePx}px`;
+        guard += 1;
+    }
+}
+
+function setHeroNamesState({ opacity = 1, y = 0, scale = 1, pointerEvents = 'none' } = {}) {
+    const heroNamesDOM = document.querySelector('#hero-names');
+    if (!heroNamesDOM) return;
+    gsap.set(heroNamesDOM, {
+        opacity,
+        y,
+        scale,
+        pointerEvents,
+        clearProps: 'display',
+        xPercent: -50,
+        yPercent: -50,
+        x: 0,
+    });
+}
+
+/**
+ * Initialise `#hero-names` DOM element state — shown on all screens.
+ * @param {import('./gl/world/HeroText.js').default | null} _ht
+ */
+function setupHeroTextMedia(_ht) {
+    const heroNamesDOM = document.querySelector('#hero-names');
+    if (!heroNamesDOM || typeof window === 'undefined') return;
+    setHeroNamesState({ opacity: heroIntroCompleted ? 1 : 0, y: heroIntroCompleted ? 0 : 20 });
+    fitHeroNamesToViewport();
+}
+
+/**
+ * @param {'hidden' | 'visible'} visibility
+ */
+function rebuildHeroSplits(visibility) {
+    const taglineEl = document.querySelector('.hero-tagline');
+    if (!taglineEl) return;
+
+    heroSplitTagline?.revert();
+
+    heroSplitTagline = new SplitType(taglineEl, { types: 'words' });
+
+    if (visibility === 'visible') {
+        gsap.set(heroSplitTagline.words, { y: '0%', opacity: 1 });
+    } else {
+        gsap.set(heroSplitTagline.words, { y: '100%', opacity: 0 });
+    }
+}
+
+function handleHeroSplitResize() {
+    if (!heroSplitTagline) return;
+
+    if (heroIntroTimeline) {
+        heroIntroTimeline.kill();
+        heroIntroTimeline = null;
+        heroIntroCompleted = true;
+        if (glassRing?.mesh) {
+            gsap.set(glassRing.mesh.scale, { x: 1, y: 1, z: 1 });
+        }
+        gsap.set(['.hero-tagline', '.hero-bottom'], {
+            opacity: 1,
+            y: 0,
+        });
+        setHeroNamesState({ opacity: 1, y: 0, scale: 1, pointerEvents: 'none' });
+        gsap.killTweensOf('.hero-scroll-indicator');
+        gsap.set('.hero-scroll-indicator', {
+            opacity: 1,
+            scaleY: 1,
+            transformOrigin: 'top center',
+        });
+    }
+
+    rebuildHeroSplits(heroIntroCompleted ? 'visible' : 'hidden');
+    fitHeroNamesToViewport();
+    ScrollTrigger.refresh();
+}
+
+window.addEventListener('resize', () => {
+    window.clearTimeout(heroSplitResizeTimer);
+    heroSplitResizeTimer = window.setTimeout(handleHeroSplitResize, HERO_SPLIT_DEBOUNCE_MS);
+});
+
+let galleryRibbon = null;
+let galleryRibbonPromise = null;
+
+async function ensureGalleryRibbon() {
+    if (galleryRibbon) return galleryRibbon;
+    if (!galleryRibbonPromise) {
+        galleryRibbonPromise = import('./gl/world/GalleryRibbon.js')
+            .then(({ default: GalleryRibbon }) => {
+                galleryRibbon = new GalleryRibbon();
+                return galleryRibbon;
+            })
+            .catch((err) => {
+                galleryRibbonPromise = null;
+                throw err;
+            });
+    }
+    return galleryRibbonPromise;
+}
+
+let mouseParallax = { update: () => {}, destroy: () => {} };
+
+const scroll = new Scroll();
+scroll.lenis.stop();
+scroll.resize();
+
+const { lenis } = scroll;
+
+scheduleIdleMeshInit(() => {
+    try {
+        glassRing = new GlassRing();
+        glassRing.mesh.scale.setScalar(0);
+
+        try {
+            heroText = new HeroText();
+            const w = getWorld();
+            if (w) {
+                w.heroText = heroText;
+                w.glassRing = glassRing;
+            }
+        } catch (e) {
+            console.error('HeroText init failed:', e);
+        }
+
+        const _kickEnvFade = () => world.tryFadeEnvReflections?.();
+        _kickEnvFade();
+        heroText?.ready.then(_kickEnvFade);
+        glassRing.ready.then(_kickEnvFade);
+
+        setupHeroTextMedia(heroText);
+
+        if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
+            import('./modules/MouseParallax.js')
+                .then(({ default: MouseParallax }) => {
+                    mouseParallax.destroy();
+                    if (!glassRing?.mesh) return;
+                    mouseParallax = new MouseParallax([
+                        { object: glassRing.mesh, depth: 0.06 },
+                        ...(heroText?.root ? [{ object: heroText.root, depth: 0.035 }] : []),
+                    ]);
+                })
+                .catch((err) => {
+                    console.warn('MouseParallax lazy-load failed:', err);
+                });
+        }
+    } finally {
+        meshInitResolve();
+    }
+});
+
+let ringScrollEffectsBound = false;
+function ensureRingScrollEffectsBound() {
+    if (ringScrollEffectsBound || !glassRing) return;
+    bindGlassRingScrollEffects(glassRing);
+    ringScrollEffectsBound = true;
+    scroll.resize();
+}
+
+let loggedDrawCalls = false;
+
+lenis.on('scroll', () => {
+    ScrollTrigger.update();
+});
+
+gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+
+    galleryRibbon?.update();
+    glassRing?.update();
+    mouseParallax.update();
+    world.update();
+    if (!loggedDrawCalls) {
+        loggedDrawCalls = true;
+        console.log('Draw calls:', world.renderer.instance.info.render.calls);
+    }
+});
+gsap.ticker.lagSmoothing(0);
+
+/** Hero overlay: scrubbed fade + lift over first ~800px (replaces scrollY > 80 snap). */
+gsap.fromTo(
+    '#hero-overlay',
+    { opacity: 1, y: 0 },
+    {
+        opacity: 0,
+        y: -56,
+        ease: 'none',
+        scrollTrigger: {
+            trigger: 'body',
+            start: 'top top',
+            end: '+=800',
+            scrub: true,
+        },
+    },
+);
+
+ScrollTrigger.create({
+    trigger: 'body',
+    start: 'top -80px',
+    toggleClass: { targets: '#site-nav', className: 'nav--scrolled' },
+});
+
+const WEDDING_COUNTDOWN_TARGET = new Date('2026-08-08T15:00:00Z');
+
+function tickWeddingCountdown() {
+    const elDays = document.getElementById('cd-days');
+    const elHours = document.getElementById('cd-hours');
+    const elMinutes = document.getElementById('cd-minutes');
+    if (!elDays || !elHours || !elMinutes) return;
+
+    let ms = WEDDING_COUNTDOWN_TARGET.getTime() - Date.now();
+    if (ms <= 0) {
+        elDays.textContent = '000';
+        elHours.textContent = '00';
+        elMinutes.textContent = '00';
+        return;
+    }
+
+    const days = Math.floor(ms / 86400000);
+    ms %= 86400000;
+    const hours = Math.floor(ms / 3600000);
+    ms %= 3600000;
+    const minutes = Math.floor(ms / 60000);
+
+    elDays.textContent = String(days).padStart(3, '0');
+    elHours.textContent = String(hours).padStart(2, '0');
+    elMinutes.textContent = String(minutes).padStart(2, '0');
+}
+
+tickWeddingCountdown();
+setInterval(tickWeddingCountdown, 1000);
+
+function runHeroIntro() {
+    // Defer heavy ScrollTrigger timeline wiring until intro start to reduce initial main-thread pressure.
+    ensureRingScrollEffectsBound();
+
+    scroll.resize();
+    scroll.lenis.scrollTo(0, { immediate: true });
+    ScrollTrigger.refresh();
+
+    scroll.lenis.start();
+
+    heroIntroCompleted = false;
+    rebuildHeroSplits('hidden');
+
+    gsap.killTweensOf('#hero-names');
+
+    if (heroSplitTagline?.words?.length) {
+        gsap.set(heroSplitTagline.words, { y: '0%', opacity: 0 });
+    }
+    gsap.set('.hero-tagline', { opacity: 0, y: 20, xPercent: -50, x: 0 });
+    setHeroNamesState({ opacity: 0, y: 20, scale: 1, pointerEvents: 'none' });
+    fitHeroNamesToViewport();
+    gsap.set('.hero-bottom', { opacity: 0, y: 20 });
+
+    heroIntroTimeline = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+            heroIntroCompleted = true;
+            heroIntroTimeline = null;
+            ScrollTrigger.refresh();
+            gsap.to('.hero-scroll-indicator', {
+                scaleY: 0.5,
+                opacity: 0.3,
+                duration: 1,
+                yoyo: true,
+                repeat: -1,
+                ease: 'power1.inOut',
+                transformOrigin: 'top center',
+            });
+        },
+    });
+
+    const ringScaleIn = { x: 1, y: 1, z: 1, duration: 3.2, ease: 'expo.out' };
+    if (glassRing?._built) {
+        gsap.set(glassRing.mesh.rotation, { y: Math.PI * -0.15, z: Math.PI * 0.05 });
+        heroIntroTimeline
+            .to(glassRing.mesh.scale, ringScaleIn, 0.05)
+            .to(glassRing.mesh.rotation, { x: 0, y: 0, z: 0, duration: 3.2, ease: 'power3.out' }, 0.05);
+    } else if (glassRing) {
+        glassRing.ready.then(() => {
+            gsap.set(glassRing.mesh.rotation, { y: Math.PI * -0.15, z: Math.PI * 0.05 });
+            gsap.to(glassRing.mesh.scale, ringScaleIn);
+            gsap.to(glassRing.mesh.rotation, { x: 0, y: 0, z: 0, duration: 3.2, ease: 'power3.out' });
+        });
+    }
+
+    if (heroText?.group) {
+        heroIntroTimeline.to(
+            heroText.group.scale,
+            { x: 1, y: 1, z: 1, duration: 1.15, ease: 'expo.out' },
+            0.1,
+        );
+    }
+
+    const introHeroIn = '-=0.8';
+    const introSt = '<0.15';
+    heroIntroTimeline.fromTo(
+        '.hero-tagline',
+        { opacity: 0, y: 20, xPercent: -50, x: 0 },
+        {
+            opacity: 1,
+            y: 0,
+            xPercent: -50,
+            x: 0,
+            duration: 1.2,
+            clearProps: 'all',
+        },
+        introHeroIn,
+    );
+    if (heroSplitTagline?.words?.length) {
+        heroIntroTimeline.to(
+            heroSplitTagline.words,
+            {
+                opacity: 1,
+                duration: 0.75,
+                ease: 'expo.out',
+                stagger: { amount: 0.2, from: 'start' },
+            },
+            '<',
+        );
+    }
+    heroIntroTimeline.fromTo(
+        '#hero-names',
+        { opacity: 0, y: 20, xPercent: -50, yPercent: -50, x: 0 },
+        {
+            opacity: 1,
+            y: 0,
+            xPercent: -50,
+            yPercent: -50,
+            x: 0,
+            duration: 1.2,
+        },
+        introSt,
+    );
+    heroIntroTimeline.fromTo(
+        '.hero-bottom',
+        { opacity: 0, y: 20 },
+        {
+            opacity: 1,
+            y: 0,
+            duration: 1.2,
+            clearProps: 'all',
+        },
+        introSt,
+    );
+    heroIntroTimeline.fromTo(
+        '#site-nav',
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 1.2, clearProps: 'all' },
+        introSt,
+    );
+
+    heroIntroTimeline.fromTo(
+        '.hero-scroll-indicator',
+        {
+            opacity: 0,
+            scaleY: 0,
+            xPercent: -50,
+            x: 0,
+            transformOrigin: 'top center',
+        },
+        { opacity: 1, scaleY: 1, xPercent: -50, x: 0, duration: 1.0, ease: 'expo.out', clearProps: 'all' },
+        '>',
+    );
+}
+
+async function launchExperience() {
+    await meshInitPromise;
+    if (heroText) await heroText.ready;
+
+    // Block experience until critical typography is fully loaded to prevent SplitType miscalculations
+    try {
+        await Promise.all([
+            document.fonts.load('1em "Playfair Display"'),
+            document.fonts.load('1em "Manrope"'),
+        ]);
+    } catch (e) {
+        console.warn('Font Loading API failed/timeout, proceeding with fallback:', e);
+    }
+
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        if (preloaderArc) {
+            gsap.to(preloaderArc, {
+                attr: { 'stroke-dashoffset': 0 },
+                duration: 0.35,
+                ease: 'power2.out',
+            });
+        }
+        gsap.to(preloader, {
+            opacity: 0,
+            duration: 0.6,
+            ease: 'power2.out',
+            delay: 0.2,
+            onStart: () => {
+                if (preloaderWrap) gsap.killTweensOf(preloaderWrap);
+            },
+            onComplete: () => {
+                preloader.remove();
+                runHeroIntro();
+            },
+        });
+    } else {
+        runHeroIntro();
+    }
+}
+
+launchExperience();
+
+const navBurger = document.getElementById('nav-burger');
+const navLinksEl = document.querySelector('.nav-links');
+
+function closeMobileNav() {
+    if (!navBurger || !navLinksEl) return;
+    navBurger.classList.remove('active');
+    navLinksEl.classList.remove('open');
+    navBurger.setAttribute('aria-expanded', 'false');
+}
+
+if (navBurger && navLinksEl) {
+    navBurger.addEventListener('click', () => {
+        const open = !navLinksEl.classList.contains('open');
+        navBurger.classList.toggle('active', open);
+        navLinksEl.classList.toggle('open', open);
+        navBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+}
+
+document.querySelectorAll('.nav-links a').forEach((a) => {
+    a.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeMobileNav();
+        document.querySelector(e.target.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+});
+
+gsap.set('#hero-overlay', { pointerEvents: 'none' });
+
+// Ensure overlay starts fully hidden (autoAlpha owns both opacity + visibility)
+gsap.set('#gallery-overlay', { autoAlpha: 0 });
+
+const rsvpForm = document.getElementById('rsvp-form');
+const btnRevealRsvp = document.getElementById('btn-reveal-rsvp');
+
+if (rsvpForm) {
+    rsvpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = rsvpForm.querySelector('.submit-btn');
+        const rsvpStatus = document.getElementById('rsvp-status');
+        const nameEl = document.getElementById('rsvp-name');
+        const attendanceEl = rsvpForm.querySelector('input[name="attendance"]:checked');
+
+        if (!submitBtn || !nameEl || !attendanceEl || !rsvpStatus) return;
+
+        const nameInput = nameEl.value.trim();
+        const attendance = attendanceEl.value;
+
+        if (!nameInput) return;
+
+        submitBtn.textContent = 'Отправка...';
+        submitBtn.disabled = true;
+
+        const escapeHtml = (value) =>
+            String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;');
+
+        const safeName = escapeHtml(nameInput);
+        const statusLabel = attendance === 'Буду' ? '✅ С удовольствием буду' : '❌ К сожалению, не смогу';
+        const safeStatus = escapeHtml(statusLabel);
+        const sentAt = new Date().toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+        const safeSentAt = escapeHtml(sentAt);
+        const source = escapeHtml(typeof window !== 'undefined' ? window.location.hostname : 'unknown');
+        const message =
+            `<b>RSVP • Катя & Артём</b>\n` +
+            `━━━━━━━━━━━━━━\n` +
+            `🕊 <b>Новый ответ на приглашение</b>\n\n` +
+            `👤 <b>Гость</b>\n` +
+            `${safeName}\n\n` +
+            `📌 <b>Статус</b>\n` +
+            `${safeStatus}\n\n` +
+            `🕒 <b>Время:</b> ${safeSentAt}\n` +
+            `🌐 <b>Источник:</b> ${source}`;
+
+        try {
+            const token = import.meta.env.VITE_TG_BOT_TOKEN;
+            const chatId = import.meta.env.VITE_TG_CHAT_ID;
+
+            console.log('Env Check:', { hasToken: !!token, hasChatId: !!chatId });
+            if (!token || !chatId) {
+                throw new Error('Missing VITE_TG_* env');
+            }
+
+            let delivered = false;
+            let lastError = null;
+            const canUseLocalRsvpApi =
+                typeof window !== 'undefined' &&
+                (window.location.hostname === 'localhost' ||
+                    window.location.hostname === '127.0.0.1');
+
+            // Preferred route when backend exists (dev/preview/custom server).
+            if (canUseLocalRsvpApi) {
+                try {
+                    const rsvpRes = await fetch('/api/rsvp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: nameInput, attendance }),
+                    });
+                    const rsvpData = await rsvpRes.json().catch(() => ({ ok: false }));
+                    delivered = !!(rsvpRes.ok && rsvpData.ok);
+                    if (!delivered) {
+                        lastError = new Error(rsvpData.description || 'RSVP API Error');
+                    }
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+
+            // GitHub Pages fallback: direct Telegram request via no-cors.
+            if (!delivered) {
+                const directTelegramUrl =
+                    `https://api.telegram.org/bot${token}/sendMessage` +
+                    `?chat_id=${encodeURIComponent(chatId)}` +
+                    `&text=${encodeURIComponent(message)}` +
+                    `&parse_mode=HTML`;
+
+                try {
+                    await fetch(directTelegramUrl, {
+                        method: 'GET',
+                        mode: 'no-cors',
+                        cache: 'no-store',
+                    });
+                    delivered = true;
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+
+            if (!delivered) {
+                throw lastError || new Error('Telegram delivery failed');
+            }
+
+            rsvpStatus.textContent = 'Спасибо! Ваш ответ записан.';
+            rsvpStatus.style.color = '#8b6f3d';
+            rsvpForm.reset();
+            submitBtn.style.display = 'none';
+        } catch (err) {
+            console.error('RSVP Fatal Error:', err);
+            rsvpStatus.textContent = 'Ошибка отправки. Проверьте консоль.';
+            rsvpStatus.style.color = '#ff4b4b';
+            submitBtn.textContent = 'Отправить';
+            submitBtn.disabled = false;
+        }
+    });
+}
+
+/* ── Gallery scene background tween ─────────────────────────────────
+   Tweens StudioDome material colour + renderer clear colour in sync.
+   On open → near-black (#0d0a07) so photos "float" in dark space.
+   On close → restore warm pearl (#EAE7DC).
+   Works without importing THREE: StudioDome._material.color is a
+   THREE.Color with normalised r/g/b we can tween directly.
+────────────────────────────────────────────────────────────────────── */
+const _bgProxy = { r: 0, g: 0, b: 0 };
+let   _bgTween = null;
+
+function tweenSceneBg(r, g, b, duration = 0.85) {
+    const domeMat  = world?.studioDome?._material;
+    const renderer = world?.renderer?.instance;
+    if (!domeMat || !renderer) return;
+
+    _bgTween?.kill();
+    // Seed proxy from current dome colour so tween always starts where we are
+    _bgProxy.r = domeMat.color.r;
+    _bgProxy.g = domeMat.color.g;
+    _bgProxy.b = domeMat.color.b;
+
+    _bgTween = gsap.to(_bgProxy, {
+        r, g, b,
+        duration,
+        ease: 'power2.out',
+        onUpdate() {
+            domeMat.color.setRGB(_bgProxy.r, _bgProxy.g, _bgProxy.b);
+            renderer.setClearColor(domeMat.color, 1);
+        },
+    });
+}
+
+/* ── Gallery mode toggle ─────────────────────────────────────────────
+   Main narrative DOM fades with opacity + pointer-events only (no autoAlpha
+   / visibility) so layout & ScrollTrigger pin math stay intact; WebGL reads
+   through. Lenis stops while gallery is open.
+────────────────────────────────────────────────────────────────────── */
+const GALLERY_DOM_HIDE =
+    '#site-nav, #section-path, #section-glimpse, #section-destination, #section-final, .section-divider';
+const galleryOverlay  = document.getElementById('gallery-overlay');
+const btnOpenGallery  = document.getElementById('btn-open-gallery');
+const btnCloseGallery = document.getElementById('btn-close-gallery');
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('gallery-active') && btnCloseGallery) {
+        btnCloseGallery.click();
+    }
+});
+
+if (btnOpenGallery) {
+    btnOpenGallery.addEventListener('click', async () => {
+        scroll.lenis.stop();
+        document.body.classList.add('gallery-active');
+
+        gsap.to('#gallery-overlay', {
+            autoAlpha: 1,
+            duration: 0.6,
+            ease: 'power2.out',
+            onStart: () => {
+                galleryOverlay.style.pointerEvents = 'auto';
+                galleryOverlay.setAttribute('aria-hidden', 'false');
+                btnCloseGallery.removeAttribute('tabindex');
+            },
+        });
+
+        gsap.to(GALLERY_DOM_HIDE, {
+            opacity: 0,
+            pointerEvents: 'none',
+            duration: 0.6,
+            ease: 'power2.out',
+        });
+
+        if (glassRing) glassRing.mesh.visible = false;
+
+        // Dark "gallery room" — photos pop on near-black background
+        tweenSceneBg(13 / 255, 10 / 255, 7 / 255, 0.85);
+
+        try {
+            const ribbon = await ensureGalleryRibbon();
+            await ribbon.open();
+        } catch (err) {
+            console.error('GalleryRibbon open failed:', err);
+            document.body.classList.remove('gallery-active');
+            gsap.set('#gallery-overlay', { autoAlpha: 0 });
+            gsap.set(GALLERY_DOM_HIDE, { opacity: 1, pointerEvents: 'auto' });
+            if (glassRing) glassRing.mesh.visible = true;
+            tweenSceneBg(234 / 255, 231 / 255, 220 / 255, 0.2);
+            scroll.lenis.start();
+        }
+    });
+}
+
+if (btnCloseGallery) {
+    btnCloseGallery.addEventListener('click', () => {
+        document.body.classList.remove('gallery-active');
+
+        gsap.to('#gallery-overlay', {
+            autoAlpha: 0,
+            duration: 0.5,
+            ease: 'power2.in',
+            onComplete: () => {
+                galleryOverlay.style.pointerEvents = 'none';
+                galleryOverlay.setAttribute('aria-hidden', 'true');
+                btnCloseGallery.setAttribute('tabindex', '-1');
+            },
+        });
+
+        gsap.to(GALLERY_DOM_HIDE, {
+            opacity: 1,
+            pointerEvents: 'auto',
+            duration: 0.5,
+            ease: 'power2.in',
+            onComplete: () => {
+                // Wait one frame so restored layout is committed before recalculating pin metrics.
+                requestAnimationFrame(() => {
+                    ScrollTrigger.refresh();
+                });
+            },
+        });
+
+        // Restore warm pearl as cards fall away
+        tweenSceneBg(234 / 255, 231 / 255, 220 / 255, 0.7);
+
+        if (galleryRibbon) {
+            galleryRibbon.close(() => {
+                if (glassRing) glassRing.mesh.visible = true;
+            });
+        } else if (glassRing) {
+            glassRing.mesh.visible = true;
+        }
+
+        scroll.lenis.start();
+    });
+}
+
+if (btnRevealRsvp && rsvpForm) {
+    btnRevealRsvp.addEventListener('click', () => {
+        if (rsvpForm.style.display === 'flex') return;
+        btnRevealRsvp.style.display = 'none';
+        rsvpForm.style.display = 'flex';
+        gsap.fromTo(
+            rsvpForm,
+            { height: 0, autoAlpha: 0, overflow: 'hidden' },
+            {
+                height: 'auto',
+                autoAlpha: 1,
+                duration: 0.8,
+                ease: 'power3.out',
+                onComplete: () => {
+                    ScrollTrigger.refresh();
+                },
+            },
+        );
+    });
+}
+
+window.addEventListener('resize', () => {
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+    sizes.coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const dprCap = sizes.coarsePointer ? 1.5 : 2.0;
+    sizes.pixelRatio = Math.min(window.devicePixelRatio, dprCap);
+
+    world.camera.resize(sizes);
+    world.renderer.resize(sizes);
+    scroll.resize();
+    galleryRibbon?.resize();
+    fitHeroNamesToViewport();
+});
+</file>
+
+<file path="CHANGELOG.md">
+# Changelog
+
+Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/). Версии не пронумерованы — проект без semver-релизов; даты фиксируют снимок для передачи контекста между сессиями.
+
+## [Unreleased]
+
+- **A11y landmark**: wrapped hero, story sections, destination/RSVP, final block, and gallery overlay in `<main id="main">` for Lighthouse / screen-reader main landmark compliance.
+- **Lighthouse / boot perf**: Resource preloading and async mesh initialization implemented to optimize LCP/TBT for Lighthouse 90+ compliance (`index.html` preconnect/preloads, `main.js` idle-deferred `GlassRing`/`HeroText`, `Renderer.js` `powerPreference: high-performance`, `ResourceLoader` Draco CDN note).
+
+## 2026-04-09 (Production Ready)
+
+- Finalized minimalist art direction, optimized PBR gold response, and stabilized cross-platform performance.
+- **Dead code removal**: removed dormant `Petals.js` particle system to enforce clean architecture, reduce bundle size, and maintain a strict minimalist art direction.
+- **Gallery optical FX**: fragment shader uses `uVelocity` for UV zoom under motion plus horizontal RGB channel split (chromatic aberration); rounded mask still driven by raw `vUv` for stable card edges (`GalleryRibbon.js`).
+- **Magnetic UI & blend cursor**: `#cursor` is white with `mix-blend-mode: difference`; `.editorial-btn` elements get magnetic GSAP offset on `mousemove` and elastic snap-back on leave (`src/modules/Cursor.js`, `src/style.css`).
+- **Preloader & boot polish**: frosted `#preloader` (translucent page-bg + backdrop blur) to align with the ACES-mapped canvas; `StudioDome` material `envMapIntensity: 0` so the dome does not shift hue when the HDRI loads; `#site-nav` hidden until hero intro and eased in with the hero footer stack.
+- **Hero names — stroke removed**: dropped `-webkit-text-stroke` from `#hero-names` and `#hero-names.hero-names--stacked`; contrast over WebGL uses soft double-layer pearl `text-shadow` only to avoid harsh outlines and clipping artifacts on the rings.
+- **UX & art polish**: custom cursor `quickTo` shortened to 0.1s/`power3.out` for near 1:1 pointer tracking; glass ring gold roughness `0.15` and glass ring env fade target `1.6` to soften readable HDRI reflections; hero names use layered glow for contrast on dark WebGL areas.
+- **Typography boot gate**: `launchExperience()` now awaits `document.fonts.load` for Playfair Display and Manrope before preloader exit so SplitType runs against final font metrics (mitigates FOUT/swap layout crash on slow networks).
+- **Hero intro — luxury settle**: replaced elastic ring scale-in with 3.2s `expo.out` and paired rotation untwist (`power3.out`) from a slight Y/Z offset in `runHeroIntro()` (`src/main.js`).
+- **Rendering & PBR pass**: removed EffectComposer/SMAA/RT pipeline; `WebGLRenderer` uses native MSAA (`antialias: true`) and `toneMappingExposure` 1.15. GlassRing gold upgraded (`#d4af37`, clearcoat, roughness 0.05). World: sharper key light, stronger shadow catcher, `VSMShadowMap`, glass ring env intensity fade target 2.5. DPR capped at 2.0 for all pointers.
+- **SEO completeness**: added `<meta name=\"description\">` to `index.html` to satisfy Lighthouse SEO content-best-practice and improve search snippet quality.
+- **Renderer hotfix**: fixed `ReferenceError: sizes is not defined` in `Renderer._ensureComposer()` by storing constructor/resize `sizes` on the instance (`this._sizes`) and using that for adaptive AA sample selection.
+- **Mobile AA quality-gate**: `src/gl/Renderer.js` now disables composer RT MSAA on coarse-pointer devices (`samples: 0`) while keeping SMAA, reducing mobile GPU load/TBT risk without changing desktop AA profile.
+- **TBT cleanup pass**: removed reserved `GlimpseGallery` from runtime boot loop and switched `MouseParallax` to lazy-load on fine-pointer devices only, trimming non-critical startup JS work.
+- **Desktop hero text contrast tweak**: increased base `#hero-names` readability with slightly stronger `-webkit-text-stroke` and a subtle `text-shadow` so the contour is visible in desktop view.
+- **Hero names readability parity**: added desktop-like subtle stroke/shadow treatment to mobile stacked `#hero-names` so lettering remains legible over bright/dark ring regions.
+- **Hero names vertical spacing pass**: increased stacked mobile separation so `Катя` sits higher and `Артём` lower, with adjusted line-height/gap around central ampersand for clearer three-line composition.
+- **Scope correction for hero stack mode**: restricted stacked `#hero-names` treatment to mobile coarse-pointer only (`max-width: 767px` + `pointer: coarse`) and increased mobile auto-fit target size for stronger visual presence.
+- **Mobile hero wrap hardening**: enforced wrapped flex layout for `#hero-names` on coarse-pointer mobile and added rendered-width fallback shrink loop in `fitHeroNamesToViewport()` to prevent residual overflow on very narrow viewports.
+- **Mobile hero title readability pass**: switched mobile `#hero-names` behavior from forced single-line shrink to larger multi-line layout (`white-space: normal`) with viewport-constrained auto-fit sizing, so text stays big and no longer overflows narrow screens.
+- **Mobile hero title fit fix**: added viewport auto-fit logic for `#hero-names` (`fitHeroNamesToViewport()` in `src/main.js`) to shrink font-size on coarse-pointer phones until the single-line name block fits screen width; added defensive mobile `max-width` in `src/style.css`.
+- **TBT-oriented startup deferral**: moved `bindGlassRingScrollEffects()` initialization from early boot to intro start in `src/main.js`, so expensive ScrollTrigger timeline wiring happens later and initial main-thread load is lighter.
+- **Perf-oriented startup split**: `src/main.js` now lazy-loads `Cursor` only for fine pointers and lazy-loads `GalleryRibbon` on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial JS startup pressure before hero narrative.
+- **Lighthouse protocol note**: release checklist now explicitly requires auditing against `vite preview` / production URL (not `localhost` dev server), to avoid misleading TBT/LCP diagnostics from dev-module overhead.
+- **P0 release-readiness package**: improved `.final-tagline` typography rendering (`font-smoothing`, kerning/ligature hints), moved gallery-close `ScrollTrigger.refresh()` to post-reflow timing (`requestAnimationFrame` in DOM-restore completion), and added mobile stress/refresh/RSVP checklist to `CONTEXT.md`.
+- **CONTEXT hard cleanup**: removed legacy phase-history tail and rewrote `CONTEXT.md` into a concise 6-section current-state manifest (discipline, vision, stack map, implemented features, environment, next steps).
+- **CONTEXT sync pass**: aligned `CONTEXT.md` with actual codebase state (HeroText no-op stub, current RSVP flow, asset status, and refreshed next steps) to remove stale handoff notes.
+- **CONTEXT cleanup**: removed outdated next-step note about populating `public/photos/gallery/1.webp … 24.webp` (assets are already live and working).
+- **HeroText current state fixed in docs**: `src/gl/world/HeroText.js` is documented as the actual no-op compatibility stub (`root/group/ready` API), while visible hero names are DOM `#hero-names`.
+- **Asynchronous layered loading**: `ResourceLoader` — отложенные промисы на ассет (`waitFor(name)`), прогресс `resources:progress`, по завершении попыток загрузки — **`Promise.allSettled`** → `resources:ready` с `detail: { ok, failed, total }` (старт сцены от события не зависит; один упавший ассет не «ломает» агрегатный промис). `World` ждёт `envMap` и выставляет окружение; `tryFadeEnvReflections()` безопасно вызывается повторно при появлении материалов позже PMREM. `main.js`: ранние `GlassRing` + `HeroText`, `world.glassRing`, `bindGlassRingScrollEffects`, `MouseParallax`, затем `launchExperience` → `await heroText.ready` → прелоадер → `runHeroIntro`.
+- Галерея: лёгкий автодрейф (`AUTO_SCROLL_WORLD_PER_SEC`), пауза после жеста/колеса и во вкладке в фоне.
+- Перфоманс: `public/gallery-manifest.json` из `scripts/convert-images.js` — без 24× `Image()`; DPR cap coarse 1.5 / fine 2.0; на coarse pointer тени 512² и меньший `radius`.
+
+---
+
+## 2026-04-08
+
+### Добавлено
+
+- **`CHANGELOG.md`** — краткая история значимых правок для handoff (ИИ ↔ ИИ и люди).
+
+### Изменено
+
+- **Галерея (`GalleryRibbon.js`)** — нет одного общего `_stride` на все кадры. Зазор **`G = EDGE_GAP_FRAC × itemH`** между **краями** соседних фото постоянный; расстояние центр→центр = **`w_i/2 + G + w_{i+1}/2`** (`w = itemH × aspect`). Телепорт пула на **`_forwardPoolFrom` / `_backwardPoolFrom`**; нормировка скорости в шейдере — **`_velNorm ≈ loopLength/TOTAL`**. Пропорции всех 24 кадров по-прежнему зондируются лёгким **`Image()`** до открытия; уточнение ratio из GL-текстуры → **`_reflowPreserveAnchor()`** при заметном отличии от пробы.
+- **`CONTEXT.md`** — описание галереи и **`await galleryRibbon.open()`**.
+
+### Ранее по той же галерее (кратко)
+
+- Pointer: `touch-action`, capture/cancel; **`main.js`**: async-открытие.
+- **Resize** при открытой галерее: масштаб **`scroll`/offset** пропорционально **`itemH`**.
+</file>
+
+<file path="CONTEXT.md">
+# Project context (save state)
+
+## 1. Executor discipline (commands & directives)
+
+- **Validate before execute:** before shell commands or edits, verify paths/APIs/versions against the real project. If a directive is known-invalid or based on false premises, stop and surface it plainly.
+- **Do not ship mathematically wrong transforms:** if motion intent is in world/view space, do not blindly mutate local axes; verify parent-space alignment first.
+- **Docs handoff is mandatory:** any meaningful change to boot order, loading, scroll, WebGL lifecycle, deploy, or interaction must update this file in the same session.
+- **Changelog handoff:** meaningful state changes also get one short line under `CHANGELOG.md` in `[Unreleased]`.
+
+## 2. Vision & Target Aesthetic
+
+- **Goal:** premium Awwwards-style wedding experience with stable 60fps and predictable mobile behavior.
+- **Global palette:** warm pearl base `#EAE7DC` synchronized across DOM background, preloader, `theme-color`, renderer clear color, and `StudioDome`.
+- **Typography:** hero names via DOM `#hero-names` (Playfair), UI/system copy via Manrope, truffle primary text `#120c08`, muted labels in low-alpha truffle, restrained gold accents (`#8b6f3d`/`#9a7b4a`).
+- **WebGL look:** pure minimalist studio aesthetic. All atmospheric particle systems (petals/grain) explicitly removed to prioritize negative space and high-end PBR materials. Gold rings over a matte `StudioDome`; transparent DOM sections over fixed canvas.
+- **Motion language:** one long-form ring/camera choreography across the page, with pinned DOM narrative beats and restrained easing (avoid noisy micro-jank).
+
+## 3. Stack & Folder Structure
+
+| Layer | Choice |
+|------|--------|
+| Build | Vite |
+| 3D | Three.js `^0.183.2`; GLTF via `GLTFLoader` + Draco + Meshopt |
+| Scroll | Lenis + GSAP + ScrollTrigger |
+| Text splitting | SplitType |
+| Post FX | Native WebGLRenderer (`antialias: true`). Removed EffectComposer to achieve 60fps and remove mobile GPU bottleneck. |
+| Renderer | `alpha:false`, `antialias:true`, `powerPreference: high-performance`, clear `#EAE7DC`, `ACESFilmicToneMapping`, `exposure 1.15`; shadow map type `VSMShadowMap` (set on instance in `World`) |
+| RSVP | Root `.env` with `VITE_TG_BOT_TOKEN`, `VITE_TG_CHAT_ID`; `vite.config.js` has `/api/rsvp` middleware and `/api/telegram` proxy |
+
+Core map:
+
+```text
+CHANGELOG.md
+CONTEXT.md
+.env / .env.example
+vite.config.js
+index.html
+src/main.js
+src/style.css
+src/modules/Scroll.js
+src/gl/World.js
+src/gl/Renderer.js
+src/gl/Camera.js
+src/gl/ResourceLoader.js
+src/gl/world/StudioDome.js
+src/gl/world/GlassRing.js
+src/gl/world/HeroText.js
+src/gl/world/GalleryRibbon.js
+src/gl/world/GlimpseGallery.js
+public/gallery-manifest.json
+public/photos/gallery/1.webp ... 24.webp
+public/photos/scroll/1.webp ... 3.webp
+public/models/ring_a.glb, ring_b.glb
+public/hdri/studio_small_09_1k.hdr
+public/og.webp (+ og-original.webp, og-telegram.webp)
+public/OG_POLICY.md
+public/CNAME
+```
+
+## 4. Implemented features (current, factual)
+
+- **Layered boot:** scene, scroll orchestration, and core DOM animation setup are initialized at T+0; heavy assets load asynchronously via `ResourceLoader` deferreds and `waitFor(name)`. `GlassRing` / `HeroText` mesh hosts are constructed inside `requestIdleCallback` (fallback `setTimeout(0)`) so the first paint can complete before GLB/geometry work; `launchExperience()` awaits `meshInitPromise` then `heroText.ready`, then `document.fonts.load` for Playfair and Manrope before the preloader exits so SplitType metrics stay correct. **Resource preloading** (`index.html`): `preconnect` to `gstatic.com` for Draco; `preload` `as="fetch"` for hero HDRI and `ring_a.glb` to tighten the critical network waterfall (LCP/TBT-oriented).
+- **Resource preloading and async mesh initialization** are implemented to optimize LCP/TBT toward Lighthouse 90+ class compliance (see layered boot and `index.html` hints).
+- **Startup TBT trim:** heavy ring scroll choreography wiring (`bindGlassRingScrollEffects` -> pinned timelines + master timeline) is deferred from early boot to intro start (`runHeroIntro`) so initial paint path does less main-thread setup work.
+- **Startup JS trim (non-critical modules):** `MouseParallax` now lazy-loads only on fine-pointer devices; reserved `GlimpseGallery` is removed from startup/update path to reduce initial parse/execute overhead.
+- **Frosted glass preloader:** `#preloader` is a frosted-glass overlay (`rgba(var(--color-page-bg-rgb), 0.6)` + `backdrop-filter` / `-webkit-backdrop-filter` blur) so the loading state inherits the live ACES-tonemapped WebGL backdrop instead of fighting it with a flat opaque panel.
+- **Preloader sequence:** SVG arc listens to global `resources:progress`; `launchExperience` waits for `heroText.ready`, then Font Loading API (Playfair + Manrope), then fades the frosted preloader and runs `runHeroIntro()`.
+- **StudioDome / HDRI isolation:** cyclorama `MeshStandardMaterial` uses `envMapIntensity: 0` so the matte dome fill stays on `#EAE7DC` and does not pick up hue shift when the scene environment map loads.
+- **Hero ring intro motion:** glass rings scale in with `expo.out` over 3.2s (no elastic bounce); initial Y/Z rotation offset untwists to rest via `power3.out` in parallel with scale (same timing in timeline; deferred `glassRing.ready` path mirrors with standalone tweens).
+- **Hero text architecture:** visible hero names are DOM (`#hero-names`) on all screens. `HeroText` is an API-compatible no-op Three.js stub (`root`, `group`, `ready`, `destroy`) so timelines and world hooks remain stable.
+- **Hero-name mobile-only stacked layout:** `fitHeroNamesToViewport()` now applies only on mobile coarse-pointer query (`(max-width: 767px) and (pointer: coarse)`), toggling `.hero-names--stacked` (`Катя` top, `&` center, `Артём` bottom). Desktop/tablet layouts remain unchanged.
+- **Hero-name vertical separation tuning:** in `.hero-names--stacked`, top/bottom name parts now use stronger opposite Y offsets and tighter center ampersand line-height so `Катя` reads clearly above and `Артём` below with more visual air.
+- **Hero-name readability parity:** mobile stacked hero names mirror the desktop diffused `text-shadow` glow (no stroke) for legibility over dark ring highlights.
+- **Desktop hero-name readability:** base `#hero-names` relies on soft multi-layer pearl-toned `text-shadow` diffusion rather than outline tricks so letterforms stay clean over bright and dark ring areas.
+- **Hero-name halo (DOM):** `#hero-names` and `#hero-names.hero-names--stacked` use only highly diffused layered `text-shadow` (no `-webkit-text-stroke`) so truffle type reads over dark WebGL without jagged overlap on the rings.
+- **Ring choreography:** `src/modules/Scroll.js` builds pinned `pathDomTl` (`+=1500`) and `glimpseDomTl` (`+=3000`), then a full-page `masterTl` (`0..160`) for rings and camera (`z 6.5 -> 5 -> 4.85 -> 4.55`), with Act-I hero scale-out and mobile DOM name scrub-out.
+- **Act I (Path):** full-viewport golden thread scrub + SplitType char choreography for two lines (`.path-text-1`, `.path-text-2`) inside pinned section.
+- **Act II (Glimpse):** mask expansion + label fade + staged image crossfades + gallery CTA reveal in pinned section.
+- **Gallery overlay mode:** open/close state toggles `body.gallery-active`, stops/starts Lenis, fades narrative DOM (excluding hero overlay), hides/shows glass rings, handles Escape close, and refreshes ScrollTrigger on close.
+- **Lazy non-critical JS loading:** `Cursor` is dynamically imported only on fine-pointer devices; `GalleryRibbon` is dynamically imported on first gallery-open intent (`ensureGalleryRibbon()`), reducing initial startup JS work before hero/scroll narrative.
+- **Magnetic UI & difference-blend cursor (fine pointer):** `#cursor` is a small white disc with `mix-blend-mode: difference` so it inverts against light or dark regions (DOM and canvas). `Cursor.js` pairs snappy `quickTo` follow (`0.1s`, `power3.out`) with GSAP magnetic displacement on `.editorial-btn` (`mousemove` pull toward pointer, `mouseleave` elastic return to origin) and hover scale on the broader interactive set.
+- **Minimalist WebGL scope:** dormant particle layer removed (`Petals.js` deleted); no film grain or atmospheric particles—editorial clarity and PBR read take priority.
+- **GalleryRibbon:** infinite object pool (`POOL=7`, `TOTAL=24`), shader-based bend (`uVelocity`), rounded-corner fragment mask with vignette, lazy texture loading/caching, manifest-driven aspect ratios (`public/gallery-manifest.json`), adaptive teleport spacing by edge-gap math, drag/wheel momentum, idle autopan pause logic, throttled on-screen counter (`NN / 24`), and velocity-based chromatic aberration and optical zoom in the fragment shader.
+- **World/lighting:** singleton `World`, studio dome background, ambient + directional light, adaptive shadow map resolution (`coarse: 512`, `fine: 2048`) with `VSMShadowMap`, shadow catcher plane (`z=-1.5`, opacity `0.45`), PMREM environment setup, and guarded env-reflection fade on materials when available.
+- **Mobile behavior:** coarse-pointer path uses native scroll shim in `Scroll.js` (with passive scroll->ScrollTrigger sync), canvas is non-intercepting (`pointer-events:none`), touch controls use `touch-action: manipulation`, hero/pinned sections use `svh/dvh` handling, pull-to-refresh preserved (no overflow lock on `html`).
+- **Navigation/sections:** fixed nav with burger menu on small screens, three anchor links (`История`, `Галерея`, `Детали`), final section as scroll destination without nav item. `#site-nav` starts at `opacity: 0` with hero chrome and animates in during `runHeroIntro()` after `.hero-bottom`.
+- **RSVP delivery:** form reveal animation via GSAP; submit path uses env-backed Telegram flow with HTML-escaped payload: local tries `POST /api/rsvp` then direct Telegram fallback (`no-cors`), production static host uses direct fallback path.
+- **Metadata/OG:** absolute OG/Twitter meta tags in `index.html`; `public/og.webp` treated as immutable master per `public/OG_POLICY.md`.
+- **SEO meta baseline:** `index.html` now includes explicit `<meta name="description">` for Lighthouse SEO completeness and better search snippet summary.
+- **Accessibility landmark:** primary narrative sits in a single `<main id="main">` (after `#site-nav`) so auditors and screen readers get a documented main region; Lenis `html` classes do not replace this landmark.
+
+## 5. Environment (scene/runtime constants)
+
+| Item | Value |
+|------|-------|
+| Camera | Perspective `fov: 35`; resize updates aspect/projection only |
+| Clear color | `#EAE7DC` opaque |
+| Tone mapping | `ACESFilmicToneMapping`, **`toneMappingExposure` `1.15`** (matches `Renderer.js`) |
+| Lights | Ambient `0.5`; Directional `1.05` at `(-4.0, 5.0, 4.0)` |
+| Shadows | `VSMShadowMap`; coarse `512` + bias `-0.005` + radius `4`; fine `2048` + bias `-0.001` + radius `12` |
+| Shadow catcher | Plane `25x25`, `ShadowMaterial opacity 0.45`, `z=-1.5`, receives shadows |
+| DPR cap | **`2.0` max** — `Math.min(devicePixelRatio, 2.0)` on all pointers (`Sizes.js`) |
+| AA | Native multisampling via `WebGLRenderer` `antialias: true` |
+| Lenis | Desktop defaults: duration `2.0`, wheelMultiplier `0.8`, smoothWheel true, syncTouch true; coarse pointer uses native-scroll shim path |
+| Rings timeline | Act I `0-30`, Act II `30-125`, Act III `125-145`, Act IV `145-160` |
+| Gallery | `TOTAL=24`, `POOL=7`, edge-gap fraction `0.055`, idle auto-pan `0.1 world units/s` |
+| Glass ring (gold) | `MeshPhysicalMaterial` **`roughness` `0.15`**; PMREM env reflection fade target **`envMapIntensity` `1.6`** for `glassRing.goldMaterial` in `World.tryFadeEnvReflections()` (production gold response) |
+
+## 6. Next steps
+
+- Optional: run real-device profiling (iPhone 13/14 class) on native renderer MSAA + VSM shadows and tune bias/radius if artifacts appear.
+- Optional: polish Act IV final inertia/easing if artistic review wants stronger magnetic settle in Unity segment.
+- Optional: add ultrawide guardrails for `.final-tagline` (hard width cap) if composition breaks on very wide screens.
+- Optional: gallery center-card hover microinteraction (raycast + subtle scale/label), only if perf budget stays safe.
+- Release readiness checklist:
+  - [ ] Mobile stress-test: 3 full gallery cycles (`24` photos) on iOS/Android; verify no crash and no severe degradation.
+  - [ ] Refresh sync: after gallery close, verify Act III/IV pins and scrub states are stable (no jumps/desync).
+  - [ ] RSVP validation: submit from a real mobile device and confirm Telegram delivery path works as expected.
+  - [ ] Run Lighthouse against `vite preview` / production URL (not `vite dev`), then re-evaluate LCP/TBT priorities from that report.
+</file>
+
+</files>

@@ -1,0 +1,36 @@
+# MISSION: Awwwards Site of the Day (SOTD) Cinema-Web Experience
+# RULE: No "Defensive Slop". Trust the architecture. No legacy fallbacks.
+
+## ROLE: Elite Creative Technologist (Canvas & Performance Expert)
+You are an expert in building high-fidelity, scroll-driven web experiences.
+Your goal is 60fps on mobile and sub-1s LCP.
+
+## CASCADE AGENT BEHAVIOR (CRITICAL)
+1. **No Placeholders**: When applying code changes, NEVER use `// ... existing code ...` or `// remaining code`. Rewrite the complete function, class, or logic block so the internal diff engine applies it flawlessly. The user is a visionary, not a manual coder; your output must execute perfectly without manual syntax fixing.
+2. **Read Before Act**: Before writing any code or proposing an architectural shift, you MUST read `CONTEXT.md`.
+3. **Log Actions**: Update `CONTEXT.md` and `CHANGELOG.md` after every successful feature implementation.
+
+## TECH STACK
+- Core: Vanilla JavaScript (ESNext), Vite.
+- Animation: GSAP (typography, fades, timelines) + **Lenis** (smooth scroll).
+- Scroll Logic: **ScrollTrigger is FORBIDDEN**. Global phase is driven ONLY from `lenis.progress` in `main.js`. 
+- Rendering: **Canvas 2D** for image sequences (`sequencePlayer.js`). **Three.js** is minimal for future WebGL.
+- UI: Swiper (mirror gallery). No React/Vue/Svelte.
+
+## AI CODE STYLE (ANTI-SLOP DIRECTIVES)
+1. **Greenfield Rule**: This is a modern clean-slate project. Never add 'legacy' fallbacks or defensive checks (like redundant `Number.isFinite` or `?? ""`) if the data structure is explicitly defined.
+2. **Trust Boundary**: Assume inputs from your own modules (like `sequencePlayer`) are valid. Do not clutter business logic with redundant null-checks.
+3. **No Optional Chaining Obsession**: Do not use `?.` everywhere. If a property should exist, access it directly so errors surface early during development.
+4. **Declarative Logic**: Write clean, math-heavy JS for animations. Avoid nested ternary operators or "clever" one-liners that obscure intent.
+
+## ARCHITECTURAL DIRECTIVES
+1. **Canvas Engine**: Use `requestAnimationFrame` for time-based playback. Avoid `<img>` grids or CSS-based sequences.
+2. **Memory Management**: When modifying Canvas/Three.js logic, ensure all objects, textures, and listeners are properly disposed of to prevent memory leaks.
+3. **Loading**: Preloader dismisses when **>=30%** of frames are cached.
+4. **Layers**: All scene layers are `position: fixed` direct children of `<body>`. Document height is driven by `.scroll-driver`.
+5. **Lenis**: Use default `wrapper = window`. Do not break fixed positioning with transform-parents.
+
+## PERFORMANCE CRITIQUE (MANDATORY)
+- Target: Stable 60fps.
+- Identify and eliminate: Layout shifts, main-thread spikes, and redundant draw calls in the render loop.
+- Critically analyze memory usage of WebP/AVIF sequences.
