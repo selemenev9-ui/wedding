@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+- **Living newspaper video effect:** replaced static 3-image crossfade in Act II Glimpse section with seamless looping `<video>` (`/video/loop.webm`) for enhanced editorial impact. Video uses native HTML5 attributes (`autoplay muted loop playsinline`) and fills container with `object-fit: cover`/`contain` responsive behavior.
+- **GSAP optimization:** removed crossfade opacity tweens for `.glimpse-img-2` and `.glimpse-img-3` from Scroll.js timeline; container pinning logic preserved (`+=3000px` scroll budget, mask expansion, button reveal timing).
+- **CSS cleanup:** replaced `.glimpse-img` styles with `.glimpse-video` styles; removed obsolete `.glimpse-img-1/2/3` z-index and opacity classes.
 - **Accessibility contrast pass:** increased muted text contrast in navigation/date labels/destination metadata/gallery counter and darkened route-link color to improve WCAG readability while preserving the warm visual palette.
 - **Event details update:** date/time moved to **19.09.2026, 16:00** across hero/details/final/meta; location changed to restaurant **«НАЛ»** (Советская ул., 1, село Большие Салы) with updated Yandex route URL.
 - **Destination section composition:** added a compact pre-event block for **«Выкуп невесты»** (**14:00**, Сумский переулок, 7) above the main venue, including a separate route link and visual divider to preserve layout rhythm.
