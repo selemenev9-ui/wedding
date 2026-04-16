@@ -76,9 +76,9 @@ export default class World {
         this.scene.add(this.shadowCatcher);
 
         this.resources = new ResourceLoader([
-            { name: 'envMap', type: 'hdri', path: '/hdri/studio_small_09_1k.hdr' },
-            { name: 'ringA', type: 'gltf', path: '/models/ring_a.glb' },
-            { name: 'ringB', type: 'gltf', path: '/models/ring_b.glb' },
+            { name: 'envMap', type: 'hdri', path: './hdri/studio_small_09_1k.hdr' },
+            { name: 'ringA', type: 'gltf', path: './models/ring_a.glb' },
+            { name: 'ringB', type: 'gltf', path: './models/ring_b.glb' },
         ]);
 
         /** Set from `main.js` when `HeroText` is created (layered load). */
