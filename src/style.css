@@ -212,14 +212,22 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 1.4rem 3rem;
-    transition: background 0.5s ease;
+    transition: background 0.5s ease, opacity 0.3s ease, transform 0.3s ease;
 }
 
 #site-nav.nav--scrolled {
-    background: rgba(var(--color-page-bg-rgb), 0.25);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(18, 12, 8, 0.06);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: none;
+}
+
+@media (pointer: fine) {
+    #site-nav.nav--hidden {
+        opacity: 0;
+        transform: translateY(-14px);
+        pointer-events: none;
+    }
 }
 
 @media (pointer: coarse) {

@@ -326,7 +326,8 @@ gsap.ticker.add((time) => {
         console.log('Draw calls:', world.renderer.instance.info.render.calls);
     }
 });
-gsap.ticker.lagSmoothing(0);
+// Keep smoothing enabled so occasional frame stalls don't read as harsh jump-cuts.
+gsap.ticker.lagSmoothing(1000, 16);
 
 /** Hero overlay: scrubbed fade + lift over first ~800px (replaces scrollY > 80 snap). */
 gsap.fromTo(
@@ -349,6 +350,22 @@ ScrollTrigger.create({
     trigger: 'body',
     start: 'top -80px',
     toggleClass: { targets: '#site-nav', className: 'nav--scrolled' },
+});
+
+// Desktop: hide nav once gallery/photos section starts; restore when scrolling back up.
+ScrollTrigger.create({
+    trigger: '#section-glimpse',
+    start: 'top top',
+    onEnter: () => {
+        if (window.matchMedia('(pointer: fine)').matches) {
+            document.getElementById('site-nav')?.classList.add('nav--hidden');
+        }
+    },
+    onLeaveBack: () => {
+        if (window.matchMedia('(pointer: fine)').matches) {
+            document.getElementById('site-nav')?.classList.remove('nav--hidden');
+        }
+    },
 });
 
 /** Local ceremony time (MSK, UTC+3) */
@@ -385,6 +402,21 @@ function tickWeddingCountdown() {
     elDays.textContent = String(days).padStart(3, '0');
     elHours.textContent = String(hours).padStart(2, '0');
     elMinutes.textContent = String(minutes).padStart(2, '0');
+}
+
+async function waitForCriticalFonts(maxWaitMs = 1500) {
+    if (!document.fonts?.load) return;
+
+    const fontLoads = Promise.all([
+        document.fonts.load('1em "Playfair Display"'),
+        document.fonts.load('1em "Manrope"'),
+    ]);
+
+    const timeout = new Promise((resolve) => {
+        window.setTimeout(resolve, maxWaitMs);
+    });
+
+    await Promise.race([fontLoads, timeout]);
 }
 
 /** Defer path SplitType + ring `ScrollTrigger` wiring to the next frame so the preloader can paint first. */
@@ -522,12 +554,9 @@ async function launchExperience() {
     await meshInitPromise;
     if (heroText) await heroText.ready;
 
-    // Block experience until critical typography is fully loaded to prevent SplitType miscalculations
+    // Wait briefly for critical fonts, but do not block boot indefinitely on slow network/CDN.
     try {
-        await Promise.all([
-            document.fonts.load('1em "Playfair Display"'),
-            document.fonts.load('1em "Manrope"'),
-        ]);
+        await waitForCriticalFonts(1500);
     } catch (e) {
         console.warn('Font Loading API failed/timeout, proceeding with fallback:', e);
     }
@@ -549,6 +578,7 @@ async function launchExperience() {
             onStart: () => {
                 if (preloaderWrap) gsap.killTweensOf(preloaderWrap);
                 requestAnimationFrame(() => flushDeferredRingScrollBind());
+                startWeddingCountdownTicker();
             },
             onComplete: () => {
                 preloader.remove();
