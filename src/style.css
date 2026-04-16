@@ -921,6 +921,12 @@ canvas {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
+    background: radial-gradient(
+        circle at 50% 42%,
+        rgba(234, 231, 220, 0.4) 0%,
+        rgba(18, 12, 8, 0.82) 68%,
+        rgba(10, 8, 6, 0.94) 100%
+    );
 }
 
 .glimpse-expand-mask.video-fallback-active .glimpse-video {

@@ -49,7 +49,7 @@ src/gl/world/GalleryRibbon.js
 src/gl/world/GlimpseGallery.js
 public/gallery-manifest.json
 public/photos/gallery/1.webp ... 16.webp
-public/photos/scroll/1.webp ... 3.webp
+public/video/loop.mp4, loop.webm
 public/models/ring_a.glb, ring_b.glb
 public/hdri/studio_small_09_1k.hdr
 public/og.webp (+ og-original.webp, og-telegram.webp)
