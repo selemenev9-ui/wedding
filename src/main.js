@@ -605,6 +605,8 @@ function ensureMobileVideoPlayback() {
         if (video.paused) {
             video.play().catch(err => {
                 console.warn('Mobile video autoplay failed:', err);
+                // Force reload after src change on mobile
+                video.load();
                 // Fallback: try to play on first user interaction
                 document.addEventListener('touchstart', () => {
                     video.play().catch(e => console.warn('Video play on touch failed:', e));
