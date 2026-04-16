@@ -899,41 +899,24 @@ canvas {
     z-index: 1;
 }
 
-/* Viewport-sized layers — mask is a window; image scale does not follow card shrink */
-.glimpse-img {
+/* Viewport-sized layers — mask is a window; video scale does not follow card shrink */
+.glimpse-video {
     position: absolute;
     width: 100vw;
     height: 100vh;
-    left: 50%;
     top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     object-fit: cover;
-    max-width: none;
-    pointer-events: none;
-    display: block;
 }
 
 /* Landscape / desktop: full vertical frame, letterboxing on sides (editorial) */
 @media (min-aspect-ratio: 1/1) {
-    .glimpse-img {
+    .glimpse-video {
         object-fit: contain;
     }
 }
 
-.glimpse-img-1 {
-    z-index: 1;
-    opacity: 1;
-}
-
-.glimpse-img-2 {
-    z-index: 2;
-    opacity: 0;
-}
-
-.glimpse-img-3 {
-    z-index: 3;
-    opacity: 0;
-}
 
 /* Button sits over the full-bleed mask (same stacking context as pin container) */
 .glimpse-action {

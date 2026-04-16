@@ -217,8 +217,7 @@ export function bindGlassRingScrollEffects(glassRing) {
             duration: 15,
         }, 85);
 
-        /* ── Glimpse: img crossfade prep + button (btn tween unchanged below) ── */
-        gsap.set('.glimpse-img-2, .glimpse-img-3', { opacity: 0 });
+        /* ── Glimpse: video prep + button (btn tween unchanged below) ── */
         gsap.set('#btn-open-gallery', { autoAlpha: 0 });
         gsap.set('.glimpse-label', { autoAlpha: 1 });
 
@@ -249,20 +248,7 @@ export function bindGlassRingScrollEffects(glassRing) {
             ease: 'power2.inOut',
         }, 0);
 
-        /* 40–70 — crossfade 1 */
-        glimpseDomTl.to('.glimpse-img-2', {
-            opacity: 1,
-            duration: 30,
-            ease: 'power2.inOut',
-        }, 40);
-
-        /* 70–100 — crossfade 2 */
-        glimpseDomTl.to('.glimpse-img-3', {
-            opacity: 1,
-            duration: 30,
-            ease: 'power2.inOut',
-        }, 70);
-
+        
         /* #btn-open-gallery — left exactly as before (do not modify) */
         glimpseDomTl.to('#btn-open-gallery', {
             autoAlpha: 1,
