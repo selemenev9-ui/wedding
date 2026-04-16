@@ -600,24 +600,44 @@ function ensureMobileVideoPlayback() {
   if (!window.matchMedia('(pointer: coarse)').matches) return;
   const video = document.getElementById('glimpse-video');
   if (!video) return;
+  const mask = video.closest('.glimpse-expand-mask');
+
+  const setFallback = (enabled) => {
+    if (!mask) return;
+    mask.classList.toggle('video-fallback-active', enabled);
+  };
 
   const tryPlay = () => {
     video.muted = true;
-    video.load();
-    video.play().catch(() => {});
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', 'true');
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise
+        .then(() => setFallback(false))
+        .catch(() => setFallback(true));
+    }
   };
 
-  // Try immediately
+  video.addEventListener('playing', () => setFallback(false), { passive: true });
+  video.addEventListener('loadeddata', () => setFallback(false), { passive: true });
+  video.addEventListener('error', () => setFallback(true), { passive: true });
+
+  // Immediate attempt + retries on first user interaction hooks.
   tryPlay();
-
-  // Try again after page fully loaded
   window.addEventListener('load', tryPlay, { once: true });
-
-  // Try on first scroll (guaranteed user interaction on mobile)
   window.addEventListener('scroll', tryPlay, { once: true, passive: true });
-
-  // Try on first touch
   document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
+
+  // If autoplay never starts on a strict mobile browser, show static fallback instead of blank.
+  window.setTimeout(() => {
+    const isStalled = video.readyState < 2 || video.paused;
+    if (isStalled) setFallback(true);
+  }, 2500);
 }
 
 ensureMobileVideoPlayback();

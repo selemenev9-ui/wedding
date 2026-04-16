@@ -910,6 +910,27 @@ canvas {
     object-fit: cover;
 }
 
+.glimpse-video-fallback {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.glimpse-expand-mask.video-fallback-active .glimpse-video {
+    opacity: 0;
+}
+
+.glimpse-expand-mask.video-fallback-active .glimpse-video-fallback {
+    opacity: 1;
+}
+
 /* Mobile video fixes */
 @media (pointer: coarse) {
     .glimpse-video {
