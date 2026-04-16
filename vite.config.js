@@ -121,7 +121,7 @@ export default defineConfig(({ mode }) => {
     };
 
     return {
-        base: mode === 'production' ? '/awwwards-wedding/' : '/',
+        base: '/',
         plugins: [rsvpTelegramPlugin(env)],
         esbuild: {
             drop: mode === 'production' ? ['console', 'debugger'] : [],
