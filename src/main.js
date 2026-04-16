@@ -597,28 +597,27 @@ launchExperience();
 
 // ── Mobile video autoplay fix ───────────────────────────────
 function ensureMobileVideoPlayback() {
+  if (!window.matchMedia('(pointer: coarse)').matches) return;
   const video = document.getElementById('glimpse-video');
   if (!video) return;
 
-  const attemptPlay = () => {
+  const tryPlay = () => {
+    video.muted = true;
     video.load();
-    const p = video.play();
-    if (p !== undefined) {
-      p.catch(() => {
-        // Fallback: play on first user touch
-        document.addEventListener('touchstart', () => {
-          video.load();
-          video.play().catch(() => {});
-        }, { once: true });
-      });
-    }
+    video.play().catch(() => {});
   };
 
-  if (video.readyState >= 1) {
-    attemptPlay();
-  } else {
-    video.addEventListener('loadedmetadata', attemptPlay, { once: true });
-  }
+  // Try immediately
+  tryPlay();
+
+  // Try again after page fully loaded
+  window.addEventListener('load', tryPlay, { once: true });
+
+  // Try on first scroll (guaranteed user interaction on mobile)
+  window.addEventListener('scroll', tryPlay, { once: true, passive: true });
+
+  // Try on first touch
+  document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
 }
 
 ensureMobileVideoPlayback();
