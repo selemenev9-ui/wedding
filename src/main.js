@@ -608,6 +608,7 @@ function ensureMobileVideoPlayback() {
   };
 
   const tryPlay = () => {
+    setFallback(false);
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
@@ -619,7 +620,10 @@ function ensureMobileVideoPlayback() {
     if (playPromise && typeof playPromise.catch === 'function') {
       playPromise
         .then(() => setFallback(false))
-        .catch(() => setFallback(true));
+        .catch(() => {
+          // Autoplay can be temporarily blocked by policy and later succeed after gesture.
+          // Do not force static fallback here — keep retry hooks active.
+        });
     }
   };
 
@@ -632,12 +636,6 @@ function ensureMobileVideoPlayback() {
   window.addEventListener('load', tryPlay, { once: true });
   window.addEventListener('scroll', tryPlay, { once: true, passive: true });
   document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
-
-  // If autoplay never starts on a strict mobile browser, show static fallback instead of blank.
-  window.setTimeout(() => {
-    const isStalled = video.readyState < 2 || video.paused;
-    if (isStalled) setFallback(true);
-  }, 2500);
 }
 
 ensureMobileVideoPlayback();
