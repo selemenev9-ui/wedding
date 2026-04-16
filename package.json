@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "node scripts/convert-images.js && vite build",
     "preview": "vite preview",
-    "images": "node scripts/convert-images.js"
+    "images": "node scripts/convert-images.js",
+    "deploy": "npm run build && npx gh-pages -d dist"
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "sharp": "^0.34.5",
     "vite": "^8.0.1"
   },
