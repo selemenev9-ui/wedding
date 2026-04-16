@@ -597,29 +597,28 @@ launchExperience();
 
 // ── Mobile video autoplay fix ───────────────────────────────
 function ensureMobileVideoPlayback() {
-    const video = document.getElementById('glimpse-video');
-    if (!video) return;
-    
-    // Force video play on mobile devices
-    const playVideo = () => {
-        if (video.paused) {
-            video.play().catch(err => {
-                console.warn('Mobile video autoplay failed:', err);
-                // Force reload after src change on mobile
-                video.load();
-                // Fallback: try to play on first user interaction
-                document.addEventListener('touchstart', () => {
-                    video.play().catch(e => console.warn('Video play on touch failed:', e));
-                }, { once: true });
-            });
-        }
-    };
-    
-    // Try immediate play
-    playVideo();
-    
-    // Also try when section becomes visible (ScrollTrigger)
-    setTimeout(playVideo, 1000);
+  const video = document.getElementById('glimpse-video');
+  if (!video) return;
+
+  const attemptPlay = () => {
+    video.load();
+    const p = video.play();
+    if (p !== undefined) {
+      p.catch(() => {
+        // Fallback: play on first user touch
+        document.addEventListener('touchstart', () => {
+          video.load();
+          video.play().catch(() => {});
+        }, { once: true });
+      });
+    }
+  };
+
+  if (video.readyState >= 1) {
+    attemptPlay();
+  } else {
+    video.addEventListener('loadedmetadata', attemptPlay, { once: true });
+  }
 }
 
 ensureMobileVideoPlayback();
