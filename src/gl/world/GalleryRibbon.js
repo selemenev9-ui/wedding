@@ -5,7 +5,7 @@ import { getWorld } from '../World.js';
 /* ─────────────────────────────────────────────────────────────────────
    Configuration
 ───────────────────────────────────────────────────────────────────── */
-const TOTAL = 16;
+const TOTAL = 12;
 const POOL  = 7;
 const BASE_PATH = '/photos/gallery/';
 
