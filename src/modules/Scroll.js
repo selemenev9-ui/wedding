@@ -156,7 +156,7 @@ export function bindGlassRingScrollEffects(glassRing) {
 
         gsap.set('.golden-thread', { scaleY: 0, transformOrigin: 'top center' });
 
-        gsap.set('.destination-content, .final-date, .final-tagline', {
+        gsap.set('.destination-content, .info-card, .final-date, .final-tagline', {
             autoAlpha: 0,
             y: 30,
         });
@@ -356,6 +356,18 @@ export function bindGlassRingScrollEffects(glassRing) {
                 start: 'top 75%',
                 end: 'center center',
                 scrub: true,
+                ...st,
+            },
+        });
+
+        gsap.to('.info-card', {
+            autoAlpha: 1,
+            y: 0,
+            stagger: 0.15,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: '#section-info',
+                start: 'top 75%',
                 ...st,
             },
         });

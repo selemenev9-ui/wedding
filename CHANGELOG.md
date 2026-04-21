@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- **Accessibility + SEO housekeeping:** increased `#section-info` base typography for mobile readability (`.info-title` now starts at `2rem`, `.info-text` at `1rem`) with tighter mobile grid spacing, and added `public/robots.txt` (`User-agent: *`, `Allow: /`) to fix Lighthouse robots parsing errors.
+- **Info section:** inserted a new DOM-only `#section-info` between destination and final with three editorial cards (dress code, gifts, children policy), responsive grid styling, and a dedicated `ScrollTrigger` reveal in `Scroll.js` without touching the WebGL `masterTl`.
 - **Living newspaper video effect:** replaced static 3-image crossfade in Act II Glimpse section with seamless looping `<video>` (`/video/loop.webm`) for enhanced editorial impact. Video uses native HTML5 attributes (`autoplay muted loop playsinline`) and fills container with `object-fit: cover`/`contain` responsive behavior.
 - **GSAP optimization:** removed crossfade opacity tweens for `.glimpse-img-2` and `.glimpse-img-3` from Scroll.js timeline; container pinning logic preserved (`+=3000px` scroll budget, mask expansion, button reveal timing).
 - **CSS cleanup:** replaced `.glimpse-img` styles with `.glimpse-video` styles; removed obsolete `.glimpse-img-1/2/3` z-index and opacity classes.

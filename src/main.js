@@ -601,9 +601,47 @@ function ensureMobileVideoPlayback() {
   const video = document.getElementById('glimpse-video');
   if (!video) return;
   const mask = video.closest('.glimpse-expand-mask');
+  if (!mask) return;
+
+  let playbackStarted = false;
+  let overlayEl = null;
+  let overlayTimeoutId = null;
+
+  const removePlayOverlayPermanently = () => {
+    if (overlayTimeoutId != null) {
+      clearTimeout(overlayTimeoutId);
+      overlayTimeoutId = null;
+    }
+    if (overlayEl?.parentNode) {
+      overlayEl.parentNode.removeChild(overlayEl);
+    }
+    overlayEl = null;
+  };
+
+  const showPlayOverlay = () => {
+    if (playbackStarted || overlayEl) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'glimpse-play-overlay';
+    btn.setAttribute('aria-label', 'Воспроизвести видео');
+    mask.appendChild(btn);
+    overlayEl = btn;
+
+    const onTap = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      btn.classList.add('glimpse-play-overlay--hidden');
+      const p = tryPlay();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+          btn.classList.remove('glimpse-play-overlay--hidden');
+        });
+      }
+    };
+    btn.addEventListener('click', onTap, { passive: false });
+  };
 
   const setFallback = (enabled) => {
-    if (!mask) return;
     mask.classList.toggle('video-fallback-active', enabled);
   };
 
@@ -625,9 +663,18 @@ function ensureMobileVideoPlayback() {
           // Do not force static fallback here — keep retry hooks active.
         });
     }
+    return playPromise;
   };
 
-  video.addEventListener('playing', () => setFallback(false), { passive: true });
+  video.addEventListener(
+    'playing',
+    () => {
+      playbackStarted = true;
+      setFallback(false);
+      removePlayOverlayPermanently();
+    },
+    { passive: true },
+  );
   video.addEventListener('loadeddata', () => setFallback(false), { passive: true });
   video.addEventListener('error', () => setFallback(true), { passive: true });
 
@@ -651,6 +698,18 @@ function ensureMobileVideoPlayback() {
       { threshold: 0.5 },
     );
     observer.observe(video);
+  }
+
+  const schedulePlayOverlayAfterLoad = () => {
+    overlayTimeoutId = window.setTimeout(() => {
+      overlayTimeoutId = null;
+      if (!playbackStarted) showPlayOverlay();
+    }, 2000);
+  };
+  if (document.readyState === 'complete') {
+    schedulePlayOverlayAfterLoad();
+  } else {
+    window.addEventListener('load', schedulePlayOverlayAfterLoad, { once: true });
   }
 }
 
