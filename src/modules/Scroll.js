@@ -360,6 +360,29 @@ export function bindGlassRingScrollEffects(glassRing) {
             },
         });
 
+        gsap.to('.dresscode-shell', {
+            autoAlpha: 1,
+            y: 0,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: '#section-dresscode',
+                start: 'top 75%',
+                ...st,
+            },
+        });
+
+        gsap.to('.dresscode-swatch', {
+            autoAlpha: 1,
+            y: 0,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: '#section-dresscode',
+                start: 'top 70%',
+                ...st,
+            },
+        });
+
         gsap.to('.info-card', {
             autoAlpha: 1,
             y: 0,

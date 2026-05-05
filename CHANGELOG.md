@@ -4,6 +4,23 @@
 
 ## [Unreleased]
 
+- **Dresscode palette:** added a standalone `#section-dresscode` with frosted shell, bilingual label, descriptive copy, and four color swatches (`Шоколад`, `Жемчуг`, `Роза`, `Фисташка`) plus GSAP reveal staging.
+- **Dresscode palette tuning:** moved palette authority into `DressModel` with separate `chipColor` values for DOM swatches and ACES-compensated PBR `color` / `envMapIntensity` values for the satin dress; removed the swatch inset highlight so chips render as flat reference colors.
+- **Dresscode satin tuning:** adjusted the four `DressModel` presets toward the visual reference: lighter copper chocolate, creamy pearl, softer dusty rose, and grey-olive pistachio without touching global lighting or HDRI.
+- **Dresscode satin micro-pass 2:** cooled the chocolate preset away from red, reduced pearl iridescence, softened rose highlights, and desaturated pistachio toward the grey-olive reference fabric.
+- **Dresscode chocolate correction:** isolated the chocolate preset with a lifted base, higher roughness, softer sheen, and lower environment reflections so it reads as satin instead of glossy leather.
+- **Dresscode bronze/taupe correction:** reinterpreted the `Шоколад` preset as bronze/taupe satin to match the reference fabric instead of literal dark chocolate.
+- **Dresscode satin fabric shader:** extended `DressModel`'s `MeshPhysicalMaterial` via `onBeforeCompile` with per-preset satin lift/contrast/saturation/rim/glow uniforms, preserving scene shadows and ACES while replacing the plastic response with cloth-like highlights.
+- **Dresscode satin shader correction:** removed the milk-white diffuse lift from the satin shader so base palette colors remain visible while only grazing folds and highlights receive cloth glow.
+- **Dresscode satin color micro-pass:** adjusted only preset values over the corrected satin shader: champagne-taupe bronze, calmer pearl saturation, lighter dusty rose, and greyer pistachio.
+- **Dresscode reference pass:** kept pistachio unchanged as the best visual match and retuned only pearl/rose/chocolate toward warmer cream, lighter dusty rose, and lifted bronze-taupe respectively.
+- **Dresscode pearl-only pass:** locked chocolate/rose/pistachio and tuned only `Жемчуг` warmer and creamier with reduced iridescence/env pickup and cleaner satin highlights.
+- **Dresscode pearl champagne pass:** pushed only `Жемчуг` away from white-grey porcelain toward deeper champagne/ivory satin with warmer base, warmer sheen, reduced iridescence, and less environment pickup.
+- **Dresscode responsive composition:** fixed final color/material presets and adjusted only layout CSS: tighter desktop/tablet dress slot, inward model shift, clipped section bounds, and compact one-row mobile swatches without the previous 2x2 media-query override.
+- **Dresscode silk model:** rebuilt `DressModel` material around sheen + iridescence (double-sided satin, vertex sway/billow) and mapped each swatch to its own PBR preset with animated sheen/iridescence morphs.
+- **Dresscode mobile viewport:** compressed the `max-width: 767px` layout into a 100svh vignette (tight padding, shell clamp, dress reordered below copy) so the floating model and swatches are visible simultaneously on phones.
+- **Info cards layout:** desktop grid now auto-fits `minmax(18rem, 1fr)` columns with hyphenated titles so long Russian words stop clipping on the "Проживание" card.
+- **Info cards refresh:** reworded the three-card grid (проживание/подарки/дети) and restyled the DOM cards with deeper relief so the section matches the new art direction; Scroll.js triggers updated to reveal the new layout.
 - **Accessibility + SEO housekeeping:** increased `#section-info` base typography for mobile readability (`.info-title` now starts at `2rem`, `.info-text` at `1rem`) with tighter mobile grid spacing, and added `public/robots.txt` (`User-agent: *`, `Allow: /`) to fix Lighthouse robots parsing errors.
 - **Info section:** inserted a new DOM-only `#section-info` between destination and final with three editorial cards (dress code, gifts, children policy), responsive grid styling, and a dedicated `ScrollTrigger` reveal in `Scroll.js` without touching the WebGL `masterTl`.
 - **Living newspaper video effect:** replaced static 3-image crossfade in Act II Glimpse section with seamless looping `<video>` (`/video/loop.webm`) for enhanced editorial impact. Video uses native HTML5 attributes (`autoplay muted loop playsinline`) and fills container with `object-fit: cover`/`contain` responsive behavior.

@@ -1230,15 +1230,231 @@ body.gallery-active .gallery-overlay {
     will-change: transform, opacity;
 }
 
+/* ── Dresscode palette ───────────────────────────────────────────────────── */
+#section-dresscode {
+    min-height: 86vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 3vw, 4rem);
+    padding: 10vh clamp(3vw, 5vw, 6vw);
+    position: relative;
+    z-index: 5;
+    overflow: hidden;
+}
+
+.dresscode-shell {
+    position: relative;
+    width: 100%;
+    padding: clamp(3rem, 6vw, 5rem) clamp(2rem, 5vw, 4rem);
+    text-align: center;
+    border-radius: 48px;
+    background: rgba(var(--color-page-bg-rgb), 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 60px 120px rgba(18, 12, 8, 0.08);
+    overflow: hidden;
+    isolation: isolate;
+    opacity: 0;
+    transform: translateY(60px);
+}
+
+.dresscode-content {
+    flex: 1 1 auto;
+    max-width: 64rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.dresscode-label {
+    font-family: 'Manrope', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    font-size: 0.7rem;
+    color: rgba(18, 12, 8, 0.45);
+    margin-bottom: 1rem;
+}
+
+.dresscode-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: #120c08;
+    margin-bottom: 1.5rem;
+}
+
+.dresscode-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    line-height: 1.7;
+    color: rgba(18, 12, 8, 0.75);
+    max-width: 48rem;
+    margin: 0 auto 2.5rem;
+}
+
+.dresscode-swatches {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 1.5rem;
+    justify-items: center;
+}
+
+.dresscode-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.dresscode-swatch-dot {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    background: var(--swatch-color, #c6b5a3);
+    box-shadow: 0 8px 20px rgba(18, 12, 8, 0.14);
+}
+
+.dresscode-swatch-name {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.28em;
+    display: none;
+    text-transform: uppercase;
+    color: rgba(18, 12, 8, 0.65);
+}
+
+.dresscode-orbit {
+    position: absolute;
+    width: clamp(240px, 40vw, 420px);
+    height: clamp(240px, 40vw, 420px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+    filter: blur(0.5px) drop-shadow(0 35px 45px rgba(18, 12, 8, 0.2));
+    opacity: 0.45;
+    z-index: -1;
+}
+
+.dresscode-orbit--left {
+    top: -20%;
+    left: -10%;
+}
+
+.dresscode-orbit--right {
+    bottom: -25%;
+    right: -5%;
+}
+
+.dresscode-3d-wrap {
+    flex: 0 0 clamp(180px, 18vw, 260px);
+    aspect-ratio: 3 / 5;
+    pointer-events: none;
+    align-self: center;
+    transform: translateX(8%);
+}
+
+@media (max-width: 992px) {
+    #section-dresscode {
+        gap: clamp(1.5rem, 3vw, 3rem);
+    }
+    .dresscode-3d-wrap {
+        flex: 0 0 clamp(120px, 17vw, 180px);
+        transform: translateX(6%);
+    }
+}
+
+@media (max-width: 767px) {
+    #section-dresscode {
+        flex-direction: column;
+        min-height: 100svh;
+        padding: max(0.75rem, env(safe-area-inset-top)) 4vw 0;
+        gap: 0;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .dresscode-3d-wrap {
+        width: min(68vw, 260px);
+        aspect-ratio: 3 / 4.6;
+        flex: none;
+        order: 2;
+        align-self: center;
+        margin-top: -1.25rem;
+        transform: none;
+    }
+
+    .dresscode-shell {
+        padding: 1.15rem 1.1rem 1.45rem;
+        max-width: 100%;
+        border-radius: 0 0 34px 34px;
+    }
+
+    .dresscode-label {
+        display: none;
+    }
+
+    .dresscode-content {
+        order: 1;
+        width: 100%;
+        gap: 0;
+    }
+
+    .dresscode-swatches {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.4rem;
+        padding: 0 0.25rem;
+        margin-top: 1.5rem;
+        position: relative;
+        z-index: 3;
+    }
+
+    .dresscode-swatch-name {
+        display: none;
+    }
+
+    .dresscode-swatch-dot {
+        width: clamp(54px, 17vw, 64px);
+        height: clamp(54px, 17vw, 64px);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+    .dresscode-swatches {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .dresscode-swatches {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.4rem;
+    }
+
+    .dresscode-swatch-dot {
+        width: clamp(54px, 17vw, 64px);
+        height: clamp(54px, 17vw, 64px);
+    }
+
+    .dresscode-swatch-name {
+        letter-spacing: 0.2em;
+    }
+}
+
+/* ── Info cards ─────────────────────────────────────────────────────────── */
 #section-info {
-    min-height: 80vh;
+    min-height: 70vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 8vh 6vw;
     position: relative;
     z-index: 5;
-    background: transparent;
 }
 
 .info-container {
@@ -1249,24 +1465,36 @@ body.gallery-active .gallery-overlay {
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4rem;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: clamp(2.5rem, 4vw, 4rem);
+    justify-content: center;
 }
 
 .info-card {
+    position: relative;
     text-align: center;
     opacity: 0;
     transform: translateY(40px);
     will-change: transform, opacity;
-    
-    /* Premium Glassmorphism Effect */
-    background: rgba(var(--color-page-bg-rgb), 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    padding: 2.5rem 1.5rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 12px 40px rgba(18, 12, 8, 0.06);
+    padding: 3rem 2rem;
+    border-radius: 28px;
+    background: #f8f4eb;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 35px 80px rgba(18, 12, 8, 0.12);
+    overflow: hidden;
+}
+
+.info-card::after {
+    content: '';
+    position: absolute;
+    inset: 20% auto auto 50%;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+    opacity: 0.35;
+    transform: translateX(-50%);
+    pointer-events: none;
 }
 
 .info-title {
@@ -1276,6 +1504,8 @@ body.gallery-active .gallery-overlay {
     color: #120c08;
     margin-bottom: 1.25rem;
     text-shadow: 0 1px 12px rgba(255, 255, 255, 0.4);
+    hyphens: auto;
+    overflow-wrap: anywhere;
 }
 
 .info-text {
