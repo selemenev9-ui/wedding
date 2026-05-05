@@ -75,6 +75,15 @@ export default class DressModel {
         this._destroyed   = false;
         this._tracker     = document.querySelector('.dresscode-3d-wrap');
         this._shaderUniforms = null;
+        this._dragging = false;
+        this._dragPointerId = null;
+        this._dragStartX = 0;
+        this._dragStartY = 0;
+        this._dragLastX = 0;
+        this._dragLastTime = 0;
+        this._dragIntent = false;
+        this._rotationTargetY = 0;
+        this._rotationVelocity = 0.003;
 
         const pearl = PRESETS['Жемчуг'];
         this._satinState = {
@@ -161,6 +170,7 @@ export default class DressModel {
         this._listeners = [];
         this._load();
         this.bindSwatches();
+        this.bindRotation();
     }
 
     _load() {
@@ -277,6 +287,63 @@ export default class DressModel {
         });
     }
 
+    bindRotation() {
+        if (!this._tracker) return;
+
+        const onPointerDown = (event) => {
+            this._dragging = true;
+            this._dragPointerId = event.pointerId;
+            this._dragStartX = event.clientX;
+            this._dragStartY = event.clientY;
+            this._dragLastX = event.clientX;
+            this._dragLastTime = performance.now();
+            this._dragIntent = false;
+            this._rotationVelocity = 0;
+            this._tracker.setPointerCapture(event.pointerId);
+        };
+
+        const onPointerMove = (event) => {
+            if (!this._dragging || event.pointerId !== this._dragPointerId) return;
+
+            const dxFromStart = event.clientX - this._dragStartX;
+            const dyFromStart = event.clientY - this._dragStartY;
+            if (!this._dragIntent) {
+                if (Math.abs(dxFromStart) < 8) return;
+                if (Math.abs(dyFromStart) > Math.abs(dxFromStart) * 1.15) return;
+                this._dragIntent = true;
+            }
+
+            event.preventDefault();
+            const now = performance.now();
+            const dx = event.clientX - this._dragLastX;
+            const dt = Math.max(now - this._dragLastTime, 16);
+            const deltaRotation = dx * 0.012;
+            this._rotationTargetY += deltaRotation;
+            this._rotationVelocity = deltaRotation / dt * 16;
+            this._dragLastX = event.clientX;
+            this._dragLastTime = now;
+        };
+
+        const onPointerEnd = (event) => {
+            if (event.pointerId !== this._dragPointerId) return;
+            this._dragging = false;
+            this._dragPointerId = null;
+            this._dragIntent = false;
+            this._tracker.releasePointerCapture(event.pointerId);
+        };
+
+        this._tracker.addEventListener('pointerdown', onPointerDown);
+        this._tracker.addEventListener('pointermove', onPointerMove);
+        this._tracker.addEventListener('pointerup', onPointerEnd);
+        this._tracker.addEventListener('pointercancel', onPointerEnd);
+        this._listeners.push({
+            el: this._tracker,
+            onPointerDown,
+            onPointerMove,
+            onPointerEnd,
+        });
+    }
+
     update() {
         if (this._destroyed || !this._tracker || !this._floatGroup.children.length) return;
 
@@ -309,14 +376,28 @@ export default class DressModel {
         this._floatGroup.position.y  = (ndcY * worldH * 0.5)
                                       + Math.sin(t * 0.65) * 0.07
                                       + Math.sin(t * 0.3 + 1.2) * 0.025;
-        this._floatGroup.rotation.y += 0.003;
+        if (!this._dragging) {
+            this._rotationTargetY += this._rotationVelocity;
+            this._rotationVelocity = this._rotationVelocity * 0.94 + 0.003 * 0.06;
+        }
+        this._floatGroup.rotation.y += (this._rotationTargetY - this._floatGroup.rotation.y) * 0.18;
     }
 
     destroy() {
         this._destroyed = true;
         for (const { el, onActivate } of this._listeners) {
-            el.removeEventListener('mouseenter', onActivate);
-            el.removeEventListener('touchstart',  onActivate);
+            if (onActivate) {
+                el.removeEventListener('mouseenter', onActivate);
+                el.removeEventListener('touchstart',  onActivate);
+            }
+        }
+        for (const { el, onPointerDown, onPointerMove, onPointerEnd } of this._listeners) {
+            if (onPointerDown) {
+                el.removeEventListener('pointerdown', onPointerDown);
+                el.removeEventListener('pointermove', onPointerMove);
+                el.removeEventListener('pointerup', onPointerEnd);
+                el.removeEventListener('pointercancel', onPointerEnd);
+            }
         }
         this._material?.dispose();
         if (this._world?.scene && this._floatGroup) {

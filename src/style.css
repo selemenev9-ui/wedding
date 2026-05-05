@@ -1354,9 +1354,15 @@ body.gallery-active .gallery-overlay {
 .dresscode-3d-wrap {
     flex: 0 0 clamp(180px, 18vw, 260px);
     aspect-ratio: 3 / 5;
-    pointer-events: none;
+    pointer-events: auto;
+    touch-action: pan-y;
+    cursor: grab;
     align-self: center;
     transform: translateX(8%);
+}
+
+.dresscode-3d-wrap:active {
+    cursor: grabbing;
 }
 
 @media (max-width: 992px) {
