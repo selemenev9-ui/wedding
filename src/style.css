@@ -1461,19 +1461,19 @@ body.gallery-active .gallery-overlay {
     }
 
     .hero-date {
-        font-size: 0.82rem;
-        font-weight: 600;
-        letter-spacing: 0.28em;
-        text-indent: 0.28em;
-        color: rgba(18, 12, 8, 0.86);
+        font-size: 0.98rem;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-indent: 0.24em;
+        color: rgba(18, 12, 8, 0.9);
     }
 
     .hero-time {
-        font-size: 0.8rem;
-        font-weight: 650;
-        letter-spacing: 0.32em;
-        text-indent: 0.32em;
-        color: rgba(18, 12, 8, 0.78);
+        font-size: 0.94rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-indent: 0.22em;
+        color: rgba(18, 12, 8, 0.84);
     }
 
     .cd-label {
