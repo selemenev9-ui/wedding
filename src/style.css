@@ -1310,10 +1310,22 @@ body.gallery-active .gallery-overlay {
 }
 
 .dresscode-swatches {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(120px, 1fr));
-    gap: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.9rem, 1.8vw, 1.5rem);
     justify-items: center;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0.65rem 0.75rem;
+    border-radius: 999px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(var(--color-page-bg-rgb), 0.28));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.82),
+        inset 0 -12px 24px rgba(18, 12, 8, 0.035),
+        0 18px 46px rgba(18, 12, 8, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .dresscode-swatch {
@@ -1324,24 +1336,79 @@ body.gallery-active .gallery-overlay {
     opacity: 0;
     transform: translateY(30px);
     cursor: pointer;
-    min-width: 72px;
-    min-height: 72px;
+    min-width: 78px;
+    min-height: 78px;
     justify-content: center;
+    border-radius: 999px;
+    padding: 0.45rem;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 58%),
+        rgba(255, 255, 255, 0.16);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -8px 18px rgba(18, 12, 8, 0.045);
+    transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
 }
 
 .dresscode-swatch-dot {
-    width: 86px;
-    height: 86px;
+    width: 68px;
+    height: 68px;
     border-radius: 50%;
     background: var(--swatch-color, #c6b5a3);
-    box-shadow: 0 8px 20px rgba(18, 12, 8, 0.14);
+    position: relative;
+    box-shadow:
+        inset 10px 12px 18px rgba(255, 255, 255, 0.22),
+        inset -12px -16px 22px rgba(18, 12, 8, 0.18),
+        0 10px 18px rgba(18, 12, 8, 0.14);
     transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.dresscode-swatch-dot::before {
+    content: "";
+    position: absolute;
+    top: 11%;
+    left: 16%;
+    width: 38%;
+    height: 28%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.24);
+    filter: blur(3px);
+}
+
+.dresscode-swatch-dot::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+    border-radius: 50%;
+    border: 1px solid rgba(142, 108, 55, 0);
+    box-shadow: 0 0 0 rgba(142, 108, 55, 0);
+    transition: border-color 0.28s ease, box-shadow 0.28s ease;
 }
 
 .dresscode-swatch:hover .dresscode-swatch-dot,
 .dresscode-swatch:active .dresscode-swatch-dot {
-    transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 14px 28px rgba(18, 12, 8, 0.18);
+    transform: translateY(-2px) scale(1.035);
+    box-shadow:
+        inset 10px 12px 18px rgba(255, 255, 255, 0.24),
+        inset -12px -16px 22px rgba(18, 12, 8, 0.2),
+        0 14px 26px rgba(18, 12, 8, 0.18);
+}
+
+.dresscode-swatch--active {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 58%),
+        rgba(255, 255, 255, 0.3);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.86),
+        inset 0 -8px 18px rgba(18, 12, 8, 0.05),
+        0 10px 24px rgba(18, 12, 8, 0.08);
+}
+
+.dresscode-swatch--active .dresscode-swatch-dot::after {
+    border-color: rgba(142, 108, 55, 0.5);
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.56),
+        0 0 0 5px rgba(142, 108, 55, 0.16);
 }
 
 .dresscode-swatch-name {
@@ -1400,40 +1467,45 @@ body.gallery-active .gallery-overlay {
 
 @media (max-width: 767px) {
     .hero-tagline {
-        font-size: 0.86rem;
-        letter-spacing: 0.22em;
-        color: rgba(18, 12, 8, 0.72);
+        font-size: 0.94rem;
+        font-weight: 650;
+        letter-spacing: 0.18em;
+        color: rgba(18, 12, 8, 0.78);
     }
 
     .hero-date {
-        font-size: 0.76rem;
-        letter-spacing: 0.42em;
-        text-indent: 0.42em;
-        color: rgba(18, 12, 8, 0.82);
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-indent: 0.28em;
+        color: rgba(18, 12, 8, 0.86);
     }
 
     .hero-time {
-        font-size: 0.74rem;
+        font-size: 0.8rem;
+        font-weight: 650;
         letter-spacing: 0.32em;
         text-indent: 0.32em;
-        color: rgba(18, 12, 8, 0.72);
+        color: rgba(18, 12, 8, 0.78);
     }
 
     .cd-label {
-        font-size: 0.64rem;
-        letter-spacing: 0.16em;
-        text-indent: 0.16em;
-        color: rgba(18, 12, 8, 0.64);
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.12em;
+        text-indent: 0.12em;
+        color: rgba(18, 12, 8, 0.72);
     }
 
     .dest-event-label,
     .dest-date,
     .dest-address,
     .route-link {
-        font-size: 0.76rem;
-        letter-spacing: 0.18em;
-        text-indent: 0.18em;
-        color: rgba(18, 12, 8, 0.72);
+        font-size: 0.84rem;
+        font-weight: 650;
+        letter-spacing: 0.12em;
+        text-indent: 0.12em;
+        color: rgba(18, 12, 8, 0.78);
     }
 
     .route-link {
@@ -1441,9 +1513,10 @@ body.gallery-active .gallery-overlay {
     }
 
     .editorial-btn {
-        font-size: 0.76rem;
-        letter-spacing: 0.18em;
-        text-indent: 0.18em;
+        font-size: 0.82rem;
+        font-weight: 650;
+        letter-spacing: 0.12em;
+        text-indent: 0.12em;
     }
 
     #section-dresscode {
@@ -1482,19 +1555,19 @@ body.gallery-active .gallery-overlay {
     }
 
     .dresscode-hint {
-        font-size: 0.72rem;
+        font-size: 0.78rem;
+        font-weight: 650;
         line-height: 1.5;
-        letter-spacing: 0.12em;
-        text-indent: 0.12em;
-        color: rgba(18, 12, 8, 0.66);
+        letter-spacing: 0.1em;
+        text-indent: 0.1em;
+        color: rgba(18, 12, 8, 0.72);
         max-width: 18rem;
         margin-top: 0;
     }
 
     .dresscode-swatches {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.4rem;
-        padding: 0 0.25rem;
+        gap: 0.25rem;
+        padding: 0.45rem;
         margin-top: 0.55rem;
         position: relative;
         z-index: 3;
@@ -1505,26 +1578,32 @@ body.gallery-active .gallery-overlay {
     }
 
     .dresscode-swatch-dot {
-        width: clamp(54px, 17vw, 64px);
-        height: clamp(54px, 17vw, 64px);
+        width: clamp(48px, 13vw, 58px);
+        height: clamp(48px, 13vw, 58px);
+    }
+
+    .dresscode-swatch {
+        min-width: clamp(56px, 17vw, 70px);
+        min-height: clamp(56px, 17vw, 70px);
+        padding: 0.36rem;
     }
 }
 
 @media (min-width: 768px) and (max-width: 992px) {
     .dresscode-swatches {
-        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        flex-wrap: wrap;
+        max-width: 24rem;
     }
 }
 
 @media (max-width: 600px) {
     .dresscode-swatches {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.4rem;
+        gap: 0.22rem;
     }
 
     .dresscode-swatch-dot {
-        width: clamp(54px, 17vw, 64px);
-        height: clamp(54px, 17vw, 64px);
+        width: clamp(48px, 13vw, 58px);
+        height: clamp(48px, 13vw, 58px);
     }
 
     .dresscode-swatch-name {

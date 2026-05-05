@@ -275,12 +275,18 @@ export default class DressModel {
     }
 
     bindSwatches() {
-        document.querySelectorAll('.dresscode-swatch').forEach((el) => {
-            const name = el.querySelector('.dresscode-swatch-name')?.textContent?.trim();
+        const swatches = document.querySelectorAll('.dresscode-swatch');
+        swatches.forEach((el) => {
+            const name = el.querySelector('.dresscode-swatch-name').textContent.trim();
             if (!name || !PRESETS[name]) return;
             el.querySelector('.dresscode-swatch-dot')
                 .style.setProperty('--swatch-color', PRESETS[name].chipColor);
-            const onActivate = () => this.morphTo(name);
+            el.classList.toggle('dresscode-swatch--active', name === 'Жемчуг');
+            const onActivate = () => {
+                swatches.forEach((swatch) => swatch.classList.remove('dresscode-swatch--active'));
+                el.classList.add('dresscode-swatch--active');
+                this.morphTo(name);
+            };
             el.addEventListener('mouseenter', onActivate, { passive: true });
             el.addEventListener('touchstart',  onActivate, { passive: true });
             this._listeners.push({ el, onActivate });
