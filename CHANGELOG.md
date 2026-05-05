@@ -18,6 +18,7 @@
 - **Dresscode pearl champagne pass:** pushed only `Жемчуг` away from white-grey porcelain toward deeper champagne/ivory satin with warmer base, warmer sheen, reduced iridescence, and less environment pickup.
 - **Dresscode responsive composition:** fixed final color/material presets and adjusted only layout CSS: tighter desktop/tablet dress slot, inward model shift, clipped section bounds, and compact one-row mobile swatches without the previous 2x2 media-query override.
 - **Dresscode manual rotation:** added local pointer drag rotation for the dress model with horizontal intent detection, release inertia, and native vertical mobile scroll preservation; no camera, Lenis, lighting, or material changes.
+- **Dresscode Android model load:** removed the narrow coarse-pointer lazy-init skip so the dress model loads on real Android Opera instead of leaving the dresscode section without the 3D dress.
 - **Dresscode silk model:** rebuilt `DressModel` material around sheen + iridescence (double-sided satin, vertex sway/billow) and mapped each swatch to its own PBR preset with animated sheen/iridescence morphs.
 - **Dresscode mobile viewport:** compressed the `max-width: 767px` layout into a 100svh vignette (tight padding, shell clamp, dress reordered below copy) so the floating model and swatches are visible simultaneously on phones.
 - **Info cards layout:** desktop grid now auto-fits `minmax(18rem, 1fr)` columns with hyphenated titles so long Russian words stop clipping on the "Проживание" card.

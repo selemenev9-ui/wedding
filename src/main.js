@@ -1184,8 +1184,6 @@ ScrollTrigger.create({
     start: 'top bottom',
     once: true,
     onEnter: () => {
-        // Skip on narrow touch devices — model would overlap text and drain battery
-        if (window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches) return;
         import('./gl/world/DressModel.js')
             .then(({ default: DressModel }) => {
                 if (dressModel) return;
