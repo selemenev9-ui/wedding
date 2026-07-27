@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
+- **Time update:** ceremony time changed from 16:00 to 15:30 across hero, destination, final, countdown target, and meta description.
 - **Dresscode palette:** added a standalone `#section-dresscode` with frosted shell, bilingual label, descriptive copy, and four color swatches (`Шоколад`, `Жемчуг`, `Роза`, `Фисташка`) plus GSAP reveal staging.
 - **Dresscode palette tuning:** moved palette authority into `DressModel` with separate `chipColor` values for DOM swatches and ACES-compensated PBR `color` / `envMapIntensity` values for the satin dress; removed the swatch inset highlight so chips render as flat reference colors.
 - **Dresscode satin tuning:** adjusted the four `DressModel` presets toward the visual reference: lighter copper chocolate, creamy pearl, softer dusty rose, and grey-olive pistachio without touching global lighting or HDRI.
@@ -33,7 +34,7 @@
 - **GSAP optimization:** removed crossfade opacity tweens for `.glimpse-img-2` and `.glimpse-img-3` from Scroll.js timeline; container pinning logic preserved (`+=3000px` scroll budget, mask expansion, button reveal timing).
 - **CSS cleanup:** replaced `.glimpse-img` styles with `.glimpse-video` styles; removed obsolete `.glimpse-img-1/2/3` z-index and opacity classes.
 - **Accessibility contrast pass:** increased muted text contrast in navigation/date labels/destination metadata/gallery counter and darkened route-link color to improve WCAG readability while preserving the warm visual palette.
-- **Event details update:** date/time moved to **19.09.2026, 16:00** across hero/details/final/meta; location changed to restaurant **«НАЛ»** (Советская ул., 1, село Большие Салы) with updated Yandex route URL.
+- **Event details update:** date/time moved to **19.09.2026, 15:30** across hero/details/final/meta; location changed to restaurant **«НАЛ»** (Советская ул., 1, село Большие Салы) with updated Yandex route URL.
 - **Destination section composition:** removed the pre-ceremony **«Выкуп невесты»** block; destination now shows only the main venue with a single route link.
 - **Gallery color pipeline fix:** `GalleryRibbon` custom shader now uses output colorspace conversion (`#include <colorspace_fragment>`), so photos in WebGL match standalone `.webp` rendering (no unintended dark/contrast cast from linear output mismatch).
 - **Gallery content:** `public/photos/gallery` now **16** WebP slides; `GalleryRibbon` `TOTAL=16`; `npm run images` refreshed `gallery-manifest.json`; scroll section still `1–3.webp`. `index.html` counter seed `01 / 16`.
