@@ -651,46 +651,6 @@ canvas {
     text-shadow: none;
 }
 
-/* Выкуп — тот же ритм, что у «Детали», отделён от торжества */
-.dest-ransom {
-    width: 100%;
-}
-
-.dest-event-label {
-    font-family: 'Manrope', sans-serif;
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 0.28em;
-    text-indent: 0.28em;
-    text-transform: uppercase;
-    color: rgba(18, 12, 8, 0.64);
-    margin: 0 0 1rem;
-}
-
-.dest-ransom .dest-date {
-    margin-bottom: 0.65rem;
-}
-
-.dest-ransom .dest-address {
-    margin-bottom: 1rem;
-}
-
-.route-link--ransom {
-    margin-bottom: 0;
-}
-
-.dest-between {
-    width: min(12rem, 72%);
-    height: 1px;
-    margin: 2rem auto 2.25rem;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(18, 12, 8, 0.1),
-        transparent
-    );
-}
-
 .dest-title {
     font-family: 'Playfair Display', serif;
     font-size: clamp(2.5rem, 5vw, 4rem);

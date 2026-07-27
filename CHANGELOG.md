@@ -34,7 +34,7 @@
 - **CSS cleanup:** replaced `.glimpse-img` styles with `.glimpse-video` styles; removed obsolete `.glimpse-img-1/2/3` z-index and opacity classes.
 - **Accessibility contrast pass:** increased muted text contrast in navigation/date labels/destination metadata/gallery counter and darkened route-link color to improve WCAG readability while preserving the warm visual palette.
 - **Event details update:** date/time moved to **19.09.2026, 16:00** across hero/details/final/meta; location changed to restaurant **«НАЛ»** (Советская ул., 1, село Большие Салы) with updated Yandex route URL.
-- **Destination section composition:** added a compact pre-event block for **«Выкуп невесты»** (**14:00**, Сумский переулок, 7) above the main venue, including a separate route link and visual divider to preserve layout rhythm.
+- **Destination section composition:** removed the pre-ceremony **«Выкуп невесты»** block; destination now shows only the main venue with a single route link.
 - **Gallery color pipeline fix:** `GalleryRibbon` custom shader now uses output colorspace conversion (`#include <colorspace_fragment>`), so photos in WebGL match standalone `.webp` rendering (no unintended dark/contrast cast from linear output mismatch).
 - **Gallery content:** `public/photos/gallery` now **16** WebP slides; `GalleryRibbon` `TOTAL=16`; `npm run images` refreshed `gallery-manifest.json`; scroll section still `1–3.webp`. `index.html` counter seed `01 / 16`.
 - **GitHub Actions Pages deploy:** `deploy-gh-pages.yml` now passes `VITE_RSVP_RELAY_URL` (and optional `VITE_RSVP_RELAY_SECRET`, `VITE_TG_*`) from **repository secrets** into `npm run build`. CI builds previously had an empty relay URL → RSVP failed on the live site while `localhost` worked with local `.env`.
